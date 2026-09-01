@@ -1,7 +1,7 @@
 export function detectOS() {
   // if a browser has no support for navigator.userAgentData.platform use platform as fallback
   const userAgent = (
-    navigator?.userAgentData.platform ?? navigator.platform
+    navigator.userAgentData?.platform ?? navigator.platform
   ).toLowerCase();
 
   if (userAgent.includes("win")) {
