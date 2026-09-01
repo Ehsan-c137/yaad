@@ -1,12 +1,14 @@
 "use client";
 
 import { Button } from "@ui/button";
-import { FileText, Plus } from "lucide-react";
+import { FileText, Network, Plus } from "lucide-react";
+import Link from "next/link";
 
+import { Separator } from "@/components/ui/separator";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
-import { useDocumentStore } from "@/store/document/use-document-store";
 import { useSidebarStore } from "@/store/use-sidebar-store";
+import { useWorkspaceStore } from "@/store/use-workspace-store";
 
 import { SidebarPageItem } from "./sidebar-item/sidebar-page-item";
 
@@ -49,27 +51,48 @@ export function SidebarHome() {
 
 function SidebarHomeHeader() {
   const createPage = useSidebarStore((store) => store.createPage);
+  const activeWorkspaceId = useWorkspaceStore(
+    (store) => store.activeWorkspaceId,
+  );
 
   return (
-    <div
-      className={cn(
-        styles.sectionLabel,
-        "flex items-center justify-between pt-3 pb-1",
-      )}
-    >
-      <span>Private</span>
-      {/* Transparent after: pseudo-element expands the touch target to ≥44px */}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        onClick={() => createPage(null)}
-        title="Create page"
-        aria-label="Create new page"
-        className="relative text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-(--accent-blue)"
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between py-1">
+        {activeWorkspaceId && (
+          <Link
+            href={`/workspace/${activeWorkspaceId}/graph`}
+            title="Graph View"
+            className={cn(
+              "inline-flex size-7 items-center justify-center rounded-lg",
+              "text-muted-foreground transition-colors",
+              "hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <Network className="size-4" strokeWidth={1.5} />
+          </Link>
+        )}
+      </div>
+      <Separator />
+      <div
+        className={cn(
+          styles.sectionLabel,
+          "flex items-center justify-between pt-3 pb-1",
+        )}
       >
-        <Plus className="size-3.5" />
-      </Button>
+        <span>Private</span>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => createPage(null)}
+          title="Create page"
+          aria-label="Create new page"
+          className="relative text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-(--accent-blue)"
+        >
+          <Plus className="size-3.5" />
+        </Button>
+      </div>
     </div>
   );
 }

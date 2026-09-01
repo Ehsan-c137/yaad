@@ -1,28 +1,21 @@
 "use client";
 
-import { Network } from "lucide-react";
-import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef } from "react";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/use-sidebar-store";
-import { useWorkspaceStore } from "@/store/use-workspace-store";
 
+import { Profile } from "./profile/profile";
 import { SidebarTabs } from "./sidebar-tabs";
 import { SidebarToggleButton } from "./sidebar-toggle-button";
 import { WorkspaceSwitcher } from "./workspace/workspace-switch";
 
-const SettingsModal = dynamic(() =>
-  import("./setting/settings-modal").then((mod) => mod.SettingsModal),
-);
-
 export function Sidebar() {
   const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
   const toggleSidebar = useSidebarStore((store) => store.toggleSidebar);
-  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
+
   const sidebarRef = useRef<HTMLElement>(null);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
@@ -71,23 +64,11 @@ export function Sidebar() {
         <WorkspaceSwitcher />
         <SidebarToggleButton />
       </div>
+
       <SidebarTabs />
-      <div className="flex items-center justify-between pt-1">
-        {/* Graph View button */}
-        {activeWorkspaceId && (
-          <Link
-            href={`/workspace/${activeWorkspaceId}/graph`}
-            title="Graph View"
-            className={cn(
-              "inline-flex size-7 items-center justify-center rounded-lg",
-              "text-muted-foreground transition-colors",
-              "hover:bg-muted hover:text-foreground",
-            )}
-          >
-            <Network className="size-4" strokeWidth={1.5} />
-          </Link>
-        )}
-        <SettingsModal />
+
+      <div>
+        <Profile />
       </div>
     </aside>
   );
