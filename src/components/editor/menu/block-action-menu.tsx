@@ -17,7 +17,6 @@ import { useCopyBlockLink } from "@/hooks/editor/use-copy-block-link";
 import { useOpenPageInNewTab } from "@/hooks/editor/use-open-page-in-new-tab";
 import { useSidePeek } from "@/hooks/editor/use-side-peek";
 import {
-  getBlockIcon,
   getBlockLastEditedBy,
   getBlockPageId,
   getBlockSidePeekDocId,
@@ -55,9 +54,8 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
     copyLink,
     openInNewTab: () =>
       openPageInNewTab({
-        pageId:
-          block.properties.targetPageId ?? block.id ?? block.properties.pageId,
-        title: block.properties.title?.[0]?.text ?? "untitled",
+        pageId: getBlockPageId(block) || block.id,
+        title: getBlockTitle(block),
         icon: block.properties.icon,
       }),
     openInSidePeek: () => openSidePeek(getBlockSidePeekDocId(block)),
