@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@ui/dialog";
 import { Settings } from "lucide-react";
+import { useState } from "react";
 
 import { useSettingsBackup } from "@/hooks/settings/use-settings-backup";
 import { styles } from "@/lib/design-token";
@@ -17,11 +18,34 @@ import { cn } from "@/lib/utils";
 import { ImportConfirmDialog } from "./import-confirm-dialog";
 import { SectionDivider } from "./section-divider";
 import { AboutSection } from "./sections/about-section";
+import { AccountSection } from "./sections/account-section";
 import { AppearanceSection } from "./sections/appearance-section";
 import { DataBackupSection } from "./sections/data-backup-section";
 import { KeyboardSection } from "./sections/keyboard-section";
 
-export function SettingsModal() {
+interface SettingsModalProps {
+  /**
+   * Controlled open state — used when settings is opened from other UI
+   * (e.g. the sidebar Profile menu). When omitted, the modal manages its
+   * own state via the trigger button.
+   */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+
+  const isControlled = open !== undefined && onOpenChange !== undefined;
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!isControlled) {
+      setUncontrolledOpen(nextOpen);
+    }
+
+    onOpenChange?.(nextOpen);
+  };
+
   const {
     isExporting,
     isImporting,
@@ -36,26 +60,10 @@ export function SettingsModal() {
 
   return (
     <>
-      <Dialog>
-        <DialogTrigger
-          render={
-            <Button
-              onClick={(e) => e.stopPropagation()}
-              id="sidebar-settings-trigger"
-              variant="ghost"
-              size="icon"
-              aria-label="Open settings"
-              className={cn(
-                styles.listRow,
-                "relative size-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground",
-                "after:absolute after:-inset-1.5 after:content-['']",
-              )}
-            />
-          }
-        >
-          <Settings strokeWidth={1.5} className="size-4.5" />
-        </DialogTrigger>
-
+      <Dialog
+        open={isControlled ? open : uncontrolledOpen}
+        onOpenChange={handleOpenChange}
+      >
         <DialogContent
           id="settings-modal"
           className="max-w-sm gap-0 overflow-hidden p-0"
@@ -71,6 +79,10 @@ export function SettingsModal() {
           </DialogHeader>
 
           <div className="flex flex-col py-2">
+            <AccountSection />
+
+            <SectionDivider />
+
             <AppearanceSection />
 
             <SectionDivider />

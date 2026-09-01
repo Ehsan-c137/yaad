@@ -1,4 +1,5 @@
 import { SidePeekPanel } from "../editor/side-panel/side-peek-panel";
+import { WelcomeModal } from "../onboarding/welcome-modal";
 import { BottomMobileNav } from "./bottom-mobile-nav";
 import { Sidebar } from "./sidebar/sidebar";
 import { WindowHeader } from "./window-header/window-header";
@@ -15,6 +16,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </main>
         <BottomMobileNav />
       </div>
+      <WelcomeModal />
     </div>
   );
 }
