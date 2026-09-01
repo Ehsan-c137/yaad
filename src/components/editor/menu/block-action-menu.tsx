@@ -135,17 +135,40 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
           <DropdownMenuSubContent className="max-h-64 w-48 overflow-y-auto">
             <DropdownMenuGroup>
               <DropdownMenuLabel className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
-                Color
+                Background Color
+              </DropdownMenuLabel>
+              <div className="flex flex-col gap-1">
+                {COLOR_OPTIONS.map((c) => (
+                  <DropdownMenuItem
+                    key={c.name}
+                    className={c.bgClass}
+                    onClick={() =>
+                      actions.applyColor({ bgColor: c.name.toLowerCase() })
+                    }
+                  >
+                    <span
+                      className={cn(
+                        "size-3.5 shrink-0 rounded-sm border border-border",
+                        c.bgClass,
+                      )}
+                    />
+                    <span className={c.textClass}>{c.name}</span>
+                  </DropdownMenuItem>
+                ))}
+              </div>
+              <DropdownMenuLabel className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
+                Text Color
               </DropdownMenuLabel>
               {COLOR_OPTIONS.map((c) => (
                 <DropdownMenuItem
                   key={c.name}
-                  onClick={() => actions.applyColor(c.name.toLowerCase())}
+                  onClick={() =>
+                    actions.applyColor({ textColor: c.name.toLowerCase() })
+                  }
                 >
                   <span
                     className={cn(
                       "size-3.5 shrink-0 rounded-sm border border-border",
-                      c.bgClass,
                     )}
                   />
                   <span className={c.textClass}>{c.name}</span>

@@ -15,8 +15,8 @@ export function useBlockActions(blockId: string) {
   return {
     changeType: (type: DocumentBlockType) => changeBlockType(blockId, type),
 
-    applyColor: (color: string) =>
-      updateBlockProperties(blockId, pageId, { color }),
+    applyColor: ({ ...props }: Record<string, string>) =>
+      updateBlockProperties(blockId, pageId, props),
 
     duplicate: () => duplicateBlock(blockId),
 

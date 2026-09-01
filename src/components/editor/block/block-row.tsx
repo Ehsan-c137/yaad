@@ -11,6 +11,7 @@ import {
 import { useDocumentStore } from "@/store/document/use-document-store";
 
 import { BlockActionMenu } from "../menu/block-action-menu";
+import { COLOR_OPTIONS } from "../menu/menu-constant";
 import { BlockRenderer } from "./block-renderer";
 
 interface BlockRowProps {
@@ -24,6 +25,11 @@ export function BlockRow({ blockId }: BlockRowProps) {
   const addBlock = useDocumentStore((state) => state.addBlock);
 
   if (!block) return null;
+
+  const { bgColor } = block.properties;
+  const backgroundStyle = COLOR_OPTIONS.find(
+    (color) => color.name.toLocaleLowerCase() === bgColor?.toLowerCase(),
+  );
 
   return (
     <div className="group relative flex min-h-8 w-full items-start rounded-lg px-1 transition-colors hover:bg-accent/40">
@@ -66,7 +72,11 @@ export function BlockRow({ blockId }: BlockRowProps) {
         </DropdownMenu>
       </div>
 
-      <div className="min-w-0 flex-1">
+      <div
+        className={`${backgroundStyle?.bgClass}
+          min-w-0 flex-1 rounded-lg px-2
+        `}
+      >
         <BlockRenderer block={block} />
       </div>
     </div>
