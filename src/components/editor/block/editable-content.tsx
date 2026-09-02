@@ -110,9 +110,12 @@ export function EditableContent({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
     if (
-      slashMenuState.isOpen &&
-      ["ArrowDown", "ArrowUp", "Enter"].includes(e.key)
+      (slashMenuState.isOpen &&
+        ["ArrowDown", "ArrowUp", "Enter"].includes(e.key)) ||
+      isMobile
     ) {
       // Prevent block Enter / Split behavior when slash menu is intercepting keys
       return;
