@@ -5,8 +5,7 @@ import "./globals.css";
 import Script from "next/script";
 
 import { MainLayout } from "@/components/layout/main-layout";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { WorkspaceInitializer } from "@/providers/workspace-initializer";
+import { Providers } from "@/providers/providers-index";
 
 export const metadata: Metadata = {
   title: {
@@ -82,10 +81,9 @@ export default function RootLayout({
         /> */}
       </head>
       <body className="flex min-h-full flex-col font-sans">
-        <ThemeProvider />
-        <WorkspaceInitializer>
+        <Providers>
           <MainLayout>{children}</MainLayout>
-        </WorkspaceInitializer>
+        </Providers>
       </body>
     </html>
   );

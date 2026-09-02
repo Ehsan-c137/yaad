@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { useDocumentStore } from "@/store/document/use-document-store";
 
 import { BlockActionMenu } from "../menu/block-action-menu";
@@ -32,10 +33,10 @@ export function BlockRow({ blockId }: BlockRowProps) {
   );
 
   return (
-    <div className="group relative flex min-h-8 w-full items-start rounded-lg px-1 transition-colors hover:bg-accent/40">
+    <div className="group relative flex min-h-8 w-full items-start rounded-lg pl-5 transition-colors hover:bg-accent/40 md:px-1">
       <div
         contentEditable={false}
-        className="absolute bottom-0 -left-15 flex items-center gap-0.5 opacity-0 transition-opacity select-none group-hover:opacity-100"
+        className="absolute bottom-0 -left-7 flex items-center gap-0.5 opacity-0 transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100 md:-left-15"
       >
         <Button
           variant="ghost"
@@ -73,9 +74,10 @@ export function BlockRow({ blockId }: BlockRowProps) {
       </div>
 
       <div
-        className={`${backgroundStyle?.bgClass}
-          min-w-0 flex-1 rounded-lg px-2
-        `}
+        className={cn(
+          backgroundStyle?.bgClass,
+          "min-w-0 flex-1 rounded-lg px-2",
+        )}
       >
         <BlockRenderer block={block} />
       </div>
