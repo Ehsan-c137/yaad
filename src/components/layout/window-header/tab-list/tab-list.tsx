@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/tooltip";
 import { Plus } from "lucide-react";
 
 import { TabItem } from "../tab-item";
@@ -32,22 +31,17 @@ export function TabList() {
         return <TabItem key={tab.id} tab={tab} isActive={isTabActive} />;
       })}
 
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={handleCreateNewTab}
-              aria-label="New tab"
-              className="size-7 shrink-0 rounded-md text-muted-foreground hover:bg-foreground/6 hover:text-foreground dark:hover:bg-white/6"
-            >
-              <Plus className="size-3.5" />
-            </Button>
-          }
-        />
-        <TooltipContent>New document tab</TooltipContent>
-      </Tooltip>
+      <Button
+        variant="ghost"
+        size="icon-xs"
+        onClick={handleCreateNewTab}
+        aria-label="New tab"
+        title="New document tab"
+        tooltipSide="bottom"
+        className="size-7 shrink-0 rounded-md text-muted-foreground hover:bg-foreground/6 hover:text-foreground dark:hover:bg-white/6"
+      >
+        <Plus className="size-3.5" />
+      </Button>
     </div>
   );
 }
