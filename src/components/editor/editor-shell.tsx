@@ -32,7 +32,7 @@ export function EditorShell({ pageId }: EditorShellProps) {
     <EditorPageIdProvider pageId={pageId}>
       <div className={styles.editorSurface}>
         <PageHeader />
-        <div className="mx-auto max-w-3xl px-4 pb-32 md:px-12">
+        <div className="mx-auto max-w-3xl pb-32 pl-4 sm:px-4 md:px-12">
           <BlockCanvas />
         </div>
       </div>
