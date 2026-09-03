@@ -5,9 +5,11 @@ import { useParams } from "next/navigation";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
 import { Link } from "@/components/ui/link";
+import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { useDocumentStore } from "@/store/document/use-document-store";
 
+import { BookmarkButton } from "./bookmark-button";
 import { PageHeaderCover } from "./cover/page-header-cover";
 import { PageIcon } from "./icon/page-icon";
 
@@ -17,7 +19,10 @@ export function PageHeader() {
       <PageHeaderCover />
 
       <div className="mx-auto w-full max-w-3xl px-6 pt-4">
-        <PageIcon />
+        <div className="flex items-center justify-between">
+          <PageIcon />
+          <BookmarkButton />
+        </div>
         <PageHeaderTitle />
       </div>
     </div>
@@ -26,7 +31,7 @@ export function PageHeader() {
 
 function PageHeaderTitle() {
   const titleText = useDocumentStore(
-    (state) => state.currentDocument?.blocks?.root.properties?.title[0]?.text,
+    (state) => state.currentDocument?.blocks.root.properties?.title[0]?.text,
   );
   const updateTitle = useDocumentStore((state) => state.updateTitle);
   const { workspaceId, pageId } = useParams<{
@@ -45,17 +50,10 @@ function PageHeaderTitle() {
         placeholder="Untitled"
         className="text-sf-large-title leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem]"
         onChange={handleTitleChange}
-        onEnter={() => {
-          // TODO: fix
-          console.log("oops");
-        }}
-        onBackspaceEmpty={() => {
-          console.log("oops");
-        }}
       />
       <Link
         prefetch={false}
-        href={`/workspace/${encodeURI(workspaceId)}/${encodeURI(pageId)}/graph`}
+        href={`/${ROUTES.workspace}/${encodeURI(workspaceId)}/${encodeURI(pageId)}/graph`}
         title="Graph View"
         className={cn(
           "inline-flex size-7 items-center justify-center rounded-lg",
