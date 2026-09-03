@@ -16,11 +16,11 @@ interface EditableContentProps {
   html: string;
   placeholder?: string;
   className?: string;
-  onChange: (text: string) => void;
-  onEnter: (e: KeyboardEvent) => void;
-  onBackspaceEmpty: () => void;
-  onTransformType?: (type: DocumentBlockType) => void;
   blockType?: DocumentBlockType;
+  onChange: (text: string) => void;
+  onEnter?: (e: KeyboardEvent) => void;
+  onBackspaceEmpty?: () => void;
+  onTransformType?: (type: DocumentBlockType) => void;
 }
 
 export function EditableContent({
@@ -122,14 +122,14 @@ export function EditableContent({
     }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onEnter(e);
+      onEnter?.(e);
     }
     if (e.key === "Backspace") {
       const text = contentRef.current?.innerText || "";
 
       if (text.trim().length === 0) {
         e.preventDefault();
-        onBackspaceEmpty();
+        onBackspaceEmpty?.();
       }
     }
   };
