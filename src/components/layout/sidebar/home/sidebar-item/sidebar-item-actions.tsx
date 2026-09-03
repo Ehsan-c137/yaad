@@ -1,4 +1,6 @@
 import {
+  Bookmark,
+  BookmarkCheck,
   Copy,
   Network,
   Plus,
@@ -41,10 +43,20 @@ export function SidebarActions({
   const [isDuplicating, setIsDuplicating] = useState(false);
 
   const duplicatePage = useSidebarStore((s) => s.duplicatePage);
+  const toggleFavorite = useSidebarStore((s) => s.toggleFavorite);
   const createSubpage = useDocumentStore((s) => s.addSubPageBlock, page.id);
   const { openSidePeek, closeSidePeek } = useSidePeek();
 
   const pageId = page.id;
+
+  const handleToggleFavorite = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      toggleFavorite(pageId);
+      setIsOpen(false);
+    },
+    [toggleFavorite, pageId, setIsOpen],
+  );
 
   const handleDuplicate = useCallback(
     async (e: React.MouseEvent) => {
@@ -118,6 +130,24 @@ export function SidebarActions({
         >
           <Copy className="size-3.5 text-muted-foreground" />
           <span>{isDuplicating ? "Duplicating…" : "Duplicate"}</span>
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={handleToggleFavorite}
+          className={itemClass}
+        >
+          {page.isBookmarked ? (
+            <>
+              <BookmarkCheck className="size-3.5 text-(--accent-blue)" />
+              <span>Remove from bookmarks</span>
+            </>
+          ) : (
+            <>
+              <Bookmark className="size-3.5 text-muted-foreground" />
+              <span>Add to bookmarks</span>
+            </>
+          )}
         </Button>
 
         {!isMobile && (

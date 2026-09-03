@@ -1,19 +1,15 @@
 import { Tabs, TabsList, TabsTrigger } from "@ui/tabs";
-import { House, Inbox } from "lucide-react";
-import dynamic from "next/dynamic";
+import { Bookmark, House } from "lucide-react";
 import { useState } from "react";
 
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/use-sidebar-store";
 
+import { SidebarBookmarks } from "./bookmarks/sidebar-bookmarks";
 import { SidebarHome } from "./home/sidebar-home";
 
-const SidebarInbox = dynamic(() =>
-  import("./inbox/sidebar-inbox").then((mod) => mod.SidebarInbox),
-);
-
-type Tab = "home" | "inbox";
+type Tab = "bookmarked" | "home";
 
 const TABS = [
   {
@@ -22,9 +18,9 @@ const TABS = [
     icon: <House strokeWidth={1.5} className="size-4" />,
   },
   {
-    label: "Inbox",
-    value: "inbox" as const,
-    icon: <Inbox strokeWidth={1.5} className="size-4" />,
+    label: "Bookmarked",
+    value: "bookmarked" as const,
+    icon: <Bookmark strokeWidth={1.5} className="size-4" />,
   },
 ];
 
@@ -63,8 +59,8 @@ export function SidebarTabs() {
         <div hidden={activeTab !== "home"} className="h-full">
           <SidebarHome />
         </div>
-        <div hidden={activeTab !== "inbox"} className="h-full">
-          {activeTab === "inbox" && <SidebarInbox />}
+        <div hidden={activeTab !== "bookmarked"} className="h-full">
+          {activeTab === "bookmarked" && <SidebarBookmarks />}
         </div>
       </div>
     </div>

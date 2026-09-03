@@ -9,7 +9,6 @@ import { workspaceService } from "@/services/workspace-service";
 import type { SidebarPageItem, SidebarPagesSlice, SidebarState } from "./types";
 
 import { useTabStore } from "../use-tab-store";
-import { useSidebarStore } from "./use-sidebar-store";
 
 export const createPagesSlice: StateCreator<
   SidebarState,
@@ -67,7 +66,7 @@ export const createPagesSlice: StateCreator<
       };
     }),
 
-  toggleFavorite: (pageId: string) =>
+  toggleBookmarked: (pageId: string) =>
     set((state) => {
       const page = state.pages[pageId];
       if (!page) return state;
@@ -77,7 +76,7 @@ export const createPagesSlice: StateCreator<
           ...state.pages,
           [pageId]: {
             ...page,
-            isFavorite: !page.isFavorite,
+            isBookmarked: !page.isBookmarked,
             updatedAt: Date.now(),
           },
         },
@@ -173,7 +172,7 @@ export const createPagesSlice: StateCreator<
         parentId: page.parentId,
         childrenIds: [],
         isExpanded: false,
-        isFavorite: false,
+        isBookmarked: false,
         updatedAt: Date.now(),
       };
 

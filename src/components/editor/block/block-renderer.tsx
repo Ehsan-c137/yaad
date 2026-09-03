@@ -2,9 +2,9 @@
 
 import type { DocumentBlock } from "@/types/document";
 
+import { BulletListBlock } from "./elements/bullet-list-block";
 import { CalloutBlock } from "./elements/callout-block";
 import { CodeBlock } from "./elements/code-block";
-// import { FileBlock } from "./file-block";
 import { ImageBlock } from "./elements/image-block";
 import { LinkPreviewBlock } from "./elements/link-preview-block";
 import { PageBlock } from "./elements/page-block";
@@ -21,6 +21,9 @@ export function BlockRenderer({ block }: BlockRendererProps) {
   switch (block.type) {
     case "link_preview":
       return <LinkPreviewBlock block={block} />;
+
+    case "bulleted_list":
+      return <BulletListBlock block={block} />;
 
     case "page":
       return <PageBlock block={block} />;
@@ -44,6 +47,12 @@ export function BlockRenderer({ block }: BlockRendererProps) {
       return <TableBlock block={block} />;
 
     case "paragraph":
+
+    case "heading_1":
+
+    case "heading_2":
+
+    case "heading_3":
       return <TextBlock block={block} />;
 
     default:

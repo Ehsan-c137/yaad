@@ -5,7 +5,7 @@ export interface SidebarPageItem {
   parentId: string | null;
   childrenIds: string[];
   isExpanded?: boolean;
-  isFavorite?: boolean;
+  isBookmarked?: boolean;
   updatedAt?: number;
 }
 
@@ -27,7 +27,7 @@ export interface SidebarPagesSlice {
   // Actions
   loadWorkspacePages: (workspaceId: string) => Promise<void>;
   toggleExpand: (pageId: string) => void;
-  toggleFavorite: (pageId: string) => void;
+  toggleBookmarked: (pageId: string) => void;
   duplicatePage: (pageId: string) => Promise<string | null>;
   createPage: (parentId: string | null) => string;
   deletePage: (pageId: string) => void;
