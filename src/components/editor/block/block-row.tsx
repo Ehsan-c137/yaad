@@ -33,7 +33,12 @@ export function BlockRow({ blockId }: BlockRowProps) {
   );
 
   return (
-    <div className="group relative flex min-h-8 w-full items-start rounded-lg pl-5 transition-colors hover:bg-accent/40 md:px-1">
+    <div
+      className={cn(
+        "group relative flex min-h-8 w-full items-start rounded-lg pl-5 transition-colors hover:bg-accent/40 md:px-1",
+        block.type === "bulleted_list" && "items-center",
+      )}
+    >
       <div
         contentEditable={false}
         className="absolute bottom-0 -left-7 flex items-center gap-0.5 opacity-0 transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100 md:-left-15"
@@ -45,6 +50,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
             addBlock(block.parentId ?? "root", block.id, "paragraph")
           }
           title="Add block below"
+          tooltipSide="bottom"
         >
           <Plus className="size-3.5" />
         </Button>
@@ -57,6 +63,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
                 size="icon-xs"
                 className="cursor-grab active:cursor-grabbing"
                 title="Open block options"
+                tooltipSide="bottom"
               >
                 <GripVertical className="size-3.5" />
               </Button>
