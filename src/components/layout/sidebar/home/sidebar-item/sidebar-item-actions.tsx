@@ -43,19 +43,19 @@ export function SidebarActions({
   const [isDuplicating, setIsDuplicating] = useState(false);
 
   const duplicatePage = useSidebarStore((s) => s.duplicatePage);
-  const toggleFavorite = useSidebarStore((s) => s.toggleFavorite);
+  const toggleBookmarked = useSidebarStore((s) => s.toggleBookmarked);
   const createSubpage = useDocumentStore((s) => s.addSubPageBlock, page.id);
-  const { openSidePeek, closeSidePeek } = useSidePeek();
+  const { openSidePeek } = useSidePeek();
 
   const pageId = page.id;
 
-  const handleToggleFavorite = useCallback(
+  const handleToggleBookmarked = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      toggleFavorite(pageId);
+      toggleBookmarked(pageId);
       setIsOpen(false);
     },
-    [toggleFavorite, pageId, setIsOpen],
+    [toggleBookmarked, pageId, setIsOpen],
   );
 
   const handleDuplicate = useCallback(
@@ -134,7 +134,7 @@ export function SidebarActions({
 
         <Button
           variant="outline"
-          onClick={handleToggleFavorite}
+          onClick={handleToggleBookmarked}
           className={itemClass}
         >
           {page.isBookmarked ? (
