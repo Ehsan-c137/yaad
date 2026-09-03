@@ -21,13 +21,16 @@ import {
 } from "@ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { Ellipsis } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
-import { useDeletePage } from "@/hooks/sidebar/use-delete-page";
+import { ROUTES } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/use-sidebar-store";
+import { useWorkspaceStore } from "@/store/use-workspace-store";
 
 import { SidebarActions } from "./sidebar-item-actions";
 
@@ -36,13 +39,39 @@ interface SidebarItemOptionsProps {
 }
 
 export function SidebarItemOptions({ pageId }: SidebarItemOptionsProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const page = useSidebarStore((s) => s.pages[pageId]);
-  const handleDeletePage = useDeletePage(pageId);
+  const moveToTrash = useSidebarStore((s) => s.moveToTrash);
+  const restorePage = useSidebarStore((s) => s.restorePage);
+  const activePageId = useSidebarStore((s) => s.activePageId);
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
 
   if (!page) return null;
+
+  const handleMoveToTrash = () => {
+    setIsDeleteDialogOpen(false);
+    setIsOpen(false);
+    const pageTitle = page.title || "Untitled";
+
+    moveToTrash(pageId);
+
+    toast.success(`Moved "${pageTitle}" to trash`, {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          restorePage(pageId);
+          toast.success(`Restored "${pageTitle}"`);
+        },
+      },
+    });
+
+    if (activePageId === pageId && activeWorkspaceId) {
+      router.push(`/${ROUTES.workspace}/${activeWorkspaceId}`);
+    }
+  };
 
   const sharedActionsProps = {
     page,
@@ -63,18 +92,22 @@ export function SidebarItemOptions({ pageId }: SidebarItemOptionsProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete page?</AlertDialogTitle>
+            <AlertDialogTitle>Move to trash?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{page.title || "Untitled"}
-              &quot;? This will also delete any sub-pages it contains.
+              &quot;{page.title || "Untitled"}&quot; and any sub-pages it
+              contains will be moved to the trash. You can restore them anytime
+              from Trash.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDeletePage}>
-              Delete
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleMoveToTrash}
+            >
+              Move to trash
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -141,10 +174,7 @@ function OptionsMenu({
         align="start"
         side="bottom"
         sideOffset={4}
-        className={cn(
-          styles.menu,
-          "w-56 p-1.5 text-xs shadow-xl backdrop-blur-xl",
-        )}
+        className={cn(styles.menu, "w-56 p-1.5 text-xs shadow-xl")}
       >
         <SidebarActions {...sharedActionsProps} />
       </PopoverContent>

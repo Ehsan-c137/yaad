@@ -11,6 +11,7 @@ import { useSidebarPageItem } from "@/hooks/sidebar/use-sidebar-page-item";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
+import { useSidebarStore } from "@/store/use-sidebar-store";
 
 import { SidebarItemOptions } from "./sidebar-item-options";
 
@@ -44,9 +45,10 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
     handleToggleExpand,
     handleCreateSubpage,
   } = useSidebarPageItem(pageId);
+  const pages = useSidebarStore((s) => s.pages);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
-  if (!page) return null;
+  if (!page || page.isDeleted) return null;
 
   return (
     <div className="flex w-full flex-col select-none">
@@ -101,9 +103,15 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
 
       {page.isExpanded && hasChildren && (
         <div id={`children-${pageId}`} className="flex w-full flex-col">
-          {page.childrenIds.map((childId) => (
-            <SidebarPageItem key={childId} pageId={childId} depth={depth + 1} />
-          ))}
+          {page.childrenIds
+            .filter((childId) => !pages[childId]?.isDeleted)
+            .map((childId) => (
+              <SidebarPageItem
+                key={childId}
+                pageId={childId}
+                depth={depth + 1}
+              />
+            ))}
         </div>
       )}
     </div>

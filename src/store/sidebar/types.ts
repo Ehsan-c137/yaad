@@ -6,6 +6,8 @@ export interface SidebarPageItem {
   childrenIds: string[];
   isExpanded?: boolean;
   isBookmarked?: boolean;
+  isDeleted?: boolean;
+  deletedAt?: number;
   updatedAt?: number;
 }
 
@@ -31,6 +33,10 @@ export interface SidebarPagesSlice {
   duplicatePage: (pageId: string) => Promise<string | null>;
   createPage: (parentId: string | null) => string;
   deletePage: (pageId: string) => void;
+  moveToTrash: (pageId: string) => void;
+  restorePage: (pageId: string) => void;
+  permanentlyDeletePage: (pageId: string) => Promise<void>;
+  emptyTrash: () => Promise<void>;
   /* eslint-disable-next-line max-params */
   registerSubPageInTree: (
     newPageId: string,

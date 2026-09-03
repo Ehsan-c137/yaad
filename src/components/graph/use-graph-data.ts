@@ -46,10 +46,15 @@ function collectVisibleIds(
 
   while (queue.length > 0) {
     const id = queue.shift();
-    if (!id || !(id in pages) || visibleIds.has(id)) continue;
+    if (!id || !(id in pages) || pages[id].isDeleted || visibleIds.has(id))
+      continue;
 
     visibleIds.add(id);
-    queue.push(...(pages[id].childrenIds || []));
+    queue.push(
+      ...(pages[id].childrenIds || []).filter(
+        (childId) => !pages[childId]?.isDeleted,
+      ),
+    );
   }
 
   return visibleIds;
@@ -116,15 +121,20 @@ export function useGraphData(
   focusPageId?: string,
 ): { nodes: Node<PageNodeData>[]; edges: Edge[] } {
   return useMemo(() => {
-    const pageIds = Object.keys(pages);
+    const pageIds = Object.keys(pages).filter((id) => !pages[id]?.isDeleted);
     if (!pageIds.length) return { nodes: [], edges: [] };
 
     // When focused on a page, scope the graph to that page's subtree
     // (the page itself plus all of its descendants)
-    const focusId = focusPageId && focusPageId in pages ? focusPageId : null;
+    const focusId =
+      focusPageId && focusPageId in pages && !pages[focusPageId]?.isDeleted
+        ? focusPageId
+        : null;
     const visibleIdSet = collectVisibleIds(pages, focusId, pageIds);
     const visibleIds = [...visibleIdSet];
-    const rootIds = rootPageIds.filter((id) => pages[id]);
+    const rootIds = rootPageIds.filter(
+      (id) => pages[id] && !pages[id].isDeleted,
+    );
     const fallbackRootId = rootIds[0] || pageIds[0];
     const pinnedId = focusId ?? fallbackRootId;
     const rootIndexByPage = buildRootIndexMap(pages, rootIds);

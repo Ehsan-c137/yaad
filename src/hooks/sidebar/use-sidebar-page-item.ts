@@ -25,6 +25,7 @@ export function useSidebarPageItem(pageId: string): SidebarPageItemViewModel {
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const page = useSidebarStore((s) => s.pages[pageId]);
+  const pages = useSidebarStore((s) => s.pages);
   const workspaceId = useWorkspaceStore((s) => s.activeWorkspaceId)!;
   const toggleExpand = useSidebarStore((s) => s.toggleExpand);
   const toggleSidebar = useSidebarStore((s) => s.toggleSidebar);
@@ -33,7 +34,9 @@ export function useSidebarPageItem(pageId: string): SidebarPageItemViewModel {
 
   const href = `/${ROUTES.workspace}/${workspaceId}/${pageId}`;
   const isActive = pathname === href;
-  const hasChildren = page.childrenIds.length > 0;
+  const hasChildren = Boolean(
+    page?.childrenIds?.some((childId) => !pages[childId]?.isDeleted),
+  );
 
   const handleNavigate = useCallback(() => {
     if (isMobile) toggleSidebar();

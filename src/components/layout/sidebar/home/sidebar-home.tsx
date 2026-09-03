@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@ui/button";
-import { FileText, Network, Plus } from "lucide-react";
+import { FileText, Network, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Separator } from "@/components/ui/separator";
 import { styles } from "@/lib/design-token";
@@ -50,26 +51,51 @@ export function SidebarHome() {
 }
 
 function SidebarHomeHeader() {
+  const pathname = usePathname();
   const createPage = useSidebarStore((store) => store.createPage);
   const activeWorkspaceId = useWorkspaceStore(
     (store) => store.activeWorkspaceId,
   );
 
+  const isGraphActive =
+    Boolean(activeWorkspaceId) &&
+    pathname === `/workspace/${activeWorkspaceId}/graph`;
+  const isTrashActive =
+    Boolean(activeWorkspaceId) &&
+    pathname === `/workspace/${activeWorkspaceId}/trash`;
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between py-1">
         {activeWorkspaceId && (
-          <Link
-            href={`/workspace/${activeWorkspaceId}/graph`}
-            title="Graph View"
-            className={cn(
-              "inline-flex size-7 items-center justify-center rounded-lg",
-              "text-muted-foreground transition-colors",
-              "hover:bg-muted hover:text-foreground",
-            )}
-          >
-            <Network className="size-4" strokeWidth={1.5} />
-          </Link>
+          <div className="flex items-center gap-1">
+            <Link
+              href={`/workspace/${activeWorkspaceId}/graph`}
+              title="Graph View"
+              aria-label="Graph View"
+              className={cn(
+                "inline-flex size-7 items-center justify-center rounded-lg",
+                "text-muted-foreground transition-colors",
+                "hover:bg-muted hover:text-foreground",
+                isGraphActive && "bg-muted text-foreground",
+              )}
+            >
+              <Network className="size-4" strokeWidth={1.5} />
+            </Link>
+            <Link
+              href={`/workspace/${activeWorkspaceId}/trash`}
+              title="Trash"
+              aria-label="Go to Trash"
+              className={cn(
+                "inline-flex size-7 items-center justify-center rounded-lg",
+                "text-muted-foreground transition-colors",
+                "hover:bg-muted hover:text-foreground",
+                isTrashActive && "bg-muted text-foreground",
+              )}
+            >
+              <Trash2 className="size-4" strokeWidth={1.5} />
+            </Link>
+          </div>
         )}
       </div>
       <Separator />

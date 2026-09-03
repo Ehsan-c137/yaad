@@ -34,7 +34,7 @@ export const createPagesSlice: StateCreator<
           isExpanded: get().pages[node.id]?.isExpanded ?? false, // Preserve UI expand state if already loaded
         };
 
-        if (!node.parentId) {
+        if (!node.parentId && !node.isDeleted) {
           rootIds.push(node.id);
         }
       });
@@ -283,6 +283,128 @@ export const createPagesSlice: StateCreator<
         rootPageIds: state.rootPageIds.filter((id) => id !== pageId),
       };
     });
+  },
+
+  moveToTrash: (pageId: string) => {
+    set((state) => {
+      const page = state.pages[pageId];
+      if (!page) return state;
+
+      const toTrash = new Set<string>();
+      const collectRecursive = (id: string) => {
+        const current = state.pages[id];
+        if (!current || toTrash.has(id)) return;
+        toTrash.add(id);
+        (current.childrenIds || []).forEach(collectRecursive);
+      };
+      collectRecursive(pageId);
+
+      toTrash.forEach((id) => {
+        useTabStore.getState().removeTabByPageId(id);
+      });
+
+      const updatedPages = { ...state.pages };
+      const now = Date.now();
+
+      toTrash.forEach((id) => {
+        if (updatedPages[id]) {
+          updatedPages[id] = {
+            ...updatedPages[id],
+            isDeleted: true,
+            deletedAt: now,
+            isBookmarked: false,
+          };
+        }
+      });
+
+      if (page.parentId && updatedPages[page.parentId]) {
+        updatedPages[page.parentId] = {
+          ...updatedPages[page.parentId],
+          childrenIds: updatedPages[page.parentId].childrenIds.filter(
+            (id) => id !== pageId,
+          ),
+        };
+      }
+
+      return {
+        pages: updatedPages,
+        rootPageIds: state.rootPageIds.filter((id) => id !== pageId),
+      };
+    });
+  },
+
+  restorePage: (pageId: string) => {
+    set((state) => {
+      const page = state.pages[pageId];
+
+      if (!page || !page.isDeleted) return state;
+
+      const toRestore = new Set<string>();
+
+      const collectRecursive = (id: string) => {
+        const current = state.pages[id];
+        if (!current || toRestore.has(id)) return;
+        toRestore.add(id);
+        (current.childrenIds || []).forEach(collectRecursive);
+      };
+
+      collectRecursive(pageId);
+
+      const updatedPages = { ...state.pages };
+      toRestore.forEach((id) => {
+        if (updatedPages[id]) {
+          updatedPages[id] = {
+            ...updatedPages[id],
+            isDeleted: false,
+            deletedAt: undefined,
+          };
+        }
+      });
+
+      const updatedRootIds = [...state.rootPageIds];
+      const parent = page.parentId ? updatedPages[page.parentId] : null;
+
+      if (parent && !parent.isDeleted) {
+        if (!parent.childrenIds.includes(pageId)) {
+          updatedPages[parent.id] = {
+            ...parent,
+            childrenIds: [...parent.childrenIds, pageId],
+            isExpanded: true,
+          };
+        }
+      } else {
+        updatedPages[pageId] = {
+          ...updatedPages[pageId],
+          parentId: null,
+        };
+
+        if (!updatedRootIds.includes(pageId)) {
+          updatedRootIds.push(pageId);
+        }
+      }
+
+      return {
+        pages: updatedPages,
+        rootPageIds: updatedRootIds,
+      };
+    });
+  },
+
+  permanentlyDeletePage: async (pageId: string) => {
+    await documentService.deletePageAndSubTree(pageId);
+  },
+
+  emptyTrash: async () => {
+    const pages = get().pages;
+
+    const trashedIds = Object.keys(pages).filter((id) => pages[id]?.isDeleted);
+
+    for (const id of trashedIds) {
+      const page = get().pages[id];
+      if (page) {
+        await documentService.deletePageAndSubTree(id);
+      }
+    }
   },
 
   /* eslint-disable-next-line max-params */

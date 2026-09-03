@@ -13,5 +13,7 @@ export interface WorkspacePageMeta {
   icon?: string;
   parentId: string | null;
   childrenIds: string[];
+  isDeleted?: boolean;
+  deletedAt?: number;
   updatedAt: number;
 }

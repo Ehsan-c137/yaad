@@ -22,7 +22,11 @@ export function useRecentPages(limit = 5, workspaceId?: string): SearchItem[] {
     if (!targetWorkspaceId) return [];
 
     const workspaceTabs = tabs
-      .filter((t) => t.workspaceId === targetWorkspaceId)
+      .filter(
+        (t) =>
+          t.workspaceId === targetWorkspaceId &&
+          !sidebarPages[t.pageId]?.isDeleted,
+      )
       .sort((a, b) => b.lastAccessedAt - a.lastAccessedAt);
 
     const recentTabItems: SearchItem[] = workspaceTabs.map((tab) => {
@@ -49,7 +53,7 @@ export function useRecentPages(limit = 5, workspaceId?: string): SearchItem[] {
       activeWorkspaceId === targetWorkspaceId
     ) {
       const additionalPages = Object.values(sidebarPages)
-        .filter((page) => !recentPageIds.has(page.id))
+        .filter((page) => !page.isDeleted && !recentPageIds.has(page.id))
         .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
         .slice(0, limit - recentTabItems.length)
         .map((page) => ({

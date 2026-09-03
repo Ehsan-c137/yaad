@@ -22,6 +22,7 @@ export function usePageSearch(debouncedQuery: string): SearchItem[] {
     const allPages = Object.values(sidebarPages);
 
     const matches = allPages.filter((page) => {
+      if (page.isDeleted) return false;
       const title = (page.title || "Untitled").toLowerCase();
       return title.includes(trimmedQuery);
     });
