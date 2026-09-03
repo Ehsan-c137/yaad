@@ -14,10 +14,11 @@ export const createCoreSlice: StateCreator<
 > = (set, get) => ({
   currentDocument: null,
   isSaving: false,
+  _hasHydrated: false,
 
   loadDocument: async (id: string) => {
     const doc = await documentService.loadDocument(id);
-    set({ currentDocument: doc });
+    set({ currentDocument: doc, _hasHydrated: true });
   },
 
   saveCurrentDocumentImmediately: async () => {

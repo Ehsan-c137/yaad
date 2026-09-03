@@ -3,6 +3,7 @@ import type { DocumentBlockType, DocumentJSON } from "@/types/document";
 export interface DocumentCoreSlice {
   currentDocument: DocumentJSON | null;
   isSaving: boolean;
+  _hasHydrated: boolean;
   loadDocument: (id: string) => Promise<void>;
   saveCurrentDocumentImmediately: () => Promise<void>;
   deleteDocument: (documentId: string) => Promise<void>;
