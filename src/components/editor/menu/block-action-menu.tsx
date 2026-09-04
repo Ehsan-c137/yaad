@@ -61,10 +61,6 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
     openInSidePeek: () => openSidePeek(getBlockSidePeekDocId(block)),
   };
 
-  const blockActions: BlockMenuAction[] = [
-    { id: "add-to-favorites", icon: Star, label: "Add to Favorites" },
-  ];
-
   const documentActions: BlockMenuAction[] = [
     {
       id: "open-in-new-tab",
@@ -105,9 +101,6 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
         <BlockMenuLabel>Block</BlockMenuLabel>
         <BlockTurnIntoSubmenu onChangeType={actions.changeType} />
         <BlockColorSubmenu onApplyColor={actions.applyColor} />
-        {blockActions.map((action) => (
-          <BlockMenuItem key={action.id} action={action} />
-        ))}
       </DropdownMenuGroup>
 
       <DropdownMenuSeparator />
