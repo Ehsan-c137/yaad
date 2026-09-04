@@ -2,7 +2,6 @@ import { Bookmark, BookmarkCheck } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/use-sidebar-store";
 
 export const BookmarkButton = () => {
@@ -15,22 +14,12 @@ export const BookmarkButton = () => {
 
   return (
     <Button
+      size="icon"
       title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
       variant="ghost"
-      onClick={() => {
-        toggleBookmarked(pageId);
-      }}
-      className={cn(
-        "inline-flex size-7 items-center justify-center rounded-lg",
-        "text-muted-foreground transition-colors",
-        "hover:bg-muted hover:text-foreground",
-      )}
+      onClick={() => toggleBookmarked(pageId)}
     >
-      {isBookmarked ? (
-        <BookmarkCheck className="size-4" />
-      ) : (
-        <Bookmark className="size-4" />
-      )}
+      {isBookmarked ? <BookmarkCheck /> : <Bookmark />}
     </Button>
   );
 };
