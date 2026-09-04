@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Yaad",
     description: "Your modern note-taking application",
-    images: ["/favicon/android-chrome-512x512.png"],
+    images: ["/person-note.png"],
   },
 };
 
