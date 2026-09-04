@@ -8,6 +8,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 const COMMON_EMOJIS = [
@@ -90,9 +91,8 @@ export function IconPickerPopover({
       >
         {children}
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-3" align="start">
+      <PopoverContent className={cn("w-72 p-3", styles.menu)} align="start">
         <div className="space-y-3">
-          {/* Search Input */}
           <Input
             placeholder="Search emoji..."
             value={search}
