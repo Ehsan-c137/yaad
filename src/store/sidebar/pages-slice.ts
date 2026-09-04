@@ -32,6 +32,7 @@ export const createPagesSlice: StateCreator<
         pagesMap[node.id] = {
           ...node,
           isExpanded: get().pages[node.id]?.isExpanded ?? false, // Preserve UI expand state if already loaded
+          isBookmarked: get().pages[node.id]?.isBookmarked ?? node.isBookmarked, // Preserve bookmarked state from persisted store
         };
 
         if (!node.parentId && !node.isDeleted) {
@@ -69,7 +70,8 @@ export const createPagesSlice: StateCreator<
   toggleBookmarked: (pageId: string) =>
     set((state) => {
       const page = state.pages[pageId];
-      if (!page) return state;
+      if (!page)
+        throw new Error(`Page with ID ${pageId} not found in the store.`);
 
       return {
         pages: {
@@ -224,6 +226,7 @@ export const createPagesSlice: StateCreator<
         parentId,
         childrenIds: [],
         isExpanded: false,
+        isBookmarked: false,
       };
 
       const updatedPages = { ...state.pages, [newId]: newPage };
@@ -291,12 +294,14 @@ export const createPagesSlice: StateCreator<
       if (!page) return state;
 
       const toTrash = new Set<string>();
+
       const collectRecursive = (id: string) => {
         const current = state.pages[id];
         if (!current || toTrash.has(id)) return;
         toTrash.add(id);
         (current.childrenIds || []).forEach(collectRecursive);
       };
+
       collectRecursive(pageId);
 
       toTrash.forEach((id) => {
@@ -424,6 +429,7 @@ export const createPagesSlice: StateCreator<
         // If parent doesn't exist, treat as root page
         parentId: parentExists ? parentDocId : null,
         childrenIds: [],
+        isBookmarked: false,
         isExpanded: false,
         updatedAt: Date.now(),
       };
