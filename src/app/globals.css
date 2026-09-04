@@ -347,7 +347,7 @@
 
   /* Menus, popovers, slash menus */
   .menu {
-    @apply rounded-2xl ring-1 ring-foreground/5;
+    @apply rounded-2xl ring-1 ring-foreground/5 bg-background;
     border: 1px solid var(--material-border);
   }
 
