@@ -16,4 +16,5 @@ export interface WorkspacePageMeta {
   isDeleted?: boolean;
   deletedAt?: number;
   updatedAt: number;
+  isBookmarked?: boolean;
 }
