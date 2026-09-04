@@ -1,13 +1,7 @@
 "use client";
 
 import { DropdownMenuGroup, DropdownMenuSeparator } from "@ui/dropdown-menu";
-import {
-  Copy,
-  ExternalLink,
-  Sidebar as SidePeek,
-  Star,
-  Trash2,
-} from "lucide-react";
+import { Copy, ExternalLink, Sidebar as SidePeek, Trash2 } from "lucide-react";
 
 import type { BlockActions } from "@/types/actions/block-actions";
 import type { DocumentBlock } from "@/types/document";
