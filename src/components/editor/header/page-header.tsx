@@ -4,6 +4,7 @@ import { Network } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
+import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
@@ -51,18 +52,20 @@ function PageHeaderTitle() {
         className="text-sf-large-title leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem]"
         onChange={handleTitleChange}
       />
-      <Link
-        prefetch={false}
-        href={`/${ROUTES.workspace}/${encodeURI(workspaceId)}/${encodeURI(pageId)}/graph`}
-        title="Graph View"
-        className={cn(
-          "inline-flex size-7 items-center justify-center rounded-lg",
-          "text-muted-foreground transition-colors",
-          "hover:bg-muted hover:text-foreground",
-        )}
-      >
-        <Network className="size-4" strokeWidth={1.5} />
-      </Link>
+      <Button variant="ghost" size="icon" title="Graph View">
+        <Link
+          prefetch={false}
+          href={`/${ROUTES.workspace}/${encodeURI(workspaceId)}/${encodeURI(pageId)}/graph`}
+          title="Graph View"
+          className={cn(
+            "inline-flex size-7 items-center justify-center rounded-lg",
+            "text-muted-foreground transition-colors",
+            "hover:bg-muted hover:text-foreground",
+          )}
+        >
+          <Network className="size-4" strokeWidth={1.5} />
+        </Link>
+      </Button>
     </div>
   );
 }
