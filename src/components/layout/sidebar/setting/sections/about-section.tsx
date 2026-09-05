@@ -36,7 +36,7 @@ export function AboutSection() {
         subtitle="A calm space for your notes — v0.1"
       />
 
-      <SettingsRow
+      {/* <SettingsRow
         icon={<GithubIcon className="size-3.5" />}
         title="Want to contribute?"
         subtitle="Help build Yaad on GitHub"
@@ -58,7 +58,7 @@ export function AboutSection() {
             <ExternalLink className="ml-1 size-3" />
           </Button>
         }
-      />
+      /> */}
     </>
   );
 }
