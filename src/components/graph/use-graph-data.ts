@@ -12,7 +12,7 @@ import {
 } from "d3-force";
 import { useMemo } from "react";
 
-import type { SidebarPageItem } from "@/store/use-sidebar-store";
+import type { SidebarPageMap } from "@/store/use-sidebar-store";
 
 export interface PageNodeData extends Record<string, unknown> {
   id: string;
@@ -31,7 +31,7 @@ interface SimNode extends SimulationNodeDatum {
 
 /** Page ids visible in the graph: the focused page's subtree, or every page */
 function collectVisibleIds(
-  pages: Record<string, SidebarPageItem>,
+  pages: SidebarPageMap,
   focusId: string | null,
   pageIds: string[],
 ): Set<string> {
@@ -46,12 +46,12 @@ function collectVisibleIds(
 
   while (queue.length > 0) {
     const id = queue.shift();
-    if (!id || !(id in pages) || pages[id].isDeleted || visibleIds.has(id))
-      continue;
+    const page = id ? pages[id] : undefined;
+    if (!id || !page || page.isDeleted || visibleIds.has(id)) continue;
 
     visibleIds.add(id);
     queue.push(
-      ...(pages[id].childrenIds || []).filter(
+      ...(page.childrenIds || []).filter(
         (childId) => !pages[childId]?.isDeleted,
       ),
     );
@@ -62,7 +62,7 @@ function collectVisibleIds(
 
 /** Assigns each page the index of the top-level root page it belongs to */
 function buildRootIndexMap(
-  pages: Record<string, SidebarPageItem>,
+  pages: SidebarPageMap,
   rootIds: string[],
 ): Map<string, number> {
   const rootIndexByPage = new Map<string, number>();
@@ -74,7 +74,7 @@ function buildRootIndexMap(
     const id = rootQueue.shift();
     if (!id) continue;
 
-    pages[id].childrenIds?.forEach((childId) => {
+    pages[id]?.childrenIds?.forEach((childId) => {
       if (pages[childId] && !rootIndexByPage.has(childId)) {
         rootIndexByPage.set(childId, rootIndexByPage.get(id) ?? 0);
         rootQueue.push(childId);
@@ -86,7 +86,7 @@ function buildRootIndexMap(
 }
 
 function buildLinks(
-  pages: Record<string, SidebarPageItem>,
+  pages: SidebarPageMap,
   visibleIds: string[],
   visibleIdSet: Set<string>,
 ): { edges: Edge[]; simLinks: { source: string; target: string }[] } {
@@ -116,7 +116,7 @@ function buildLinks(
 }
 
 export function useGraphData(
-  pages: Record<string, SidebarPageItem>,
+  pages: SidebarPageMap,
   rootPageIds: string[],
   focusPageId?: string,
 ): { nodes: Node<PageNodeData>[]; edges: Edge[] } {

@@ -11,6 +11,8 @@ export interface SidebarPageItem {
   updatedAt?: number;
 }
 
+export type SidebarPageMap = Partial<Record<string, SidebarPageItem>>;
+
 export interface SidebarUiSlice {
   _hasHydrated: boolean;
   isLoading: boolean;
@@ -24,7 +26,7 @@ export interface SidebarUiSlice {
 }
 
 export interface SidebarPagesSlice {
-  pages: Record<string, SidebarPageItem | undefined>;
+  pages: SidebarPageMap;
   rootPageIds: string[];
   // Actions
   loadWorkspacePages: (workspaceId: string) => Promise<void>;

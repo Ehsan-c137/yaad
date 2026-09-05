@@ -1,5 +1,6 @@
 export type {
   SidebarPageItem,
+  SidebarPageMap,
   SidebarPagesSlice,
   SidebarState,
   SidebarUiSlice,

@@ -11,7 +11,15 @@ export function ToggleThemeButton() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const ref = useRef<HTMLSpanElement | null>(null);
 
-  const toggleDarkMode = async (isDarkMode: boolean) => {
+  const handleTheme = useCallback((newTheme: boolean | null) => {
+    if (newTheme) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
+  const toggleDarkMode = async (isDark: boolean) => {
     /**
      * Return early if View Transition API is not supported
      * or user prefers reduced motion
@@ -21,9 +29,9 @@ export function ToggleThemeButton() {
       !document.startViewTransition ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      setIsDarkMode(isDarkMode);
-      setTheme(isDarkMode ? "dark" : "light");
-      handleTheme(isDarkMode);
+      setIsDarkMode(isDark);
+      setTheme(isDark ? "dark" : "light");
+      handleTheme(isDark);
       return;
     }
 
@@ -56,14 +64,6 @@ export function ToggleThemeButton() {
       },
     );
   };
-
-  const handleTheme = useCallback((theme: boolean | null) => {
-    if (theme) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
 
   useIsomorphicLayoutEffect(() => {
     setIsDarkMode(theme === "dark");
