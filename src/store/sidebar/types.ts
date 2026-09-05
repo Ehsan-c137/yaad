@@ -24,7 +24,7 @@ export interface SidebarUiSlice {
 }
 
 export interface SidebarPagesSlice {
-  pages: Record<string, SidebarPageItem>;
+  pages: Record<string, SidebarPageItem | undefined>;
   rootPageIds: string[];
   // Actions
   loadWorkspacePages: (workspaceId: string) => Promise<void>;

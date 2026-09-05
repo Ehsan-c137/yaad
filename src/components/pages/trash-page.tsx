@@ -11,12 +11,7 @@ import {
   AlertDialogTitle,
 } from "@ui/alert-dialog";
 import { Button } from "@ui/button";
-import {
-  ArrowLeft,
-  RotateCcw,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, RotateCcw, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -84,6 +79,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
     setPageToDeletePermanently(null);
 
     setIsActionLoading(true);
+
     try {
       await permanentlyDeletePage(page.id);
       toast.success(`Permanently deleted "${page.title || "Untitled"}"`);
@@ -97,6 +93,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
   const handleEmptyTrashConfirm = async () => {
     setIsEmptyTrashOpen(false);
     setIsActionLoading(true);
+
     try {
       await emptyTrash();
       toast.success("Trash emptied successfully");
@@ -165,7 +162,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
               placeholder="Search trash..."
               className={cn(
                 "h-8 w-full rounded-lg border border-border/60 bg-muted/30 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground/70",
-                "focus:border-(--accent-blue) focus:bg-background focus:outline-none focus:ring-1 focus:ring-(--accent-blue)",
+                "focus:border-(--accent-blue) focus:bg-background focus:ring-1 focus:ring-(--accent-blue) focus:outline-none",
                 "transition-colors",
               )}
             />
@@ -186,7 +183,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
           <h2 className="text-base font-semibold text-foreground">
             Trash is empty
           </h2>
-          <p className="mt-1 max-w-xs text-xs text-muted-foreground leading-relaxed">
+          <p className="mt-1 max-w-xs text-xs/relaxed text-muted-foreground">
             Pages you move to trash will appear here. You can restore them
             anytime or delete them permanently.
           </p>
@@ -290,9 +287,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => setPageToDeletePermanently(null)}
-            >
+            <AlertDialogCancel onClick={() => setPageToDeletePermanently(null)}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -306,17 +301,14 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
       </AlertDialog>
 
       {/* Confirmation Dialog: Empty Trash */}
-      <AlertDialog
-        open={isEmptyTrashOpen}
-        onOpenChange={setIsEmptyTrashOpen}
-      >
+      <AlertDialog open={isEmptyTrashOpen} onOpenChange={setIsEmptyTrashOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Empty Trash?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to permanently delete all {trashedPages.length}{" "}
-              page{trashedPages.length === 1 ? "" : "s"} in the trash? This
-              action cannot be undone.
+              Are you sure you want to permanently delete all{" "}
+              {trashedPages.length} page{trashedPages.length === 1 ? "" : "s"}{" "}
+              in the trash? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
