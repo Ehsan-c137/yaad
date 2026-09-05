@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import type { SidebarPageItem } from "@/store/use-sidebar-store";
 import type { SearchItem } from "@/types/search";
 
 import { useSidebarStore } from "@/store/use-sidebar-store";
@@ -53,7 +54,10 @@ export function useRecentPages(limit = 5, workspaceId?: string): SearchItem[] {
       activeWorkspaceId === targetWorkspaceId
     ) {
       const additionalPages = Object.values(sidebarPages)
-        .filter((page) => !page.isDeleted && !recentPageIds.has(page.id))
+        .filter(
+          (page): page is SidebarPageItem =>
+            !!page && !page.isDeleted && !recentPageIds.has(page.id),
+        )
         .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
         .slice(0, limit - recentTabItems.length)
         .map((page) => ({

@@ -47,7 +47,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
   // Collect all trashed pages
   const trashedPages = useMemo(() => {
     return Object.values(pages)
-      .filter((page) => Boolean(page.isDeleted))
+      .filter((page): page is SidebarPageItem => Boolean(page?.isDeleted))
       .sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0));
   }, [pages]);
 

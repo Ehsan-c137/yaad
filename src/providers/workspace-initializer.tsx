@@ -3,6 +3,8 @@
 import { WorkspaceLayoutSkeleton } from "@ui/skeleton";
 import { useEffect, useState } from "react";
 
+import type { SidebarPageItem } from "@/store/use-sidebar-store";
+
 import { workspaceService } from "@/services/workspace-service";
 import { useSidebarStore } from "@/store/use-sidebar-store";
 import { useWorkspaceStore } from "@/store/use-workspace-store";
@@ -39,17 +41,19 @@ export function WorkspaceInitializer({ children }: WorkspaceInitializerProps) {
             state.pages !== prevState.pages ||
             state.rootPageIds !== prevState.rootPageIds
           ) {
-            const treeArrayToSave = Object.values(state.pages).map((page) => ({
-              id: page.id,
-              workspaceId: activeWorkspaceId,
-              title: page.title,
-              icon: page.icon,
-              parentId: page.parentId,
-              childrenIds: page.childrenIds,
-              isDeleted: page.isDeleted ?? false,
-              deletedAt: page.deletedAt,
-              updatedAt: Date.now(),
-            }));
+            const treeArrayToSave = Object.values(state.pages)
+              .filter((page): page is SidebarPageItem => page !== undefined)
+              .map((page) => ({
+                id: page.id,
+                workspaceId: activeWorkspaceId,
+                title: page.title,
+                icon: page.icon,
+                parentId: page.parentId,
+                childrenIds: page.childrenIds,
+                isDeleted: page.isDeleted ?? false,
+                deletedAt: page.deletedAt,
+                updatedAt: Date.now(),
+              }));
 
             void workspaceService.saveWorkspaceTree(
               activeWorkspaceId,

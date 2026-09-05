@@ -182,7 +182,7 @@ export const createPagesSlice: StateCreator<
       const updatedRootIds = [...state.rootPageIds];
 
       if (page.parentId && updatedPages[page.parentId]) {
-        const parent = updatedPages[page.parentId];
+        const parent = updatedPages[page.parentId]!;
         const index = parent.childrenIds.indexOf(pageId);
         const nextChildren = [...parent.childrenIds];
 
@@ -272,12 +272,11 @@ export const createPagesSlice: StateCreator<
         Object.entries(state.pages).filter(([id]) => !pagesToDelete.has(id)),
       );
 
-      if (page.parentId && updatedPages[page.parentId]) {
+      const parentPage = updatedPages[page.parentId ?? ""];
+      if (page.parentId && parentPage) {
         updatedPages[page.parentId] = {
-          ...updatedPages[page.parentId],
-          childrenIds: updatedPages[page.parentId].childrenIds.filter(
-            (id) => id !== pageId,
-          ),
+          ...parentPage,
+          childrenIds: parentPage.childrenIds.filter((id) => id !== pageId),
         };
       }
 
@@ -323,11 +322,11 @@ export const createPagesSlice: StateCreator<
       });
 
       if (page.parentId && updatedPages[page.parentId]) {
+        const parent = updatedPages[page.parentId]!;
         updatedPages[page.parentId] = {
-          ...updatedPages[page.parentId],
-          childrenIds: updatedPages[page.parentId].childrenIds.filter(
-            (id) => id !== pageId,
-          ),
+          ...parent,
+          id: parent.id,
+          childrenIds: parent.childrenIds.filter((id) => id !== pageId),
         };
       }
 
@@ -378,10 +377,14 @@ export const createPagesSlice: StateCreator<
           };
         }
       } else {
-        updatedPages[pageId] = {
-          ...updatedPages[pageId],
-          parentId: null,
-        };
+        const existingPage = updatedPages[pageId];
+
+        if (existingPage) {
+          updatedPages[pageId] = {
+            ...existingPage,
+            parentId: null,
+          };
+        }
 
         if (!updatedRootIds.includes(pageId)) {
           updatedRootIds.push(pageId);
@@ -404,12 +407,14 @@ export const createPagesSlice: StateCreator<
 
     const trashedIds = Object.keys(pages).filter((id) => pages[id]?.isDeleted);
 
-    for (const id of trashedIds) {
-      const page = get().pages[id];
-      if (page) {
-        await documentService.deletePageAndSubTree(id);
-      }
-    }
+    await Promise.all(
+      trashedIds.map((id) => {
+        const page = get().pages[id];
+        return page
+          ? documentService.deletePageAndSubTree(id)
+          : Promise.resolve();
+      }),
+    );
   },
 
   /* eslint-disable-next-line max-params */
@@ -435,7 +440,7 @@ export const createPagesSlice: StateCreator<
       };
 
       const updatedPages: Record<string, SidebarPageItem> = {
-        ...state.pages,
+        ...(state.pages as Record<string, SidebarPageItem>),
         [newPageId]: newPage,
       };
 
@@ -522,11 +527,11 @@ export const createPagesSlice: StateCreator<
       );
 
       if (page.parentId && updatedPages[page.parentId]) {
+        const parentPage = updatedPages[page.parentId]!;
         updatedPages[page.parentId] = {
-          ...updatedPages[page.parentId],
-          childrenIds: updatedPages[page.parentId].childrenIds.filter(
-            (id) => id !== pageId,
-          ),
+          ...parentPage,
+          id: page.parentId,
+          childrenIds: parentPage.childrenIds.filter((id) => id !== pageId),
         };
       }
 

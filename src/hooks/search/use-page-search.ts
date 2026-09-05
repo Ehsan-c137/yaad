@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import type { SidebarPageItem } from "@/store/use-sidebar-store";
 import type { SearchItem } from "@/types/search";
 
 import { useSidebarStore } from "@/store/use-sidebar-store";
@@ -21,8 +22,8 @@ export function usePageSearch(debouncedQuery: string): SearchItem[] {
 
     const allPages = Object.values(sidebarPages);
 
-    const matches = allPages.filter((page) => {
-      if (page.isDeleted) return false;
+    const matches = allPages.filter((page): page is SidebarPageItem => {
+      if (!page || page.isDeleted) return false;
       const title = (page.title || "Untitled").toLowerCase();
       return title.includes(trimmedQuery);
     });
