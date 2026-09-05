@@ -5,7 +5,7 @@ export interface SidebarPageItem {
   parentId: string | null;
   childrenIds: string[];
   isExpanded?: boolean;
-  isBookmarked: boolean;
+  isBookmarked?: boolean;
   isDeleted?: boolean;
   deletedAt?: number;
   updatedAt?: number;

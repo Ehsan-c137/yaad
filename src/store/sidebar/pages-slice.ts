@@ -29,10 +29,11 @@ export const createPagesSlice: StateCreator<
       const rootIds: string[] = [];
 
       treeNodes.forEach((node) => {
+        const targetPage = get().pages[node.id];
         pagesMap[node.id] = {
           ...node,
           isExpanded: get().pages[node.id]?.isExpanded ?? false, // Preserve UI expand state if already loaded
-          isBookmarked: get().pages[node.id]?.isBookmarked ?? node.isBookmarked, // Preserve bookmarked state from persisted store
+          isBookmarked: targetPage!.isBookmarked ?? node.isBookmarked,
         };
 
         if (!node.parentId && !node.isDeleted) {
