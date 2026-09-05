@@ -8,7 +8,7 @@ export const BookmarkButton = () => {
   const { pageId } = useParams<{ pageId: string }>();
 
   const isBookmarked = useSidebarStore(
-    (state) => state.pages[pageId].isBookmarked,
+    (state) => state.pages[pageId]?.isBookmarked,
   );
   const toggleBookmarked = useSidebarStore((state) => state.toggleBookmarked);
 
@@ -17,7 +17,10 @@ export const BookmarkButton = () => {
       size="icon"
       title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
       variant="ghost"
-      onClick={() => toggleBookmarked(pageId)}
+      disabled={!pageId}
+      onClick={() => {
+        toggleBookmarked(pageId);
+      }}
     >
       {isBookmarked ? <BookmarkCheck /> : <Bookmark />}
     </Button>
