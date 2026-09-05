@@ -6,11 +6,12 @@ import type { SearchItem } from "@/types/search";
 
 import { ROUTES } from "@/constants/routes";
 import { useRecentPages } from "@/hooks/search/use-recent-pages";
-import { formatRelativeTime } from "@/lib/date-formatter";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/use-sidebar-store";
 import { useTabStore } from "@/store/use-tab-store";
+
+import { DocsListItem } from "./docs-list";
 
 const DEFAULT_LIMIT = 10;
 
@@ -24,10 +25,11 @@ export function RecentDocsList({
   workspaceId,
   limit = DEFAULT_LIMIT,
 }: RecentDocsListProps) {
+  const recentDocs = useRecentPages(limit, workspaceId);
+
   const router = useRouter();
   const openTab = useTabStore((s) => s.openTab);
   const sidebarPages = useSidebarStore((s) => s.pages);
-  const recentDocs = useRecentPages(limit, workspaceId);
 
   const handleOpenDoc = useCallback(
     (item: SearchItem) => {
@@ -67,33 +69,13 @@ export function RecentDocsList({
             : undefined;
 
           return (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => handleOpenDoc(item)}
-                className={cn(
-                  styles.listRow,
-                  "w-full cursor-pointer text-left",
-                )}
-              >
-                <span className="flex size-5 shrink-0 items-center justify-center text-sm select-none">
-                  {item.icon ?? "📄"}
-                </span>
-                <span className="min-w-0 flex-1 truncate text-foreground">
-                  {item.title}
-                </span>
-                {parentTitle ? (
-                  <span className="hidden shrink-0 text-xs text-muted-foreground/80 sm:inline">
-                    In {parentTitle}
-                  </span>
-                ) : null}
-                {item.lastAccessedAt ? (
-                  <span className="shrink-0 text-[10px] text-muted-foreground/70">
-                    {formatRelativeTime(item.lastAccessedAt)}
-                  </span>
-                ) : null}
-              </button>
-            </li>
+            <DocsListItem
+              key={item.pageId}
+              item={item}
+              pageMeta={pageMeta}
+              parentTitle={parentTitle}
+              onOpenDoc={() => handleOpenDoc(item)}
+            />
           );
         })}
       </ul>
