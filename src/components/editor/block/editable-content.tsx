@@ -23,6 +23,29 @@ interface EditableContentProps {
   onTransformType?: (type: DocumentBlockType) => void;
 }
 
+const RTL_CHARACTERS = /[\u0591-\u07ff\ufb1d-\ufdfd\ufe70-\ufefc]/;
+const LTR_CHARACTERS = /[a-z]/i;
+
+function getTextDirection(text: string): "ltr" | "rtl" {
+  const trimmed = text.trim();
+
+  if (!trimmed) return "ltr";
+
+  const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+  let firstStrongCharacter: string | undefined;
+
+  for (const { segment } of segmenter.segment(trimmed)) {
+    if (RTL_CHARACTERS.test(segment) || LTR_CHARACTERS.test(segment)) {
+      firstStrongCharacter = segment;
+      break;
+    }
+  }
+
+  if (!firstStrongCharacter) return "ltr";
+
+  return RTL_CHARACTERS.test(firstStrongCharacter) ? "rtl" : "ltr";
+}
+
 export function EditableContent({
   html,
   placeholder,
@@ -57,6 +80,10 @@ export function EditableContent({
     if (!contentRef.current) return;
     const text = contentRef.current.innerText || "";
     const offset = getCaretOffset(contentRef.current);
+    const direction = getTextDirection(text);
+
+    contentRef.current.setAttribute("dir", direction);
+    contentRef.current.style.direction = direction;
     caretOffsetRef.current = offset;
 
     // Detect '/' trigger and query string
@@ -77,7 +104,7 @@ export function EditableContent({
           query,
           position: {
             top: rect.bottom + 6,
-            left: rect.left + 10,
+            left: direction === "rtl" ? rect.right + 10 : rect.left + 10,
           },
         });
       }
@@ -142,10 +169,12 @@ export function EditableContent({
         ref={contentRef}
         contentEditable
         suppressContentEditableWarning
+        dir="ltr"
+        style={{ direction: "ltr" }}
         onInput={handleInput}
         onKeyDown={handleKeyDown}
         data-placeholder={placeholder}
-        className={`w-full wrap-break-word whitespace-pre-wrap outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)] ${className}`}
+        className={`w-full text-start wrap-break-word whitespace-pre-wrap outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)] ${className}`}
       />
       {slashMenuState.isOpen && (
         <SlashMenu
