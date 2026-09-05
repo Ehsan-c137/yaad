@@ -1,22 +1,14 @@
 "use client";
 
-import { use } from "react";
+import type { Workspace } from "@/types/workspace";
 
-import { RecentDocsList } from "@/components/pages/recent-docs-list";
-import { useWorkspaceStore } from "@/store/use-workspace-store";
+import { RecentDocsList } from "@/components/pages/recent-docs-list/recent-docs-list";
 
 interface WorkspaceHomePageProps {
-  params: Promise<{ workspaceId: string }>;
+  workspace: Workspace;
 }
 
-export function WorkspaceHomePage({ params }: WorkspaceHomePageProps) {
-  const pageParams = use(params);
-  const { workspaceId } = pageParams;
-
-  const workspace = useWorkspaceStore((s) => s.workspaces[workspaceId]);
-
-  if (!workspace) return null;
-
+export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
   return (
     <div className="mx-auto max-w-4xl px-12 py-16">
       <div className="mb-4 flex items-center gap-3">
@@ -36,7 +28,7 @@ export function WorkspaceHomePage({ params }: WorkspaceHomePageProps) {
         </kbd>{" "}
         to search.
       </p>
-      <RecentDocsList workspaceId={workspaceId} />
+      <RecentDocsList workspaceId={workspace.id} />
     </div>
   );
 }
