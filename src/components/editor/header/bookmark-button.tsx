@@ -16,6 +16,7 @@ export const BookmarkButton = () => {
     <Button
       size="icon"
       title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
+      aria-label={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
       variant="ghost"
       disabled={!pageId}
       onClick={() => {
