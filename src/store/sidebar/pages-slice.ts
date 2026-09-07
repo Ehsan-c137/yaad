@@ -274,6 +274,7 @@ export const createPagesSlice: StateCreator<
       );
 
       const parentPage = updatedPages[page.parentId ?? ""];
+
       if (page.parentId && parentPage) {
         updatedPages[page.parentId] = {
           ...parentPage,
@@ -342,7 +343,7 @@ export const createPagesSlice: StateCreator<
     set((state) => {
       const page = state.pages[pageId];
 
-      if (!page || !page.isDeleted) return state;
+      if (!page?.isDeleted) return state;
 
       const toRestore = new Set<string>();
 
@@ -404,7 +405,7 @@ export const createPagesSlice: StateCreator<
   },
 
   emptyTrash: async () => {
-    const pages = get().pages;
+    const { pages } = get();
 
     const trashedIds = Object.keys(pages).filter((id) => pages[id]?.isDeleted);
 

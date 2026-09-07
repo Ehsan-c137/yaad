@@ -12,8 +12,7 @@ const WORKSPACES_KEY = "app_workspaces_v1";
 export class LocalJsonAdapter implements StorageAdapter {
   async getWorkspaces(): Promise<Workspace[]> {
     try {
-      const workspaces = await get<Workspace[]>(WORKSPACES_KEY);
-      return workspaces ?? [];
+      return await this.readWorkspaces();
     } catch (error) {
       console.error("Error fetching workspaces:", error);
       return [];
@@ -22,7 +21,7 @@ export class LocalJsonAdapter implements StorageAdapter {
 
   async saveWorkspace(workspace: Workspace): Promise<void> {
     try {
-      const workspaces = await this.getWorkspaces();
+      const workspaces = await this.readWorkspaces();
       const index = workspaces.findIndex((w) => w.id === workspace.id);
 
       if (index >= 0) {
@@ -35,6 +34,17 @@ export class LocalJsonAdapter implements StorageAdapter {
     } catch (error) {
       console.error("[LocalJsonAdapter] Error saving workspace:", error);
     }
+  }
+
+  private async readWorkspaces(): Promise<Workspace[]> {
+    const stored = await get<unknown>(WORKSPACES_KEY);
+
+    if (stored === undefined) return [];
+    if (!Array.isArray(stored)) {
+      throw new TypeError("Stored workspaces must be an array");
+    }
+
+    return stored as Workspace[];
   }
 
   async deleteWorkspace(id: string): Promise<void> {
