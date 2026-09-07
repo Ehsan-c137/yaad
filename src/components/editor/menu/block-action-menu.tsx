@@ -81,9 +81,9 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
       onSelect: actions.duplicate,
     },
     {
-      id: "move-to-trash",
+      id: "delete",
       icon: Trash2,
-      label: "Move to Trash",
+      label: "delete",
       variant: "destructive",
       onSelect: actions.delete,
     },
