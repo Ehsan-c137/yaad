@@ -233,7 +233,7 @@ function isPrivateOrReservedHost(hostname: string): boolean {
 // ---------------------------------------------------------------------------
 
 const META_TAG_PATTERN = /<meta\b[^>]*>/gi;
-const META_ATTRIBUTE_PATTERN = /\b([a-z-]+)\s*=\s*("[^"]*"|'[^']*')/gi;
+const META_ATTRIBUTE_PATTERN = /\b([-a-z]+)\s*=\s*("[^"]*"|'[^']*')/gi;
 const TITLE_PATTERN = /<title[^>]*>([^<]+)<\/title>/i;
 
 /** Collects `property`/`name` → `content` pairs from all <meta> tags. */
