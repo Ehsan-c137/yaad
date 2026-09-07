@@ -32,7 +32,8 @@ export function PageHeader() {
 
 function PageHeaderTitle() {
   const titleText = useDocumentStore(
-    (state) => state.currentDocument?.blocks.root.properties?.title[0]?.text,
+    (state) =>
+      state.currentDocument?.blocks.root.properties.title[0]?.text ?? "",
   );
   const updateTitle = useDocumentStore((state) => state.updateTitle);
   const { workspaceId, pageId } = useParams<{
