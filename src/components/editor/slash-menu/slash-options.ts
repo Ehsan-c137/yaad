@@ -1,6 +1,7 @@
 import {
   CheckSquare,
   Code,
+  Divide,
   FileText,
   Globe2,
   Heading1,
@@ -115,5 +116,12 @@ export const SLASH_OPTIONS: SlashOption[] = [
     description: "add your link.",
     type: "link_preview",
     icon: Globe2,
+  },
+  {
+    id: "seperator",
+    title: "seperator",
+    description: "add seperator",
+    icon: Divide,
+    type: "seperator",
   },
 ];

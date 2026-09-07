@@ -27,7 +27,8 @@ export type DocumentBlockType =
   | "paragraph"
   | "quote"
   | "table"
-  | "todo";
+  | "todo"
+  | "seperator";
 
 export interface DocumentBlock {
   id: string;
