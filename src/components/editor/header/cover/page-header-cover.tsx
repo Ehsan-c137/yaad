@@ -36,7 +36,10 @@ export function PageHeaderCover() {
   return (
     <>
       {coverUrl ? (
-        <div className="group/cover relative h-56 w-full overflow-hidden md:h-72">
+        <div
+          className="group/cover relative h-56 w-full overflow-hidden md:h-72"
+          aria-label="page_cover"
+        >
           <Image
             src={coverUrl}
             alt="Page Cover"
