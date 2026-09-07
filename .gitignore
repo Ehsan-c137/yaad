@@ -12,6 +12,11 @@
 
 # testing
 /coverage
+# Vitest reports and artifacts
+.vitest/
+# Playwright reports and artifacts
+playwright-report/
+test-results/
 
 # next.js
 /.next/
