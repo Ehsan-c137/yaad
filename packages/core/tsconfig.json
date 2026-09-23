@@ -1,0 +1,11 @@
+{
+  "extends": "@yaad/config/base.json",
+  "compilerOptions": {
+    "paths": {
+      "@yaad/core/*": ["./src/*"],
+      "@yaad/core": ["./src"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,26 @@
+{
+   "name": "yaad",
+   "private": true,
+   "version": "0.1.0",
+   "packageManager": "pnpm@11.15.1",
+   "scripts": {
+      "dev:desktop": "pnpm --filter @yaad/desktop dev",
+      "dev:web": "pnpm --filter @yaad/web dev",
+      "tauri": "pnpm --filter @yaad/desktop tauri",
+      "build": "pnpm -r build",
+      "test": "pnpm -r test",
+      "lint": "eslint .",
+      "lint:fix": "eslint . --fix",
+      "format": "prettier --write .",
+      "format:check": "prettier --check .",
+      "check": "pnpm run lint && pnpm run format:check",
+      "fix": "pnpm run lint:fix && pnpm run format"
+   },
+   "devDependencies": {
+      "@fullstacksjs/eslint-config": "^15.2.0",
+      "eslint": "^10.3.0",
+      "happy-dom": "^17.0.0",
+      "prettier": "^3.0.0",
+      "typescript": "~6.0.3"
+   }
+}

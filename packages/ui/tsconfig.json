@@ -1,0 +1,12 @@
+{
+  "extends": "@yaad/config/react-app.json",
+  "compilerOptions": {
+    "paths": {
+      "@ui/*": ["./src/components/ui/*"],
+      "@/*": ["./src/*"],
+      "@yaad/core/*": ["../core/src/*"],
+      "@yaad/core": ["../core/src"]
+    }
+  },
+  "include": ["src"]
+}

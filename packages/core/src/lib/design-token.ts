@@ -1,0 +1,21 @@
+/** Shared Apple design system class strings for consistent UI surfaces. */
+export const styles = {
+  material: "material",
+  materialHeavy: "material-heavy",
+  toolbar: "toolbar",
+  sidebar: "sidebar",
+  menu: "menu",
+  menuDark: "menu-dark",
+  menuItem: "menu-item",
+  menuDivider: "menu-divider",
+  menuInput: "menu-input",
+  sectionLabel: "section-label",
+  listRow: "list-row",
+  listRowActive: "list-row-active",
+  pillTab: "pill-tab",
+  pillTabActive: "pill-tab-active",
+  editorSurface: "editor-surface",
+  vibrancy: "vibrancy",
+  skeleton: "skeleton",
+  spring: "spring",
+} as const;
