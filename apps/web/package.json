@@ -24,6 +24,8 @@
     "@yaad/config": "workspace:*",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
+    "vite-bundle-analyzer": "^1.3.9",
+    "vite-plugin-compression": "^0.5.1",
     "vite-plugin-pwa": "^1.2.0"
   }
 }

@@ -4,6 +4,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+// import { analyzer } from "vite-bundle-analyzer";
+import viteCompression from "vite-plugin-compression";
 
 function atAliasPlugin(baseDirs: string[]) {
   return {
@@ -57,6 +59,7 @@ export default defineConfig(() => ({
       path.resolve(__dirname, "../../packages/ui/src"),
       path.resolve(__dirname, "../../packages/core/src"),
     ]),
+    viteCompression({ algorithm: "brotliCompress" }),
     react(),
     tailwindcss(),
     VitePWA({
