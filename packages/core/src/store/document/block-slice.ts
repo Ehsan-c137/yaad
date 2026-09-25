@@ -29,6 +29,8 @@ export const createBlockSlice: StateCreator<
 > = (set, get) => ({
   focusedBlockId: null,
   setFocusedBlockId: (blockId) => set({ focusedBlockId: blockId }),
+  activeBlockId: null,
+  setActiveBlockId: (blockId) => set({ activeBlockId: blockId }),
 
   updateBlockProperties: async (blockId, pageId, properties) => {
     const currentDoc = get().currentDocument;
@@ -134,7 +136,7 @@ export const createBlockSlice: StateCreator<
       return { ...doc, blocks: updatedBlocks, updatedAt: Date.now() };
     });
 
-    set({ focusedBlockId: newId });
+    set({ focusedBlockId: newId, activeBlockId: newId });
 
     return newId;
   },
@@ -190,7 +192,12 @@ export const createBlockSlice: StateCreator<
       updatedAt: Date.now(),
     };
 
-    set({ currentDocument: updatedDoc });
+    const resetActiveBlock =
+      get().activeBlockId && blocksToDelete.has(get().activeBlockId!)
+        ? { activeBlockId: null }
+        : {};
+
+    set({ currentDocument: updatedDoc, ...resetActiveBlock });
 
     // Save document immediately, cancelling any pending debounced saves
     await saveNow(get, set, updatedDoc);

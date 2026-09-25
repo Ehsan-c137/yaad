@@ -25,6 +25,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
     (state) => state.currentDocument?.blocks[blockId],
   );
   const addBlock = useDocumentStore((state) => state.addBlock);
+  const setActiveBlockId = useDocumentStore((state) => state.setActiveBlockId);
 
   if (!block) return null;
 
@@ -35,8 +36,10 @@ export function BlockRow({ blockId }: BlockRowProps) {
 
   return (
     <div
+      onFocus={() => setActiveBlockId(block.id)}
+      onClick={() => setActiveBlockId(block.id)}
       className={cn(
-        "group relative flex min-h-8 w-full items-start rounded-lg pl-5 transition-colors  md:px-1 mx-auto max-w-3xl",
+        "group relative flex min-h-8 w-full items-start rounded-lg px-2 transition-colors md:px-1 mx-auto max-w-3xl",
         backgroundStyle?.bgClass,
         backgroundStyle?.bgClass ? "hover:saturate-200" : "hover:bg-accent/40",
         block.type === "bulleted_list" && "items-center",
@@ -44,7 +47,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
     >
       <div
         contentEditable={false}
-        className="absolute bottom-0 -left-7 flex items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100 md:-left-15"
+        className="hidden md:flex absolute bottom-0 md:-left-15 items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100"
       >
         <Button
           variant="ghost"

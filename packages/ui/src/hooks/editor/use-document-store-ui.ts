@@ -9,7 +9,7 @@ export function useDocumentStore<T>(
   explicitPageId?: string,
 ): T {
   const contextPageId = useEditorPageIdContext();
-  const pageId = explicitPageId ?? contextPageId;
+  const pageId = explicitPageId || contextPageId;
 
   if (!pageId) {
     throw new Error(

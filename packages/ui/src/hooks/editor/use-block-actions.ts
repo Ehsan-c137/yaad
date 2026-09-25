@@ -18,18 +18,37 @@ export type EditableBlockActions = Pick<
   | "updateTags"
 >;
 
-export function useBlockActions(blockId: string): EditableBlockActions {
-  const pageId = useEditorPageIdContext();
-  const duplicateBlock = useDocumentStore((state) => state.duplicateBlock);
-  const changeBlockType = useDocumentStore((state) => state.changeBlockType);
+export function useBlockActions(
+  blockId: string,
+  explicitPageId?: string,
+): EditableBlockActions {
+  const contextPageId = useEditorPageIdContext();
+  const pageId = explicitPageId || contextPageId;
+
+  const duplicateBlock = useDocumentStore(
+    (state) => state.duplicateBlock,
+    pageId,
+  );
+  const changeBlockType = useDocumentStore(
+    (state) => state.changeBlockType,
+    pageId,
+  );
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
+    pageId,
   );
-  const deleteBlock = useDocumentStore((store) => store.deleteBlock);
-  const updateBlockTags = useDocumentStore((state) => state.updateBlockTags);
-  const addTagToBlock = useDocumentStore((state) => state.addTagToBlock);
+  const deleteBlock = useDocumentStore((store) => store.deleteBlock, pageId);
+  const updateBlockTags = useDocumentStore(
+    (state) => state.updateBlockTags,
+    pageId,
+  );
+  const addTagToBlock = useDocumentStore(
+    (state) => state.addTagToBlock,
+    pageId,
+  );
   const removeTagFromBlock = useDocumentStore(
     (state) => state.removeTagFromBlock,
+    pageId,
   );
 
   return {

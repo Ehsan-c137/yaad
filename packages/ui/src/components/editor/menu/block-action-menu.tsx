@@ -12,6 +12,7 @@ import {
 } from "@yaad/core/lib/block-metadata";
 import { Copy, ExternalLink, Sidebar as SidePeek, Trash2 } from "lucide-react";
 
+import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useBlockActions } from "@/hooks/editor/use-block-actions";
 import { useCopyBlockLink } from "@/hooks/editor/use-copy-block-link";
 import { useOpenPageInNewTab } from "@/hooks/editor/use-open-page-in-new-tab";
@@ -31,6 +32,7 @@ interface BlockActionMenuProps {
 }
 
 export function BlockActionMenu({ block }: BlockActionMenuProps) {
+  const pageId = useEditorPageIdContext();
   const {
     changeType,
     applyColor,
@@ -39,7 +41,7 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
     updateTags,
     addTag,
     removeTag,
-  } = useBlockActions(block.id);
+  } = useBlockActions(block.id, pageId);
   const openPageInNewTab = useOpenPageInNewTab();
   const { openSidePeek } = useSidePeek();
   const copyLink = useCopyBlockLink(block.id);

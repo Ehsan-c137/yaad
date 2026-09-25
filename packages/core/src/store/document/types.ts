@@ -16,6 +16,8 @@ export interface DocumentCoreSlice {
 export interface DocumentBlockSlice {
   focusedBlockId: string | null;
   setFocusedBlockId: (blockId: string | null) => void;
+  activeBlockId: string | null;
+  setActiveBlockId: (blockId: string | null) => void;
   updateBlockProperties: (
     blockId: string,
     pageId: string,
