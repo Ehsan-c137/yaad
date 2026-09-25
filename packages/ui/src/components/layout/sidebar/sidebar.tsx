@@ -3,7 +3,7 @@
 import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
 import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -51,10 +51,15 @@ export function Sidebar() {
       ref={sidebarRef}
       aria-label="Sidebar"
       data-state={isSidebarOpen ? "open" : "closed"}
+      style={
+        {
+          "--window-header-height": `${WINDOW_HEADER_HEIGHT}px`,
+        } as CSSProperties
+      }
       className={cn(
         styles.sidebar,
         "fixed top-0 left-0 z-50 flex h-screen flex-col overflow-x-hidden bg-background p-2 md:sticky",
-        `md:h-[calc(100vh-${WINDOW_HEADER_HEIGHT}px)]`,
+        "md:h-[calc(100vh-var(--window-header-height))]",
         styles.spring,
         "transition-[width,transform,opacity,padding,scale,visibility] will-change-transform",
         isSidebarOpen
