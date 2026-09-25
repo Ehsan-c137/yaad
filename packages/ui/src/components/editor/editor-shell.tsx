@@ -42,7 +42,7 @@ export function EditorShell({ pageId }: EditorShellProps) {
       <div className={styles.editorSurface}>
         {isDeleted && <PageTrashBar pageId={pageId} />}
         <PageHeader />
-        <div className="mx-auto pb-32 pl-4 sm:px-4 md:px-12">
+        <div className="mx-auto pb-32 sm:px-4 md:px-12">
           <BlockCanvas />
         </div>
       </div>

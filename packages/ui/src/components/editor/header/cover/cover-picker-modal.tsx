@@ -1,6 +1,3 @@
-// src/components/editor/header/CoverPickerModal.tsx
-"use client";
-
 import { Sparkles } from "lucide-react";
 import React, { useState } from "react";
 
