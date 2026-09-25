@@ -3,9 +3,9 @@ import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vite";
-import { VitePWA } from "vite-plugin-pwa";
 // import { analyzer } from "vite-bundle-analyzer";
 import viteCompression from "vite-plugin-compression";
+import { VitePWA } from "vite-plugin-pwa";
 
 function atAliasPlugin(baseDirs: string[]) {
   return {
@@ -55,14 +55,15 @@ function atAliasPlugin(baseDirs: string[]) {
 export default defineConfig(() => ({
   plugins: [
     atAliasPlugin([
-      path.resolve(__dirname, "src"),
-      path.resolve(__dirname, "../../packages/ui/src"),
-      path.resolve(__dirname, "../../packages/core/src"),
+      path.resolve(import.meta.dirname, "src"),
+      path.resolve(import.meta.dirname, "../../packages/ui/src"),
+      path.resolve(import.meta.dirname, "../../packages/core/src"),
     ]),
     viteCompression({ algorithm: "brotliCompress" }),
     react(),
     tailwindcss(),
     VitePWA({
+      injectRegister: false,
       registerType: "autoUpdate",
       includeAssets: [
         "favicon.ico",
@@ -81,7 +82,7 @@ export default defineConfig(() => ({
         background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait-primary",
-        start_url: "/",
+        start_url: "/app",
         scope: "/",
         icons: [
           {
@@ -121,6 +122,8 @@ export default defineConfig(() => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         cleanupOutdatedCaches: true,
+        navigateFallback: "/index.html",
+        navigateFallbackDenylist: [/^\/$/, /^\/landing$/],
       },
     }),
   ],
@@ -129,17 +132,20 @@ export default defineConfig(() => ({
       {
         find: "@ui",
         replacement: path.resolve(
-          __dirname,
+          import.meta.dirname,
           "../../packages/ui/src/components/ui",
         ),
       },
       {
         find: "@yaad/core",
-        replacement: path.resolve(__dirname, "../../packages/core/src"),
+        replacement: path.resolve(
+          import.meta.dirname,
+          "../../packages/core/src",
+        ),
       },
       {
         find: "@yaad/ui",
-        replacement: path.resolve(__dirname, "../../packages/ui/src"),
+        replacement: path.resolve(import.meta.dirname, "../../packages/ui/src"),
       },
     ],
   },

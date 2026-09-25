@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, useState } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -15,6 +15,8 @@ import { WorkspaceHomePage } from "@/components/pages/workspace-page";
 import { Providers } from "@/providers/providers-index";
 import { useWorkspaceStore } from "@/store/use-workspace-store";
 
+import { PwaManager } from "./pwa-manager";
+
 const TrashPage = lazy(() =>
   import("@/components/pages/trash-page").then((m) => ({
     default: m.TrashPage,
@@ -26,6 +28,25 @@ const GraphPage = lazy(() =>
     default: m.GraphPage,
   })),
 );
+
+function LandingRoute() {
+  const [isStandalone] = useState(() => {
+    if (typeof window === "undefined") return false;
+
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      Boolean(
+        (window.navigator as unknown as { standalone?: boolean }).standalone,
+      )
+    );
+  });
+
+  if (isStandalone) {
+    return <Navigate to="/workspace/ws_personal" replace />;
+  }
+
+  return <LandingPage />;
+}
 
 function WorkspaceHomeRoute() {
   const { workspaceId } = useParams();
@@ -58,9 +79,10 @@ function PageGraphRoute() {
 export default function App() {
   return (
     <BrowserRouter>
+      <PwaManager />
       <Providers>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<LandingRoute />} />
           <Route path="/landing" element={<Navigate to="/" replace />} />
           <Route element={<MainLayout />}>
             <Route path="/app" element={<HomePage />} />
