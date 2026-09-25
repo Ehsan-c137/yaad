@@ -51,12 +51,10 @@ export function Sidebar() {
       ref={sidebarRef}
       aria-label="Sidebar"
       data-state={isSidebarOpen ? "open" : "closed"}
-      style={{
-        height: `calc(100vh - ${WINDOW_HEADER_HEIGHT}px)`,
-      }}
       className={cn(
         styles.sidebar,
         "fixed top-0 left-0 z-50 flex h-screen flex-col overflow-x-hidden bg-background p-2 md:sticky",
+        `md:h-[calc(100vh-${WINDOW_HEADER_HEIGHT}px)]`,
         styles.spring,
         "transition-[width,transform,opacity,padding,scale,visibility] will-change-transform",
         isSidebarOpen
