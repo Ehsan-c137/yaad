@@ -15,7 +15,7 @@ export function AboutSection() {
       <SettingsRow
         icon={<Info className="size-3.5" strokeWidth={1.5} />}
         title="Yaad"
-        subtitle="A calm space for your notes â€” v0.1"
+        subtitle="A calm space for your notes 📝 v0.1"
       />
 
       {/* <SettingsRow
