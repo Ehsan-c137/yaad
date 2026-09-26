@@ -1,47 +1,16 @@
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import {
-  Check,
-  Copy,
-  Download,
-  Globe,
-  ShieldCheck,
-  Sparkles,
-  Terminal,
-} from "lucide-react";
-import { useState } from "react";
+import { Download, Globe, ShieldCheck, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
 import { AppleIcon, LinuxIcon, WindowsIcon } from "./landing-platform-utils";
 
 export function LandingDownloads() {
-  const [copiedCmd, setCopiedCmd] = useState(false);
-  const [activeTab, setActiveTab] = useState<"linux" | "mac" | "win">("mac");
-
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
   );
   const targetWorkspaceHref = activeWorkspaceId
     ? `/workspace/${activeWorkspaceId}`
     : "/workspace/ws_personal";
-
-  const copyInstallCommand = (cmd: string) => {
-    navigator.clipboard.writeText(cmd);
-    setCopiedCmd(true);
-    setTimeout(() => setCopiedCmd(false), 2000);
-  };
-
-  const getCliCommand = () => {
-    switch (activeTab) {
-      case "mac":
-        return "brew install --cask yaad";
-
-      case "win":
-        return "winget install yaad";
-
-      case "linux":
-        return "curl -fsSL https://get.yaad.app | sh";
-    }
-  };
 
   return (
     <section id="downloads" className="py-20 sm:py-28 relative">
