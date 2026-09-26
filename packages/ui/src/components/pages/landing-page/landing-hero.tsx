@@ -64,10 +64,8 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
           subscriptions or cloud lock-in.
         </p>
 
-        {/* Platform Download & CTAs */}
         <div className="mx-auto mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-          {/* Primary Action: OS-Aware Download or Web Launch */}
-          <div className="relative flex flex-col sm:flex-row items-center gap-2">
+          {/* <div className="relative flex flex-col sm:flex-row items-center gap-2">
             <a href="#downloads">
               <Button
                 size="lg"
@@ -79,7 +77,6 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
               </Button>
             </a>
 
-            {/* Quick platform dropdown trigger */}
             <div className="relative">
               <button
                 type="button"
@@ -92,7 +89,6 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
                 />
               </button>
 
-              {/* Dropdown Menu */}
               {dropdownOpen && (
                 <div className="absolute top-14 right-0 z-30 w-56 rounded-xl border border-border/80 bg-popover p-1.5 shadow-xl backdrop-blur-xl animate-in fade-in zoom-in-95 text-left">
                   <div className="px-2.5 py-1.5 text-[10px] font-semibold tracking-wider uppercase text-muted-foreground">
@@ -123,9 +119,8 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
 
-          {/* Secondary Action: Launch in Browser / Open App */}
           {onOpenApp ? (
             <Button
               onClick={onOpenApp}

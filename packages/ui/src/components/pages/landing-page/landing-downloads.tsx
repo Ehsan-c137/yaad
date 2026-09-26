@@ -65,6 +65,11 @@ export function LandingDownloads() {
         <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {/* macOS Card */}
           <div className="group relative flex flex-col justify-between rounded-2xl border border-border/70 bg-card/70 p-6 shadow-sm backdrop-blur-xl transition-all hover:border-primary/50 hover:shadow-lg">
+            <div className="pointer-events-auto absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-background/70">
+              <p className="font-mono text-sm font-semibold text-muted-foreground">
+                Coming soon...
+              </p>
+            </div>
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-foreground/5 text-foreground">
@@ -113,6 +118,11 @@ export function LandingDownloads() {
 
           {/* Windows Card */}
           <div className="group relative flex flex-col justify-between rounded-2xl border border-border/70 bg-card/70 p-6 shadow-sm backdrop-blur-xl transition-all hover:border-primary/50 hover:shadow-lg">
+            <div className="pointer-events-auto absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-background/70">
+              <p className="font-mono text-sm font-semibold text-muted-foreground">
+                Coming soon...
+              </p>
+            </div>
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-500">
@@ -164,6 +174,11 @@ export function LandingDownloads() {
 
           {/* Linux Card */}
           <div className="group relative flex flex-col justify-between rounded-2xl border border-border/70 bg-card/70 p-6 shadow-sm backdrop-blur-xl transition-all hover:border-primary/50 hover:shadow-lg">
+            <div className="pointer-events-auto absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-background/70">
+              <p className="font-mono text-sm font-semibold text-muted-foreground">
+                Coming soon...
+              </p>
+            </div>
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
@@ -251,83 +266,6 @@ export function LandingDownloads() {
               <ShieldCheck className="size-3.5 text-emerald-500 shrink-0" />
               <span>No installation required</span>
             </div>
-          </div>
-        </div>
-
-        {/* CLI / Package Manager Quick Install */}
-        <div className="mt-12 rounded-2xl border border-border/70 bg-card/60 p-5 shadow-sm backdrop-blur-xl sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                <Terminal className="size-4 text-primary" />
-                <span>Command Line Install (Optional)</span>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Prefer package managers? Install Yaad with a single terminal
-                command.
-              </p>
-            </div>
-
-            {/* Platform tab selector */}
-            <div className="flex items-center gap-1 rounded-lg border border-border/50 bg-background/80 p-1 text-xs">
-              <button
-                type="button"
-                onClick={() => setActiveTab("mac")}
-                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-                  activeTab === "mac"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Homebrew
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("win")}
-                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-                  activeTab === "win"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                WinGet
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("linux")}
-                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
-                  activeTab === "linux"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Shell Script
-              </button>
-            </div>
-          </div>
-
-          {/* Code Bar */}
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-border/60 bg-muted/40 px-4 py-3 font-mono text-xs sm:text-sm">
-            <span className="text-foreground select-all">
-              {getCliCommand()}
-            </span>
-            <button
-              type="button"
-              onClick={() => copyInstallCommand(getCliCommand())}
-              className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/80 px-2.5 py-1 text-xs font-sans text-muted-foreground transition-all hover:text-foreground cursor-pointer"
-            >
-              {copiedCmd ? (
-                <>
-                  <Check className="size-3.5 text-emerald-500" />
-                  <span className="text-emerald-500 font-medium">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="size-3.5" />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
           </div>
         </div>
       </div>
