@@ -1,26 +1,19 @@
 import { Button } from "@ui/button";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import {
-  ArrowRight,
-  ChevronDown,
-  Download,
-  Globe,
-  Sparkles,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowRight, Globe, Sparkles } from "lucide-react";
+// import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
-import type { PlatformType } from "./landing-platform-utils";
+// import type { PlatformType } from "./landing-platform-utils";
 
-import { detectUserPlatform, PLATFORMS_DATA } from "./landing-platform-utils";
+// import { detectUserPlatform, PLATFORMS_DATA } from "./landing-platform-utils";
 
 interface LandingHeroProps {
   onOpenApp?: () => void;
 }
 
 export function LandingHero({ onOpenApp }: LandingHeroProps) {
-  const [platform, setPlatform] = useState<PlatformType>("macos");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  // const [platform, setPlatform] = useState<PlatformType>("macos");
 
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
@@ -29,12 +22,9 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
     ? `/workspace/${activeWorkspaceId}`
     : "/app";
 
-  useEffect(() => {
-    setPlatform(detectUserPlatform());
-  }, []);
-
-  const currentPlatform = PLATFORMS_DATA[platform] || PLATFORMS_DATA.macos;
-  const CurrentIcon = currentPlatform.icon;
+  // useEffect(() => {
+  //   setPlatform(detectUserPlatform());
+  // }, []);
 
   return (
     <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28">
