@@ -63,8 +63,8 @@ export function LandingFooter() {
         {/* Brand & Links footer bottom */}
         <div className="mt-16 flex flex-col items-center justify-between gap-6 border-t border-border/40 pt-8 sm:flex-row">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Sparkles className="size-4" />
+            <div className="relative flex size-9 items-center justify-center rounded-xl text-primary-foreground transition-all duration-300 group-hover:scale-105  group-hover:shadow-primary/35">
+              <img alt="yaad logo" src="/yaad-logo.png" />
             </div>
             <span className="text-sm font-semibold tracking-tight text-foreground">
               Yaad
