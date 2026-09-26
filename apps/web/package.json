@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@yaad/core": "workspace:*",
     "@yaad/ui": "workspace:*",
     "react": "^19.1.0",

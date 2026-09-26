@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { lazy, useState } from "react";
 import {
   BrowserRouter,
@@ -80,6 +81,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <PwaManager />
+      <Analytics />
       <Providers>
         <Routes>
           <Route path="/" element={<LandingRoute />} />
