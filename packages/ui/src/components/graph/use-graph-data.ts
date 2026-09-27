@@ -139,6 +139,7 @@ export function useGraphData(
     const rootIndexByPage = buildRootIndexMap(pages, rootIds);
 
     const simNodes: SimNode[] = visibleIds.map((id, index) => {
+      const page = pages[id];
       const rootIndex = focusId
         ? 0
         : (rootIndexByPage.get(id) ?? rootIds.length + index);
@@ -147,9 +148,9 @@ export function useGraphData(
 
       return {
         id,
-        title: pages?.id?.title || "Untitled",
-        icon: pages?.id?.icon,
-        childCount: pages?.id?.childrenIds?.length || 0,
+        title: page?.title || "Untitled",
+        icon: page?.icon,
+        childCount: page?.childrenIds?.length || 0,
         rootIndex,
         x: rootIndex === 0 ? Math.cos(seedAngle) * seedRadius : rootIndex * 420,
         y: rootIndex === 0 ? Math.sin(seedAngle) * seedRadius : 0,
