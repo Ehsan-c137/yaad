@@ -22,11 +22,11 @@ export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
       <p className="text-sm text-muted-foreground">
         Select a page from the sidebar or press{" "}
         <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
-          ⌘K
+          ⌘ + K
         </kbd>{" "}
         /{" "}
         <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
-          Ctrl+K
+          Ctrl + K
         </kbd>{" "}
         to search.
       </p>

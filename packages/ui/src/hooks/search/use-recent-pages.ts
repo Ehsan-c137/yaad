@@ -25,6 +25,7 @@ export function useRecentPages(limit = 5, workspaceId?: string): SearchItem[] {
       .filter(
         (t) =>
           t.workspaceId === targetWorkspaceId &&
+          sidebarPages[t.pageId] != null &&
           !sidebarPages[t.pageId]?.isDeleted,
       )
       .sort((a, b) => b.lastAccessedAt - a.lastAccessedAt);

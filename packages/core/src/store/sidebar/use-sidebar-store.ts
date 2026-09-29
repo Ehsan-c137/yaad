@@ -15,9 +15,16 @@ export const useSidebarStore = create<SidebarState>()(
     {
       name: "sidebar-store",
       storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: (state) => {
-        return () => state.setHasHydrated(true);
-      },
+      // Only persist lightweight UI preferences.
+      // pages/rootPageIds are owned by the StorageAdapter (SQL/IndexedDB)
+      // and loaded on demand via loadWorkspacePages().
+      partialize: (state) => ({
+        isSidebarOpen: state.isSidebarOpen,
+        activePageId: state.activePageId,
+      }),
+      // _hasHydrated is set by loadWorkspacePages() after the adapter
+      // has populated pages — not here — to avoid a flash of the empty
+      // state between localStorage rehydration and adapter load.
     },
   ),
 );

@@ -68,11 +68,11 @@ export function EditableContent({
   const [slashMenuState, setSlashMenuState] = useState<{
     isOpen: boolean;
     query: string;
-    position: { top: number; left: number };
+    position: { top: number; left: number; anchorTop: number };
   }>({
     isOpen: false,
     query: "",
-    position: { top: 0, left: 0 },
+    position: { top: 0, left: 0, anchorTop: 0 },
   });
 
   // Handle auto-focus for newly created blocks
@@ -138,6 +138,7 @@ export function EditableContent({
           position: {
             top: rect.bottom + 6,
             left: direction === "rtl" ? rect.right + 10 : rect.left + 10,
+            anchorTop: rect.top,
           },
         });
       }
@@ -161,7 +162,7 @@ export function EditableContent({
     setSlashMenuState({
       isOpen: false,
       query: "",
-      position: { top: 0, left: 0 },
+      position: { top: 0, left: 0, anchorTop: 0 },
     });
 
     if (onTransformType) {
@@ -185,7 +186,7 @@ export function EditableContent({
       onEnter?.(e);
     }
     if (e.key === "Backspace") {
-      const text = contentRef.current?.innerText || "";
+      const text = contentRef.current?.innerText ?? "";
 
       if (text.trim().length === 0) {
         e.preventDefault();

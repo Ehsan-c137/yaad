@@ -124,10 +124,11 @@ export const createPagesSlice: StateCreator<
           pages: pagesMap,
           rootPageIds: rootIds,
           isLoading: false,
+          _hasHydrated: true, // Pages are ready — safe for components to render
         });
       } catch (error) {
         console.error("Error loading workspace pages:", error);
-        rawSet({ isLoading: false });
+        rawSet({ isLoading: false, _hasHydrated: true }); // Unblock UI even on error
       }
     },
 

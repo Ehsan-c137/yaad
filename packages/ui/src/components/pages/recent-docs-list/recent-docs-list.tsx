@@ -49,7 +49,7 @@ export function RecentDocsList({
       <section className="mt-12">
         <h2 className={cn(styles.sectionLabel)}>Recent</h2>
         <p className="px-2 py-1.5 text-sm text-muted-foreground">
-          No pages yet â€” create one from the sidebar to see it here.
+          No pages yet create one from the sidebar to see it here.
         </p>
       </section>
     );
