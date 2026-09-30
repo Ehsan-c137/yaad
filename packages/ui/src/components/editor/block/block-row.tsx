@@ -11,6 +11,8 @@ import {
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
+import { useTranslation } from "react-i18next";
+
 import { BlockActionMenu } from "../menu/block-action-menu";
 import { COLOR_OPTIONS } from "../menu/menu-constant";
 import { BlockRenderer } from "./block-renderer";
@@ -21,6 +23,7 @@ interface BlockRowProps {
 }
 
 export function BlockRow({ blockId }: BlockRowProps) {
+  const { t } = useTranslation("editor");
   const block = useDocumentStore(
     (state) => state.currentDocument?.blocks[blockId],
   );
@@ -47,7 +50,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
     >
       <div
         contentEditable={false}
-        className="hidden md:flex absolute bottom-0 md:-left-15 items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100"
+        className="hidden md:flex absolute bottom-0 ltr:md:-left-15 rtl:md:-right-15 items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100"
       >
         <Button
           variant="ghost"
@@ -55,7 +58,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
           onClick={() =>
             addBlock(block.parentId ?? "root", block.id, "paragraph")
           }
-          title="Add block below"
+          title={t("addBlockBelow")}
           tooltipSide="bottom"
         >
           <Plus className="size-3.5" />
@@ -68,7 +71,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
                 variant="ghost"
                 size="icon-xs"
                 className="cursor-grab active:cursor-grabbing"
-                title="Open block options"
+                title={t("openBlockOptions")}
                 tooltipSide="bottom"
               >
                 <GripVertical className="size-3.5" />

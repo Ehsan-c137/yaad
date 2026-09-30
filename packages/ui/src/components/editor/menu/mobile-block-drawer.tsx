@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import {
@@ -56,6 +57,7 @@ export function MobileBlockDrawer({
   onOpenChange,
   pageId: propPageId,
 }: MobileBlockDrawerProps) {
+  const { t } = useTranslation(["editor", "common"]);
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpen = open !== undefined ? open : internalOpen;
   const setIsOpen = onOpenChange !== undefined ? onOpenChange : setInternalOpen;
@@ -116,7 +118,7 @@ export function MobileBlockDrawer({
               variant="ghost"
               size="sm"
               className="h-8 gap-1.5 px-2 text-xs font-medium text-muted-foreground hover:text-foreground active:scale-95"
-              title="Block options"
+              title={t("editor:blockOptions")}
             >
               <GripVertical className="size-3.5" />
               <span>{currentTypeName}</span>
@@ -139,7 +141,7 @@ export function MobileBlockDrawer({
                   {currentTypeName}
                 </DrawerTitle>
                 <p className="text-[11px] text-muted-foreground">
-                  Block actions
+                  {t("editor:blockActions")}
                 </p>
               </div>
             </div>
@@ -164,7 +166,7 @@ export function MobileBlockDrawer({
               className="justify-start gap-2 h-9 text-xs"
             >
               <Copy className="size-3.5 text-muted-foreground" />
-              <span>Duplicate</span>
+              <span>{t("editor:duplicate")}</span>
             </Button>
 
             <Button
@@ -174,7 +176,7 @@ export function MobileBlockDrawer({
               className="justify-start gap-2 h-9 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
             >
               <Trash2 className="size-3.5 text-destructive" />
-              <span>Delete block</span>
+              <span>{t("editor:deleteBlock")}</span>
             </Button>
           </div>
 
@@ -182,7 +184,7 @@ export function MobileBlockDrawer({
           <div>
             <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
               <Repeat className="size-3.5" />
-              <span>Turn into</span>
+              <span>{t("editor:turnInto")}</span>
             </div>
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
               {TURN_INTO_OPTIONS.map((item) => {
@@ -217,7 +219,7 @@ export function MobileBlockDrawer({
           <div>
             <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
               <Paintbrush className="size-3.5" />
-              <span>Background Color</span>
+              <span>{t("editor:backgroundColor")}</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
               {COLOR_OPTIONS.map((color) => {
@@ -256,7 +258,7 @@ export function MobileBlockDrawer({
           <div>
             <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
               <TagIcon className="size-3.5" />
-              <span>Tags</span>
+              <span>{t("editor:tags")}</span>
             </div>
             <TagPickerPopover
               selectedTags={block.tags ?? []}
@@ -270,11 +272,11 @@ export function MobileBlockDrawer({
                 >
                   <div className="flex items-center gap-2">
                     <TagIcon className="size-3.5 text-muted-foreground" />
-                    <span>Manage tags</span>
+                    <span>{t("editor:manageTags")}</span>
                   </div>
                   {(block.tags?.length ?? 0) > 0 && (
                     <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                      {block.tags?.length} tags
+                      {block.tags?.length} {t("editor:tags")}
                     </span>
                   )}
                 </Button>
@@ -291,7 +293,7 @@ export function MobileBlockDrawer({
               className="justify-start gap-2 h-8 text-xs text-muted-foreground hover:text-foreground"
             >
               <Copy className="size-3.5" />
-              <span>Copy link to block</span>
+              <span>{t("editor:copyLinkToBlock")}</span>
             </Button>
 
             <Button
@@ -301,7 +303,7 @@ export function MobileBlockDrawer({
               className="justify-start gap-2 h-8 text-xs text-muted-foreground hover:text-foreground"
             >
               <ExternalLink className="size-3.5" />
-              <span>Open in new tab</span>
+              <span>{t("editor:openInNewTab")}</span>
             </Button>
 
             <Button
@@ -311,7 +313,7 @@ export function MobileBlockDrawer({
               className="justify-start gap-2 h-8 text-xs text-muted-foreground hover:text-foreground"
             >
               <SidePeek className="size-3.5" />
-              <span>Open in side peek</span>
+              <span>{t("editor:openInSidePeek")}</span>
             </Button>
           </div>
         </div>

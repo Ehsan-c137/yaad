@@ -27,6 +27,25 @@ export interface SlashOption {
   icon: any;
 }
 
+export const SLASH_OPTION_KEYS: Record<string, { titleKey: string; descKey: string }> = {
+  text: { titleKey: "slashText", descKey: "slashTextDesc" },
+  h1: { titleKey: "slashH1", descKey: "slashH1Desc" },
+  h2: { titleKey: "slashH2", descKey: "slashH2Desc" },
+  h3: { titleKey: "slashH3", descKey: "slashH3Desc" },
+  bullet_list: { titleKey: "slashBulletList", descKey: "slashBulletListDesc" },
+  toggle_list: { titleKey: "slashToggleList", descKey: "slashToggleListDesc" },
+  todo: { titleKey: "slashTodo", descKey: "slashTodoDesc" },
+  kanban: { titleKey: "slashKanban", descKey: "slashKanbanDesc" },
+  code: { titleKey: "slashCode", descKey: "slashCodeDesc" },
+  quote: { titleKey: "slashQuote", descKey: "slashQuoteDesc" },
+  callout: { titleKey: "slashCallout", descKey: "slashCalloutDesc" },
+  table: { titleKey: "slashTable", descKey: "slashTableDesc" },
+  image: { titleKey: "slashImage", descKey: "slashImageDesc" },
+  page: { titleKey: "slashPage", descKey: "slashPageDesc" },
+  link_preview: { titleKey: "slashLinkPreview", descKey: "slashLinkPreviewDesc" },
+  separator: { titleKey: "slashSeparator", descKey: "slashSeparatorDesc" },
+};
+
 export const SLASH_OPTIONS: SlashOption[] = [
   {
     id: "text",

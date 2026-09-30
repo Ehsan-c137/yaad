@@ -10,6 +10,7 @@ import { useNavigate } from "react-router";
 
 import { useRecentPages } from "@/hooks/search/use-recent-pages";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 import { DocsListItem } from "./docs-list";
 
@@ -25,6 +26,7 @@ export function RecentDocsList({
   workspaceId,
   limit = DEFAULT_LIMIT,
 }: RecentDocsListProps) {
+  const { t } = useTranslation("common");
   const recentDocs = useRecentPages(limit, workspaceId);
 
   const navigate = useNavigate();
@@ -47,9 +49,9 @@ export function RecentDocsList({
   if (recentDocs.length === 0) {
     return (
       <section className="mt-12">
-        <h2 className={cn(styles.sectionLabel)}>Recent</h2>
+        <h2 className={cn(styles.sectionLabel)}>{t("recent")}</h2>
         <p className="px-2 py-1.5 text-sm text-muted-foreground">
-          No pages yet create one from the sidebar to see it here.
+          {t("noRecentPagesHint")}
         </p>
       </section>
     );
@@ -59,7 +61,7 @@ export function RecentDocsList({
     <section className="mt-12">
       <h2 className={cn(styles.sectionLabel, "flex items-center gap-1.5")}>
         <Clock aria-hidden className="size-3" />
-        Recent
+        {t("recent")}
       </h2>
       <ul className="flex flex-col">
         {recentDocs.map((item) => {

@@ -1,6 +1,7 @@
 import type { SearchItem } from "@yaad/core/types/search";
 
 import { Tag as TagIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { CommandGroup } from "@/components/ui/command";
 
@@ -12,13 +13,15 @@ export interface MatchingTagsGroupProps {
 }
 
 export function MatchingTagsGroup({ items, onSelect }: MatchingTagsGroupProps) {
+  const { t } = useTranslation("search");
+
   if (items.length === 0) return null;
 
   return (
     <CommandGroup
       heading={
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <TagIcon className="size-3.5" /> Matching Tags
+          <TagIcon className="size-3.5" /> {t("matchingTags")}
         </span>
       }
     >

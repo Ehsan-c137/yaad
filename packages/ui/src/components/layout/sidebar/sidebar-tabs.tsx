@@ -4,6 +4,8 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark, House } from "lucide-react";
 import { useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 
 import { SidebarBookmarks } from "./bookmarks/sidebar-bookmarks";
@@ -11,22 +13,23 @@ import { SidebarHome } from "./home/sidebar-home";
 
 type Tab = "bookmarked" | "home";
 
-const TABS = [
-  {
-    label: "Home",
-    value: "home" as const,
-    icon: <House strokeWidth={1.5} className="size-4" />,
-  },
-  {
-    label: "Bookmarked",
-    value: "bookmarked" as const,
-    icon: <Bookmark strokeWidth={1.5} className="size-4" />,
-  },
-];
-
 export function SidebarTabs() {
+  const { t } = useTranslation("sidebar");
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const hasHydrated = useSidebarStore((state) => state._hasHydrated);
+
+  const tabs = [
+    {
+      label: t("home"),
+      value: "home" as const,
+      icon: <House strokeWidth={1.5} className="size-4" />,
+    },
+    {
+      label: t("bookmarked"),
+      value: "bookmarked" as const,
+      icon: <Bookmark strokeWidth={1.5} className="size-4" />,
+    },
+  ];
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -40,7 +43,7 @@ export function SidebarTabs() {
             className="w-full"
           >
             <TabsList variant="segmented" className="w-full">
-              {TABS.map((tab) => (
+              {tabs.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}

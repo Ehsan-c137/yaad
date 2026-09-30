@@ -333,7 +333,7 @@
     background-color: var(--sidebar);
     backdrop-filter: blur(var(--material-blur))
       saturate(var(--material-saturate));
-    border-right: 1px solid var(--sidebar-border);
+    border-inline-end: 1px solid var(--sidebar-border);
   }
 
   .menu-dark {

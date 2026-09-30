@@ -3,6 +3,8 @@
 import { Plus } from "lucide-react";
 import { useMemo } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 
 import type { KanbanBlockProps, KanbanCard, KanbanColumn } from "./types";
@@ -15,6 +17,7 @@ import { useKanbanDragAndDrop } from "./use-kanban-dnd";
 export type { KanbanBlockProps, KanbanCard, KanbanColumn };
 
 export function KanbanBlock({ block }: KanbanBlockProps) {
+  const { t } = useTranslation("editor");
   const {
     columns,
     cards,
@@ -66,7 +69,7 @@ export function KanbanBlock({ block }: KanbanBlockProps) {
         <div className="group/kanban overflow-x-auto my-4 select-none rounded-xl border border-border bg-card/40 p-4 shadow-sm gap-2 space-y-2 mx-auto ">
           <Button variant="outline" size="sm" onClick={addColumn}>
             <Plus className="size-3.5" />
-            Add column
+            {t("kanbanAddColumn")}
           </Button>
           <div className="flex items-start gap-4 pb-2">
             {columns.map((col, colIdx) => (

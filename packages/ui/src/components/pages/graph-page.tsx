@@ -2,6 +2,7 @@ import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
 
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { ArrowLeft, FileText, Network } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { GraphView } from "@/components/graph/graph-view";
 import { useGraphData } from "@/components/graph/use-graph-data";
@@ -50,6 +51,7 @@ interface GraphPageHeaderProps {
 }
 
 function GraphPageHeader({ workspaceId, pageId, page }: GraphPageHeaderProps) {
+  const { t } = useTranslation(["editor", "common"]);
   const pageIcon = page?.icon && page.icon !== "ðŸ“„" ? page.icon : undefined;
 
   return (
@@ -69,23 +71,23 @@ function GraphPageHeader({ workspaceId, pageId, page }: GraphPageHeaderProps) {
         )}
       </div>
       <h1 className="truncate text-sm font-semibold text-foreground">
-        {page ? page.title || "Untitled" : "Graph View"}
+        {page ? page.title || t("common:untitled") : t("editor:graphView")}
       </h1>
       <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
-        {page ? "This page and its sub-pages" : "All pages in this workspace"}
+        {page ? t("editor:pageAndSubpages") : t("editor:allPagesInWorkspace")}
       </span>
 
       {pageId && page && (
         <Link
           href={`/workspace/${workspaceId}/${pageId}`}
           className={cn(
-            "ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5",
+            "ms-auto inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5",
             "text-xs font-medium text-muted-foreground transition-colors",
             "hover:bg-muted hover:text-foreground",
           )}
         >
-          <ArrowLeft className="size-3.5" strokeWidth={1.5} />
-          Back to page
+          <ArrowLeft className="size-3.5 rtl:rotate-180" strokeWidth={1.5} />
+          {t("editor:backToPage")}
         </Link>
       )}
     </div>
@@ -93,12 +95,13 @@ function GraphPageHeader({ workspaceId, pageId, page }: GraphPageHeaderProps) {
 }
 
 function GraphEmptyState() {
+  const { t } = useTranslation("editor");
   return (
     <div className="flex size-full flex-col items-center justify-center gap-2">
       <Network className="size-8 text-muted-foreground/40" strokeWidth={1.5} />
-      <p className="text-sm text-muted-foreground">Page not found</p>
+      <p className="text-sm text-muted-foreground">{t("pageNotFound")}</p>
       <p className="text-xs text-muted-foreground/70">
-        This page may have been deleted.
+        {t("pageMayBeDeleted")}
       </p>
     </div>
   );

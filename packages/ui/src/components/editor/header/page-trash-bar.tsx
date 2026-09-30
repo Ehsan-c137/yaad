@@ -5,6 +5,8 @@ import { RotateCcw, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 
 interface PageTrashBarProps {
@@ -12,6 +14,7 @@ interface PageTrashBarProps {
 }
 
 export function PageTrashBar({ pageId }: PageTrashBarProps) {
+  const { t } = useTranslation("editor");
   const navigate = useNavigate();
   const restorePage = useSidebarStore((s) => s.restorePage);
   const permanentlyDeletePage = useSidebarStore((s) => s.permanentlyDeletePage);
@@ -20,7 +23,7 @@ export function PageTrashBar({ pageId }: PageTrashBarProps) {
     <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-500/20 bg-amber-500/10 px-4 py-2 text-xs text-amber-600 backdrop-blur-md dark:text-amber-400">
       <div className="flex items-center gap-2">
         <Trash2 className="size-4 shrink-0" />
-        <span>This page is in the trash.</span>
+        <span>{t("thisPageInTrash")}</span>
       </div>
       <div className="flex items-center gap-2">
         <Button
@@ -28,19 +31,19 @@ export function PageTrashBar({ pageId }: PageTrashBarProps) {
           variant="outline"
           onClick={() => {
             restorePage(pageId);
-            toast.success("Page restored");
+            toast.success(t("pageRestored"));
           }}
           className="h-7 gap-1 text-xs"
         >
           <RotateCcw className="size-3" />
-          <span>Restore</span>
+          <span>{t("restore")}</span>
         </Button>
         <Button
           size="sm"
           variant="destructive"
           onClick={async () => {
             await permanentlyDeletePage(pageId);
-            toast.success("Page permanently deleted");
+            toast.success(t("pageDeletedPermanently"));
 
             if (activeWorkspaceId) {
               navigate(`/${ROUTES.workspace}/${activeWorkspaceId}`);
@@ -48,7 +51,7 @@ export function PageTrashBar({ pageId }: PageTrashBarProps) {
           }}
           className="h-7 gap-1 text-xs"
         >
-          <span>Delete permanently</span>
+          <span>{t("deletePermanently")}</span>
         </Button>
       </div>
     </div>

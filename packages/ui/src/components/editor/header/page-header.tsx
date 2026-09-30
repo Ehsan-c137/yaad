@@ -1,5 +1,6 @@
 import { ROUTES } from "@yaad/core/constants/routes";
 import { Network } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
@@ -31,6 +32,7 @@ export function PageHeader() {
 }
 
 function PageHeaderTitle() {
+  const { t } = useTranslation(["editor", "common"]);
   const titleText = useDocumentStore(
     (state) =>
       state.currentDocument?.blocks.root.properties.title[0]?.text ?? "",
@@ -49,14 +51,14 @@ function PageHeaderTitle() {
     <div className="py-3 flex w-full items-center">
       <EditableContent
         html={titleText}
-        placeholder="Untitled"
+        placeholder={t("common:untitled")}
         className="text-sf-large-title leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem]"
         onChange={handleTitleChange}
       />
-      <Button variant="ghost" size="icon" title="Graph View">
+      <Button variant="ghost" size="icon" title={t("editor:graphView")}>
         <Link
           href={`/${ROUTES.workspace}/${encodeURI(workspaceId ?? "")}/${encodeURI(pageId ?? "")}/graph`}
-          title="Graph View"
+          title={t("editor:graphView")}
           className={cn(
             "inline-flex size-7 items-center justify-center rounded-lg",
             "text-muted-foreground transition-colors",

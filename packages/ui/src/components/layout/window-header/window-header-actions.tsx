@@ -11,12 +11,14 @@ import { useTabStore } from "@yaad/core/store/use-tab-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { MoreHorizontal, Plus, XSquare } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { ActionHeaderBar } from "./action-header-bar";
 import { useTabSync } from "./use-tab-sync";
 
 export function WindowHeaderActions() {
+  const { t } = useTranslation("sidebar");
   const { handleCreateNewTab } = useTabSync();
   const navigate = useNavigate();
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
@@ -29,14 +31,14 @@ export function WindowHeaderActions() {
   }, [activeWorkspaceId, closeAllTabs, navigate]);
 
   return (
-    <div className="flex shrink-0 items-center gap-1 pl-2">
+    <div className="flex shrink-0 items-center gap-1 ps-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label="Window options"
+              aria-label={t("windowOptions")}
               data-tauri-no-drag-region="true"
               className="size-7 rounded-md text-muted-foreground hover:bg-foreground/6 hover:text-foreground dark:hover:bg-white/6 [app-region:no-drag]"
             >
@@ -47,11 +49,11 @@ export function WindowHeaderActions() {
         <DropdownMenuContent align="end" className="w-48 text-xs">
           <DropdownMenuItem onClick={handleCloseAllTabs}>
             <XSquare className="size-3.5 text-muted-foreground" />
-            <span>Close all tabs</span>
+            <span>{t("closeAllTabs")}</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleCreateNewTab}>
             <Plus className="size-3.5 text-muted-foreground" />
-            <span>New document tab</span>
+            <span>{t("newDocumentTab")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

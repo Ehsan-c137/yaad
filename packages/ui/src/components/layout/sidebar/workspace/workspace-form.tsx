@@ -4,10 +4,12 @@ import { styles } from "@yaad/core/lib/design-token";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
 export function WorkspaceForm() {
+  const { t } = useTranslation(["sidebar", "common"]);
   const [isCreating, setIsCreating] = useState(false);
   const [newWsName, setNewWsName] = useState("");
   const createWorkspace = useWorkspaceStore((state) => state.createWorkspace);
@@ -42,8 +44,8 @@ export function WorkspaceForm() {
             value={newWsName}
             onChange={(e) => setNewWsName(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Workspace nameâ€¦"
-            aria-label="Workspace name"
+            placeholder={t("sidebar:workspaceName")}
+            aria-label={t("sidebar:workspaceName")}
             autoFocus
             className={cn(styles.menuInput)}
           />
@@ -55,7 +57,7 @@ export function WorkspaceForm() {
               onClick={handleCancel}
               className="text-white/60 hover:bg-white/8 hover:text-white"
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               type="submit"
@@ -63,7 +65,7 @@ export function WorkspaceForm() {
               disabled={!newWsName.trim()}
               className="bg-(--accent-blue) text-white hover:opacity-90 disabled:opacity-50"
             >
-              Create
+              {t("common:create")}
             </Button>
           </div>
         </form>
@@ -74,7 +76,7 @@ export function WorkspaceForm() {
           className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
         >
           <Plus className="size-3.5" />
-          <span>New Workspace</span>
+          <span>{t("sidebar:newWorkspace")}</span>
         </button>
       )}
     </>

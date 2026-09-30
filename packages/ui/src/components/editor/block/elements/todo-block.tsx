@@ -5,6 +5,8 @@ import type { DocumentBlock } from "@yaad/core/types/document";
 import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditableBlock } from "@/hooks/editor/use-editable-block";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +17,7 @@ interface TodoBlockProps {
 }
 
 export function TodoBlock({ block }: TodoBlockProps) {
+  const { t } = useTranslation("editor");
   const {
     pageId,
     text,
@@ -72,7 +75,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
         role="checkbox"
         aria-checked={isChecked}
         aria-label={
-          isChecked ? "Mark to-do as incomplete" : "Mark to-do as complete"
+          isChecked ? t("markTodoIncomplete") : t("markTodoComplete")
         }
         onClick={handleToggleCheck}
         className={cn(
@@ -116,7 +119,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
       >
         <EditableContent
           html={text}
-          placeholder="To-do"
+          placeholder={t("todoPlaceholder")}
           className={cn(
             "text-base transition-colors duration-300",
             isChecked ? "text-muted-foreground/60" : "text-foreground",

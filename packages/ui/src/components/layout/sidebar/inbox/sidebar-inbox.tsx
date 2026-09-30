@@ -5,11 +5,14 @@ import { styles } from "@yaad/core/lib/design-token";
 import { useInboxStore } from "@yaad/core/store/inbox/use-inbox-store";
 import { CheckCheck, Inbox, Sparkles, Trash2 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 
 import { NotificationItem } from "./notification-item";
 
 export function SidebarInbox() {
+  const { t } = useTranslation("sidebar");
   const notifications = useInboxStore((state) => state.notifications);
   const filter = useInboxStore((state) => state.filter);
   const _hasHydrated = useInboxStore((state) => state._hasHydrated);
@@ -32,7 +35,7 @@ export function SidebarInbox() {
     <div className="pointer-events-none relative flex h-full flex-col px-1 pb-4">
       <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/70">
         <p className="font-mono text-sm text-muted-foreground">
-          Coming soon...
+          {t("comingSoon")}
         </p>
       </div>
       <div className="flex items-center justify-between pt-2.5 pb-2">
@@ -43,7 +46,7 @@ export function SidebarInbox() {
               "text-xs font-semibold tracking-wider text-muted-foreground uppercase",
             )}
           >
-            Notifications
+            {t("notifications")}
           </span>
           {unreadCount > 0 && (
             <span className="inline-flex h-4 items-center justify-center rounded-full bg-(--accent-blue) px-1.5 text-[10px] font-semibold text-white">
@@ -59,8 +62,8 @@ export function SidebarInbox() {
               variant="ghost"
               size="icon-xs"
               onClick={() => markAllAsRead()}
-              title="Mark all as read"
-              aria-label="Mark all notifications as read"
+              title={t("markAllAsRead")}
+              aria-label={t("markAllAsRead")}
               className="size-6 rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
             >
               <CheckCheck className="size-3.5" />
@@ -72,8 +75,8 @@ export function SidebarInbox() {
               variant="ghost"
               size="icon-xs"
               onClick={() => clearAll()}
-              title="Clear all notifications"
-              aria-label="Clear all notifications"
+              title={t("clearAllNotifications")}
+              aria-label={t("clearAllNotifications")}
               className="size-6 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
             >
               <Trash2 className="size-3.5" />
@@ -87,20 +90,20 @@ export function SidebarInbox() {
         <FilterButton
           active={filter === "all"}
           onClick={() => setFilter("all")}
-          label="All"
+          label={t("all")}
           count={notifications.length}
         />
         <FilterButton
           active={filter === "unread"}
           onClick={() => setFilter("unread")}
-          label="Unread"
+          label={t("unread")}
           count={unreadCount}
           highlight={unreadCount > 0}
         />
         <FilterButton
           active={filter === "mentions"}
           onClick={() => setFilter("mentions")}
-          label="Mentions"
+          label={t("mentions")}
           count={mentionsCount}
         />
       </div>
@@ -127,17 +130,17 @@ export function SidebarInbox() {
           <div className="space-y-1">
             <p className="text-sm font-medium text-foreground/90">
               {filter === "unread"
-                ? "All caught up!"
+                ? t("allCaughtUp")
                 : filter === "mentions"
-                  ? "No mentions yet"
-                  : "No notifications"}
+                  ? t("noMentionsYet")
+                  : t("noNotifications")}
             </p>
             <p className="max-w-[200px] text-xs/normal text-muted-foreground">
               {filter === "unread"
-                ? "You have read all your notifications."
+                ? t("readAllNotifications")
                 : filter === "mentions"
-                  ? "When team members @mention you, they will appear here."
-                  : "New updates and activity will appear here."}
+                  ? t("mentionsHint")
+                  : t("notificationsHint")}
             </p>
           </div>
         </div>

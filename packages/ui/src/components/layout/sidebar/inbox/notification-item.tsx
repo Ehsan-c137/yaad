@@ -21,6 +21,7 @@ import {
   Trash2,
 } from "lucide-react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notification }: NotificationItemProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const navigate = useNavigate();
   const markAsRead = useInboxStore((s) => s.markAsRead);
   const toggleRead = useInboxStore((s) => s.toggleRead);
@@ -44,7 +46,7 @@ export function NotificationItem({ notification }: NotificationItemProps) {
       openTab({
         pageId: notification.pageId,
         workspaceId: activeWorkspaceId,
-        title: notification.targetTitle ?? "Untitled",
+        title: notification.targetTitle ?? t("common:untitled"),
       });
       navigate(
         `/${ROUTES.workspace}/${activeWorkspaceId}/${notification.pageId}`,
@@ -74,7 +76,7 @@ export function NotificationItem({ notification }: NotificationItemProps) {
         }
       }}
       className={cn(
-        "group relative flex w-full cursor-pointer flex-col gap-1.5 rounded-xl p-2.5 text-left select-none",
+        "group relative flex w-full cursor-pointer flex-col gap-1.5 rounded-xl p-2.5 text-start select-none",
         "border border-transparent transition-all duration-200 ease-(--spring)",
         styles.spring,
         notification.read
@@ -103,7 +105,7 @@ export function NotificationItem({ notification }: NotificationItemProps) {
           )}
 
           {!notification.read && (
-            <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-(--accent-blue) ring-2 ring-background" />
+            <span className="absolute -top-0.5 -end-0.5 size-2 rounded-full bg-(--accent-blue) ring-2 ring-background" />
           )}
         </div>
 
@@ -143,7 +145,7 @@ export function NotificationItem({ notification }: NotificationItemProps) {
       {/* Hover Action Buttons */}
       <div
         className={cn(
-          "absolute top-2 right-2 hidden items-center gap-0.5 rounded-lg border border-border/50 bg-background/90 p-0.5 shadow-xs backdrop-blur-xs group-hover:flex",
+          "absolute top-2 end-2 hidden items-center gap-0.5 rounded-lg border border-border/50 bg-background/90 p-0.5 shadow-xs backdrop-blur-xs group-hover:flex",
         )}
       >
         <Button
@@ -151,8 +153,16 @@ export function NotificationItem({ notification }: NotificationItemProps) {
           variant="ghost"
           size="icon-xs"
           onClick={handleToggleRead}
-          title={notification.read ? "Mark as unread" : "Mark as read"}
-          aria-label={notification.read ? "Mark as unread" : "Mark as read"}
+          title={
+            notification.read
+              ? t("sidebar:markAsUnread")
+              : t("sidebar:markAsRead")
+          }
+          aria-label={
+            notification.read
+              ? t("sidebar:markAsUnread")
+              : t("sidebar:markAsRead")
+          }
           className="size-5 rounded-md text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
         >
           {notification.read ? (
@@ -166,8 +176,8 @@ export function NotificationItem({ notification }: NotificationItemProps) {
           variant="ghost"
           size="icon-xs"
           onClick={handleDelete}
-          title="Delete notification"
-          aria-label="Delete notification"
+          title={t("sidebar:deleteNotification")}
+          aria-label={t("sidebar:deleteNotification")}
           className="size-5 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="size-3" />

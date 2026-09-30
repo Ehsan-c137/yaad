@@ -1,6 +1,7 @@
 import { Input } from "@ui/input";
 import { ArrowLeft, ArrowRight, Check, Edit2, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +14,7 @@ export function KanbanCardItem({
   isFirstCol,
   isLastCol,
 }: KanbanCardProps) {
+  const { t } = useTranslation("editor");
   const { updateCardTitle, deleteCard, moveCard, handleDragStart } =
     useKanbanActions();
 
@@ -91,9 +93,9 @@ export function KanbanCardItem({
                   size="icon"
                   className="size-5 text-muted-foreground hover:text-foreground"
                   onClick={() => moveCard(card.id, "left")}
-                  title="Move left"
+                  title={t("kanbanMoveLeft")}
                 >
-                  <ArrowLeft className="size-3" />
+                  <ArrowLeft className="size-3 rtl:rotate-180" />
                 </Button>
               )}
 
@@ -103,9 +105,9 @@ export function KanbanCardItem({
                   size="icon"
                   className="size-5 text-muted-foreground hover:text-foreground"
                   onClick={() => moveCard(card.id, "right")}
-                  title="Move right"
+                  title={t("kanbanMoveRight")}
                 >
-                  <ArrowRight className="size-3" />
+                  <ArrowRight className="size-3 rtl:rotate-180" />
                 </Button>
               )}
             </div>
@@ -116,7 +118,7 @@ export function KanbanCardItem({
                 size="icon"
                 className="size-5 text-muted-foreground hover:text-foreground"
                 onClick={handleStartEditing}
-                title="Edit card"
+                title={t("kanbanEditCard")}
               >
                 <Edit2 className="size-3" />
               </Button>
@@ -125,7 +127,7 @@ export function KanbanCardItem({
                 size="icon"
                 className="size-5 text-muted-foreground hover:text-destructive"
                 onClick={() => deleteCard(card.id)}
-                title="Delete card"
+                title={t("kanbanDeleteCard")}
               >
                 <Trash2 className="size-3" />
               </Button>

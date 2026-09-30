@@ -4,6 +4,7 @@ import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowUpRight, FileText, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Link } from "@/components/ui/link";
 // import { documentService } from "@yaad/core/services/document-service";
@@ -15,6 +16,7 @@ interface PageBlockProps {
 }
 
 export function PageBlock({ block }: PageBlockProps) {
+  const { t } = useTranslation(["common", "sidebar"]);
   const workspaceId = useWorkspaceStore((store) => store.activeWorkspaceId);
   const deleteBlock = useDocumentStore((state) => state.deleteBlock);
   const deleteDocument = useDocumentStore((state) => state.deleteDocument);
@@ -25,7 +27,9 @@ export function PageBlock({ block }: PageBlockProps) {
   );
 
   const title =
-    subPageItem?.title || block.properties?.title?.[0]?.text || "Untitled";
+    subPageItem?.title ||
+    block.properties?.title?.[0]?.text ||
+    t("common:untitled");
   const icon = subPageItem?.icon || block.properties?.icon;
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -43,7 +47,7 @@ export function PageBlock({ block }: PageBlockProps) {
   if (!subPageId || !workspaceId)
     return (
       <div>
-        <p className="bg-black text-white">Loading...</p>
+        <p className="bg-black text-white">{t("common:loading")}</p>
       </div>
     );
 
@@ -78,12 +82,12 @@ export function PageBlock({ block }: PageBlockProps) {
                 await handleDelete(e as any);
               }
             }}
-            title="Delete sub-page"
+            title={t("sidebar:deletePage")}
             className="flex cursor-pointer items-center justify-center rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-red-500"
           >
             <Trash2 className="size-3.5" />
           </span>
-          <ArrowUpRight className="size-4 text-muted-foreground" />
+          <ArrowUpRight className="size-4 text-muted-foreground rtl:scale-x-[-1]" />
         </div>
       </Link>
     </div>

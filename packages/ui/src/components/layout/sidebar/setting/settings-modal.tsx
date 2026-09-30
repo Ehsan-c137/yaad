@@ -2,6 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ui/dialog";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useSettingsBackup } from "@/hooks/settings/use-settings-backup";
 
@@ -12,6 +13,7 @@ import { AccountSection } from "./sections/account-section";
 import { AppearanceSection } from "./sections/appearance-section";
 import { DataBackupSection } from "./sections/data-backup-section";
 import { KeyboardSection } from "./sections/keyboard-section";
+import { LanguageSection } from "./sections/language-section";
 
 interface SettingsModalProps {
   /**
@@ -24,6 +26,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
+  const { t } = useTranslation("settings");
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
 
   const isControlled = open !== undefined && onOpenChange !== undefined;
@@ -64,7 +67,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
               id="settings-modal-title"
               className="w-full text-center text-sm font-semibold tracking-tight"
             >
-              Settings
+              {t("title")}
             </DialogTitle>
           </DialogHeader>
 
@@ -74,6 +77,10 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
             <SectionDivider />
 
             <AppearanceSection />
+
+            <SectionDivider />
+
+            <LanguageSection />
 
             <SectionDivider />
 

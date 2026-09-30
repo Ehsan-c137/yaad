@@ -5,6 +5,8 @@ import type { Tag, TagColor } from "@yaad/core/types/document";
 import { useTagStore } from "@yaad/core/store/use-tag-store";
 import { X } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { cn } from "@/lib/utils";
 
 const TAG_COLOR_CLASSES: Record<TagColor, string> = {
@@ -40,6 +42,7 @@ export function TagBadge({
   className,
   size = "md",
 }: TagBadgeProps) {
+  const { t } = useTranslation("common");
   const storeTag = useTagStore((state) =>
     state.tags.find((t) => t.id === initialTag.id),
   );
@@ -66,8 +69,8 @@ export function TagBadge({
             e.stopPropagation();
             onRemove();
           }}
-          className="ml-0.5 rounded-full p-0.5 text-current/70 hover:bg-black/10 hover:text-current dark:hover:bg-white/15"
-          title="Remove tag"
+          className="ms-0.5 rounded-full p-0.5 text-current/70 hover:bg-black/10 hover:text-current dark:hover:bg-white/15"
+          title={t("delete")}
         >
           <X className="size-3" />
         </button>

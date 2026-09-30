@@ -12,6 +12,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { useTranslation } from "react-i18next";
+
 import { TagForm } from "./tag-form";
 
 interface TagPickerPopoverProps {
@@ -29,12 +31,13 @@ export function TagPickerPopover({
   trigger,
   align = "start",
 }: TagPickerPopoverProps) {
+  const { t } = useTranslation("editor");
   const [open, setOpen] = useState(false);
 
   const defaultTrigger = (
     <>
       <TagIcon className="size-3.5 text-muted-foreground" />
-      <span>Tags</span>
+      <span>{t("tags")}</span>
     </>
   );
 

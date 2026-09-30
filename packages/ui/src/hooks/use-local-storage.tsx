@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 
-type LocalstorageKeys = "is-sidebar-open" | "theme";
+type LocalstorageKeys = "is-sidebar-open" | "locale" | "theme";
 
 /**
  * @param key The localStorage key to use.

@@ -5,6 +5,7 @@ import type { ChangeEvent, RefObject } from "react";
 import { Button } from "@ui/button";
 import { styles } from "@yaad/core/lib/design-token";
 import { Download, Upload } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
@@ -27,14 +28,18 @@ export function DataBackupSection({
   onFileChange,
   onTriggerFileSelect,
 }: DataBackupSectionProps) {
+  const { t } = useTranslation("settings");
+
   return (
     <>
-      <p className={cn(styles.sectionLabel, "px-5 pt-3 pb-1")}>Data & Backup</p>
+      <p className={cn(styles.sectionLabel, "px-5 pt-3 pb-1")}>
+        {t("dataBackup")}
+      </p>
 
       <SettingsRow
         icon={<Download className="size-3.5" strokeWidth={1.5} />}
-        title="Export Data"
-        subtitle="Download backup JSON of workspaces & docs"
+        title={t("exportData")}
+        subtitle={t("exportDataSubtitle")}
         control={
           <Button
             variant="outline"
@@ -42,15 +47,15 @@ export function DataBackupSection({
             onClick={onExport}
             disabled={isExporting}
           >
-            {isExporting ? "Exporting..." : "Export"}
+            {isExporting ? t("exporting") : t("export")}
           </Button>
         }
       />
 
       <SettingsRow
         icon={<Upload className="size-3.5" strokeWidth={1.5} />}
-        title="Import Data"
-        subtitle="Restore data from a sanitized backup file"
+        title={t("importData")}
+        subtitle={t("importDataSubtitle")}
         control={
           <>
             <input
@@ -66,7 +71,7 @@ export function DataBackupSection({
               onClick={onTriggerFileSelect}
               disabled={isImporting}
             >
-              Import
+              {isImporting ? t("importing") : t("import")}
             </Button>
           </>
         }

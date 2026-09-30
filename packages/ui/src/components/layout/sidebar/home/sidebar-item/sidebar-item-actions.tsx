@@ -14,6 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ export function SidebarActions({
   setIsOpen,
   setIsDeleteDialogOpen,
 }: SidebarActionsProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const navigate = useNavigate();
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
   const workspaceId = workspaceIdProp ?? activeWorkspaceId ?? "";
@@ -114,9 +116,9 @@ export function SidebarActions({
     <div className="flex w-full flex-col gap-0.5">
       {/* Page header */}
       <div className="flex items-center gap-2 border-b border-border/40 px-2 py-1.5 text-xs font-medium text-foreground">
-        <span className="text-sm">{page.icon ?? "ðŸ“„"}</span>
+        <span className="text-sm">{page.icon ?? "📄"}</span>
         <span className="truncate font-semibold">
-          {page.title || "Untitled"}
+          {page.title || t("common:untitled")}
         </span>
       </div>
 
@@ -129,7 +131,11 @@ export function SidebarActions({
           className={cn(itemClass, "disabled:opacity-50")}
         >
           <Copy className="size-3.5 text-muted-foreground" />
-          <span>{isDuplicating ? "Duplicatingâ€¦" : "Duplicate"}</span>
+          <span>
+            {isDuplicating
+              ? t("sidebar:duplicating")
+              : t("sidebar:duplicate")}
+          </span>
         </Button>
 
         <Button
@@ -140,12 +146,12 @@ export function SidebarActions({
           {page.isBookmarked ? (
             <>
               <BookmarkCheck className="size-3.5 text-(--accent-blue)" />
-              <span>Remove from bookmarks</span>
+              <span>{t("sidebar:removeFromBookmarks")}</span>
             </>
           ) : (
             <>
               <Bookmark className="size-3.5 text-muted-foreground" />
-              <span>Add to bookmarks</span>
+              <span>{t("sidebar:addToBookmarks")}</span>
             </>
           )}
         </Button>
@@ -157,7 +163,7 @@ export function SidebarActions({
             className={itemClass}
           >
             <SidePeekIcon className="size-3.5" />
-            <span>Open in Sidepeek</span>
+            <span>{t("sidebar:openInSidepeek")}</span>
           </Button>
         )}
         <Button
@@ -166,7 +172,7 @@ export function SidebarActions({
           className={itemClass}
         >
           <Plus className="size-3.5 text-muted-foreground" />
-          <span>Add sub-page</span>
+          <span>{t("sidebar:addSubPage")}</span>
         </Button>
 
         <Button
@@ -175,7 +181,7 @@ export function SidebarActions({
           className={itemClass}
         >
           <Network className="size-3.5 text-muted-foreground" />
-          <span>View graph</span>
+          <span>{t("sidebar:viewGraph")}</span>
         </Button>
       </div>
 
@@ -191,7 +197,7 @@ export function SidebarActions({
         )}
       >
         <Trash2 className="size-3.5" />
-        <span>Delete page</span>
+        <span>{t("sidebar:deletePage")}</span>
       </Button>
     </div>
   );

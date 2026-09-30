@@ -24,6 +24,7 @@ import {
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { WorkspaceForm } from "../workspace-form";
@@ -38,6 +39,7 @@ export function ManageWorkspacesModal({
   open,
   onOpenChange,
 }: ManageWorkspacesModalProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const workspaces = useWorkspaceStore((state) => state.workspaces);
 
   const deleteWorkspace = useWorkspaceStore((state) => state.deleteWorkspace);
@@ -77,7 +79,7 @@ export function ManageWorkspacesModal({
 
     try {
       await deleteWorkspace(deletingWorkspace.id);
-      toast.success(`Deleted "${deletingWorkspace.name}"`);
+      toast.success(t("sidebar:deleted", { name: deletingWorkspace.name }));
       setDeletingWorkspace(null);
     } finally {
       setIsDeleting(false);
@@ -97,16 +99,16 @@ export function ManageWorkspacesModal({
               id="manage-workspaces-modal-title"
               className="text-center text-sm font-semibold tracking-tight"
             >
-              Manage Workspaces
+              {t("sidebar:manageWorkspaces")}
             </DialogTitle>
             <DialogDescription className="text-center text-xs/snug text-muted-foreground">
-              Rename, pick an icon, or remove your workspaces.
+              {t("sidebar:manageWorkspacesDesc")}
             </DialogDescription>
           </DialogHeader>
 
           <div
             role="list"
-            aria-label="Workspaces"
+            aria-label={t("sidebar:workspaces")}
             className="flex max-h-72 flex-col gap-0.5 overflow-y-auto p-2"
           >
             {workspaceList.map((ws) => (
@@ -131,7 +133,7 @@ export function ManageWorkspacesModal({
                 className="w-full justify-start gap-2"
               >
                 <Plus className="size-4" />
-                New Workspace
+                {t("sidebar:newWorkspace")}
               </Button>
             )}
           </div>
@@ -148,22 +150,25 @@ export function ManageWorkspacesModal({
               <Trash2 className="size-7" />
             </AlertDialogMedia>
             <AlertDialogTitle>
-              Delete “{deletingWorkspace?.name}”?
+              {t("sidebar:deleteWorkspaceTitle", {
+                name: deletingWorkspace?.name,
+              })}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently removes the workspace and all of its pages. This
-              action cannot be undone.
+              {t("sidebar:deleteWorkspaceDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>
+              {t("common:cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               loading={isDeleting}
               onClick={handleConfirmDelete}
             >
-              Delete
+              {t("common:delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

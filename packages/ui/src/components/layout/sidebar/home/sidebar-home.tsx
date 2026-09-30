@@ -3,6 +3,7 @@ import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { FileText, Network, Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { SearchBox } from "@/components/search/search-command";
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { SidebarPageItem } from "./sidebar-item/sidebar-page-item";
 
 export function SidebarHome() {
+  const { t } = useTranslation("sidebar");
   const isHydrated = useSidebarStore((store) => store._hasHydrated);
   const rootPageIds = useSidebarStore((store) => store.rootPageIds);
 
@@ -31,9 +33,9 @@ export function SidebarHome() {
         <div className="flex flex-col items-center gap-3 px-2 py-8 text-center">
           <FileText strokeWidth={1} className="vibrancy-tertiary size-9" />
           <p className="text-sm vibrancy-secondary leading-relaxed">
-            No pages yet.
+            {t("noPagesYet")}
             <br />
-            Create one to get started.
+            {t("createToGetStarted")}
           </p>
         </div>
       )}
@@ -50,6 +52,7 @@ export function SidebarHome() {
 }
 
 function SidebarHomeHeader() {
+  const { t } = useTranslation("sidebar");
   const { pathname } = useLocation();
   const createPage = useSidebarStore((store) => store.createPage);
   const activeWorkspaceId = useWorkspaceStore(
@@ -72,7 +75,7 @@ function SidebarHomeHeader() {
           <div className="flex items-center gap-1">
             <Link
               href={`/workspace/${activeWorkspaceId}/graph`}
-              aria-label="Graph View"
+              aria-label={t("graphView")}
               className={cn(
                 isGraphActive && "bg-muted text-foreground",
                 "rounded-full",
@@ -82,14 +85,14 @@ function SidebarHomeHeader() {
                 variant="ghost"
                 size="icon"
                 className="rounded-full"
-                title="Trash page"
+                title={t("graphView")}
               >
                 <Network className="size-4" strokeWidth={1.5} />
               </Button>
             </Link>
             <Link
               href={`/workspace/${activeWorkspaceId}/trash`}
-              aria-label="Go to Trash"
+              aria-label={t("goToTrash")}
               className={cn(
                 isTrashActive && "bg-muted text-foreground",
                 "rounded-full",
@@ -99,7 +102,7 @@ function SidebarHomeHeader() {
                 variant="ghost"
                 size="icon"
                 className="rounded-full"
-                title="Trash page"
+                title={t("trashPage")}
               >
                 <Trash2 className="size-4" strokeWidth={1.5} />
               </Button>
@@ -115,15 +118,15 @@ function SidebarHomeHeader() {
           "flex items-center justify-between pt-3 pb-1",
         )}
       >
-        <span>Private</span>
+        <span>{t("private")}</span>
 
         <Button
           type="button"
           variant="ghost"
           size="icon-sm"
           onClick={() => void createPage(null)}
-          title="Create page"
-          aria-label="Create new page"
+          title={t("createPage")}
+          aria-label={t("createNewPage")}
           className="relative text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-(--accent-blue)"
         >
           <Plus className="size-3.5" />

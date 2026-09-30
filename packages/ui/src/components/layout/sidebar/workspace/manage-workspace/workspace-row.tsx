@@ -6,6 +6,7 @@ import { Input } from "@ui/input";
 import { formatDate } from "@yaad/core/lib/date-formatter";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { IconPickerPopover } from "@/components/shared/icon-picker-popover";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export function WorkspaceRow({
   onSelectIcon,
   onRequestDelete,
 }: WorkspaceRowProps) {
+  const { t } = useTranslation("sidebar");
   const [isEditing, setIsEditing] = useState(false);
   const [draftName, setDraftName] = useState(workspace.name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -96,7 +98,7 @@ export function WorkspaceRow({
                 setIsEditing(false);
               }
             }}
-            aria-label="Workspace name"
+            aria-label={t("workspaceName")}
             className="h-7 rounded-lg text-sm"
           />
         ) : (
@@ -110,7 +112,7 @@ export function WorkspaceRow({
         )}
 
         <span className="text-xs text-muted-foreground">
-          Updated {formatDate(workspace.updatedAt)}
+          {t("updated", { date: formatDate(workspace.updatedAt) })}
         </span>
       </div>
 

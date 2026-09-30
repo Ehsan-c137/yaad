@@ -2,6 +2,8 @@
 
 import type { DocumentBlock } from "@yaad/core/types/document";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditableBlock } from "@/hooks/editor/use-editable-block";
 
 import { EditableContent } from "../editable-content";
@@ -11,6 +13,7 @@ interface TextBlockProps {
 }
 
 export function TextBlock({ block }: TextBlockProps) {
+  const { t } = useTranslation("editor");
   const {
     text,
     isFocused,
@@ -40,7 +43,7 @@ export function TextBlock({ block }: TextBlockProps) {
       return (
         <EditableContent
           {...commonProps}
-          placeholder="Heading 1"
+          placeholder={t("slashH1")}
           className="mt-6 mb-2 text-3xl font-bold text-foreground"
         />
       );
@@ -49,7 +52,7 @@ export function TextBlock({ block }: TextBlockProps) {
       return (
         <EditableContent
           {...commonProps}
-          placeholder="Heading 2"
+          placeholder={t("slashH2")}
           className="mt-4 mb-1 text-2xl font-semibold text-foreground"
         />
       );
@@ -58,7 +61,7 @@ export function TextBlock({ block }: TextBlockProps) {
       return (
         <EditableContent
           {...commonProps}
-          placeholder="Heading 3"
+          placeholder={t("slashH3")}
           className="mt-3 mb-1 text-xl font-medium text-foreground"
         />
       );
@@ -69,7 +72,7 @@ export function TextBlock({ block }: TextBlockProps) {
       return (
         <EditableContent
           {...commonProps}
-          placeholder="Type '/' for commands..."
+          placeholder={t("typeForCommands")}
           className="py-1 text-base/relaxed text-foreground"
         />
       );

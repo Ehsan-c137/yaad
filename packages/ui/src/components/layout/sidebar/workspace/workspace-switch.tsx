@@ -4,6 +4,7 @@ import { styles } from "@yaad/core/lib/design-token";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Check, ChevronsUpDown, Settings2, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import {
@@ -17,6 +18,7 @@ import { ManageWorkspacesModal } from "./manage-workspace/manage-workspaces-moda
 import { WorkspaceForm } from "./workspace-form";
 
 export function WorkspaceSwitcher() {
+  const { t } = useTranslation(["sidebar", "common"]);
   const navigate = useNavigate();
   const workspaces = useWorkspaceStore((state) => state.workspaces);
   const activeWorkspaceId = useWorkspaceStore(
@@ -36,7 +38,7 @@ export function WorkspaceSwitcher() {
     : null;
 
   if (!activeWorkspace)
-    return <p className="text-sm text-muted-foreground">Loadingâ€¦</p>;
+    return <p className="text-sm text-muted-foreground">{t("common:loading")}</p>;
 
   return (
     <>
@@ -46,7 +48,7 @@ export function WorkspaceSwitcher() {
             <Button
               variant="ghost"
               className={cn(
-                "w-auto max-w-45 justify-between gap-2 p-1.5 text-left",
+                "w-auto max-w-45 justify-between gap-2 p-1.5 text-start",
                 "rounded-lg hover:bg-foreground/5",
               )}
             />
@@ -69,12 +71,12 @@ export function WorkspaceSwitcher() {
               )}
               aria-hidden="true"
             >
-              Workspaces
+              {t("sidebar:workspaces")}
             </p>
 
             <div
               role="listbox"
-              aria-label="Workspaces"
+              aria-label={t("sidebar:workspaces")}
               className="flex max-h-48 flex-col gap-0.5 overflow-y-auto"
             >
               {Object.values(workspaces).map((ws) => (
@@ -117,7 +119,9 @@ export function WorkspaceSwitcher() {
                           e.stopPropagation();
                           await deleteWorkspace(ws.id);
                         }}
-                        aria-label={`Delete workspace ${ws.name}`}
+                        aria-label={t("sidebar:deleteWorkspace", {
+                          name: ws.name,
+                        })}
                         className="rounded-sm p-0.5 text-white/30 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400 focus-visible:opacity-100 focus-visible:outline-none"
                       >
                         <Trash2 className="size-3" />
@@ -143,7 +147,7 @@ export function WorkspaceSwitcher() {
               className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
             >
               <Settings2 className="size-3.5" />
-              <span>Manage Workspaces</span>
+              <span>{t("sidebar:manageWorkspaces")}</span>
             </button>
           </div>
         </PopoverContent>

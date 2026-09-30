@@ -4,6 +4,7 @@ import { MOBILE_NAV_HEIGHT } from "@yaad/core/constants/sizes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 
 import { MobileBlockDrawer } from "@/components/editor/menu/mobile-block-drawer";
@@ -22,6 +23,7 @@ function MobileEditorNavActions({
   pageId,
   activeWorkspace,
 }: MobileEditorNavActionsProps) {
+  const { t } = useTranslation(["sidebar", "editor"]);
   const navigate = useNavigate();
   const createPage = useSidebarStore((store) => store.createPage);
   const currentDocument = useDocumentStore(
@@ -72,7 +74,7 @@ function MobileEditorNavActions({
             `/${ROUTES.workspace}/${activeWorkspace}/${newPageId}`,
           );
         }}
-        title="Create new page"
+        title={t("sidebar:createNewPage")}
       >
         <Plus />
       </Button>
@@ -87,7 +89,7 @@ function MobileEditorNavActions({
         variant="ghost"
         className="size-8 rounded-lg active:scale-95"
         onClick={handleAddBlockBelow}
-        title="Add block below"
+        title={t("sidebar:addSubPage")}
       >
         <Plus className="size-4" />
       </Button>
@@ -96,6 +98,7 @@ function MobileEditorNavActions({
 }
 
 export function BottomMobileNav() {
+  const { t } = useTranslation("sidebar");
   const navigate = useNavigate();
   const { pageId } = useParams();
   const isMobile = useMediaQuery("(max-width: 767px)");
@@ -114,7 +117,7 @@ export function BottomMobileNav() {
       style={{ height: `${MOBILE_NAV_HEIGHT}px` }}
       aria-label="Mobile navigation"
       className={cn(
-        "fixed bottom-0 left-0 z-40 flex w-full items-center justify-between bg-background/95 backdrop-blur-md",
+        "fixed inset-x-0 bottom-0 z-40 flex w-full items-center justify-between bg-background/95 backdrop-blur-md",
         "border-t border-border/40 px-3 py-1.5",
         "safe-area-pb",
       )}
@@ -133,7 +136,7 @@ export function BottomMobileNav() {
           variant="ghost"
           size="icon-lg"
           onClick={handleNewPage}
-          title="Create new page"
+          title={t("createNewPage")}
         >
           <Plus />
         </Button>

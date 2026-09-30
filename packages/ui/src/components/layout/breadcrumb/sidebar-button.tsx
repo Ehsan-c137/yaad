@@ -3,8 +3,10 @@
 import { Button } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { PanelLeftOpen } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function SidebarToggleButton() {
+  const { t } = useTranslation("sidebar");
   const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
   const toggleSidebar = useSidebarStore((store) => store.toggleSidebar);
 
@@ -23,11 +25,14 @@ export function SidebarToggleButton() {
         size="icon-sm"
         onClick={toggleSidebar}
         disabled={isSidebarOpen}
-        aria-label="Open sidebar"
+        aria-label={t("openSidebar")}
         data-tauri-no-drag-region="true"
         className="[app-region:no-drag]"
       >
-        <PanelLeftOpen strokeWidth={1.75} className="size-4" />
+        <PanelLeftOpen
+          strokeWidth={1.75}
+          className="size-4 rtl:scale-x-[-1]"
+        />
       </Button>
       <div className="mx-0.5 h-4 w-px bg-border/60 dark:bg-white/10" />
     </div>

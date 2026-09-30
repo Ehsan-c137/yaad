@@ -2,6 +2,8 @@ import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Maximize2, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
 import { useSidePeek } from "@/hooks/editor/use-side-peek";
@@ -13,6 +15,7 @@ const DEFAULT_WIDTH = 560;
 const MIN_WIDTH = 360;
 
 export function SidePeekPanel() {
+  const { t } = useTranslation("editor");
   const workspaceId = useWorkspaceStore((store) => store.activeWorkspaceId);
   const { isOpen, peekDocId, closeSidePeek } = useSidePeek();
   const [width, setWidth] = useState<number>(DEFAULT_WIDTH);
@@ -59,7 +62,12 @@ export function SidePeekPanel() {
       if (!isDraggingRef.current) return;
       const maxWidth = Math.floor(window.innerWidth * 0.5);
       const minWidth = Math.min(MIN_WIDTH, maxWidth);
-      const calculatedWidth = window.innerWidth - moveEvent.clientX;
+      const isRtl =
+        typeof document !== "undefined" &&
+        document.documentElement.dir === "rtl";
+      const calculatedWidth = isRtl
+        ? moveEvent.clientX
+        : window.innerWidth - moveEvent.clientX;
       const clampedWidth = Math.min(
         Math.max(calculatedWidth, minWidth),
         maxWidth,
@@ -96,8 +104,16 @@ export function SidePeekPanel() {
     const maxWidth = Math.floor(window.innerWidth * 0.5);
     const minWidth = Math.min(MIN_WIDTH, maxWidth);
     const STEP = 24;
+    const isRtl =
+      typeof document !== "undefined" &&
+      document.documentElement.dir === "rtl";
 
-    if (e.key === "ArrowLeft") {
+    const isExpand =
+      (!isRtl && e.key === "ArrowLeft") || (isRtl && e.key === "ArrowRight");
+    const isShrink =
+      (!isRtl && e.key === "ArrowRight") || (isRtl && e.key === "ArrowLeft");
+
+    if (isExpand) {
       e.preventDefault();
       setWidth((prev) => {
         const next = Math.min(prev + STEP, maxWidth);
@@ -110,7 +126,7 @@ export function SidePeekPanel() {
 
         return next;
       });
-    } else if (e.key === "ArrowRight") {
+    } else if (isShrink) {
       e.preventDefault();
       setWidth((prev) => {
         const next = Math.max(prev - STEP, minWidth);
@@ -144,9 +160,9 @@ export function SidePeekPanel() {
     <aside
       style={{ width: `${width}px`, maxWidth: "50vw" }}
       className={cn(
-        "relative inset-y-0 right-0 z-40 flex h-full shrink-0 flex-col border-l border-border bg-background shadow-2xl",
+        "relative inset-y-0 end-0 z-40 flex h-full shrink-0 flex-col border-s border-border bg-background shadow-2xl",
         !isDragging && "transition-[width] duration-150 ease-out",
-        "animate-in duration-200 slide-in-from-right",
+        "animate-in duration-200 slide-in-from-right rtl:slide-in-from-left",
       )}
     >
       {/* Draggable Resize Handle */}
@@ -154,7 +170,7 @@ export function SidePeekPanel() {
         role="separator"
         tabIndex={0}
         aria-orientation="vertical"
-        aria-label="Resize side peek panel"
+        aria-label={t("resizeSidePeek")}
         aria-valuenow={width}
         aria-valuemin={MIN_WIDTH}
         aria-valuemax={
@@ -166,10 +182,10 @@ export function SidePeekPanel() {
         onDoubleClick={handleDoubleClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          "absolute inset-y-0 -left-2 z-50 w-4 cursor-col-resize select-none",
+          "absolute inset-y-0 -start-2 z-50 w-4 cursor-col-resize select-none",
           "group flex items-center justify-center focus:outline-none",
         )}
-        title="Drag to resize (Max: 50% of screen), double-click to reset"
+        title={t("resizeSidePeekTip")}
       >
         <div
           className={cn(
@@ -181,13 +197,13 @@ export function SidePeekPanel() {
 
       <div className="flex h-12 items-center justify-between border-b border-border/40 px-4">
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <span>Side Peek</span>
+          <span>{t("sidePeek")}</span>
         </div>
         <div className="flex items-center gap-1">
           <Link
             href={`/workspace/${workspaceId}/${peekDocId}`}
             className="inline-flex size-6 items-center justify-center rounded-xl text-muted-foreground hover:bg-foreground/6 hover:text-foreground"
-            title="Open full page"
+            title={t("openFullPage")}
           >
             <Maximize2 className="size-3.5" />
           </Link>
@@ -195,7 +211,7 @@ export function SidePeekPanel() {
             variant="ghost"
             size="icon-xs"
             onClick={closeSidePeek}
-            title="Close side peek"
+            title={t("closeSidePeek")}
           >
             <X className="size-3.5" />
           </Button>

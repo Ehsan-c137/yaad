@@ -2,13 +2,14 @@
 
 import { Button } from "@ui/button";
 import { styles } from "@yaad/core/lib/design-token";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
 import type { SlashOption } from "./slash-options";
 
-import { SLASH_OPTIONS } from "./slash-options";
+import { SLASH_OPTION_KEYS, SLASH_OPTIONS } from "./slash-options";
 
 interface SlashMenuProps {
   position: { top: number; left: number; anchorTop: number };
@@ -32,6 +33,7 @@ export function SlashMenu({
   onSelect,
   onClose,
 }: SlashMenuProps) {
+  const { t } = useTranslation("editor");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const isKeyboardNavRef = useRef(false);
@@ -44,7 +46,19 @@ export function SlashMenu({
     transformOrigin: string;
   } | null>(null);
 
-  const filteredOptions = SLASH_OPTIONS.filter(
+  const translatedOptions = useMemo(() => {
+    return SLASH_OPTIONS.map((opt) => ({
+      ...opt,
+      title: t(SLASH_OPTION_KEYS[opt.id]?.titleKey ?? opt.id, {
+        defaultValue: opt.title,
+      }),
+      description: t(SLASH_OPTION_KEYS[opt.id]?.descKey ?? opt.id, {
+        defaultValue: opt.description,
+      }),
+    }));
+  }, [t]);
+
+  const filteredOptions = translatedOptions.filter(
     (option) =>
       option.title.toLowerCase().includes(query.toLowerCase()) ||
       option.description.toLowerCase().includes(query.toLowerCase()),
@@ -169,7 +183,7 @@ export function SlashMenu({
       }}
     >
       <div className={cn(styles.sectionLabel, "justify-start text-start")}>
-        Basic blocks
+        {t("basicBlocks")}
       </div>
       {filteredOptions.map((option, index) => {
         const Icon = option.icon;
@@ -184,7 +198,7 @@ export function SlashMenu({
             onMouseMove={() => setSelectedIndex(index)}
             className={cn(
               styles.listRow,
-              "h-auto w-full justify-start gap-2.5 py-1.5 text-left",
+              "h-auto w-full justify-start gap-2.5 py-1.5 text-start",
               isSelected && styles.listRowActive,
               isSelected && "bg-accent/50",
               isKeyboardNav &&

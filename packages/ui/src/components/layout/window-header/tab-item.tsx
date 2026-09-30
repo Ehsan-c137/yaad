@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ interface TabItemProps {
 }
 
 export function TabItem({ tab, isActive }: TabItemProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const navigate = useNavigate();
   const router = { push: (href: string) => navigate(href) };
   const closeTab = useTabStore((s) => s.closeTab);
@@ -109,8 +111,8 @@ export function TabItem({ tab, isActive }: TabItemProps) {
         </span>
 
         {/* Tab Title */}
-        <span className="flex-1 truncate text-left tracking-tight">
-          {tab.title || "Untitled"}
+        <span className="flex-1 truncate text-start tracking-tight">
+          {tab.title || t("common:untitled")}
         </span>
 
         {/* Close button (only shown if not pinned) */}
@@ -126,8 +128,8 @@ export function TabItem({ tab, isActive }: TabItemProps) {
                 handleClose(e);
               }
             }}
-            aria-label="Close tab"
-            title="Close tab (Middle click)"
+            aria-label={t("sidebar:closeTab")}
+            title={t("sidebar:closeTabHint")}
             className={cn(
               "flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm p-0 text-muted-foreground/60 transition-opacity hover:bg-foreground/10 hover:text-foreground",
               isActive
@@ -157,6 +159,7 @@ function MenuContent({
     e: React.KeyboardEvent<HTMLSpanElement> | React.MouseEvent,
   ) => void;
 }) {
+  const { t } = useTranslation("sidebar");
   const navigate = useNavigate();
   const router = { push: (href: string) => navigate(href) };
   const closeOtherTabs = useTabStore((s) => s.closeOtherTabs);
@@ -172,9 +175,9 @@ function MenuContent({
     try {
       const url = `${window.location.origin}/${ROUTES.workspace}/${tab.workspaceId}/${tab.pageId}`;
       await navigator.clipboard.writeText(url);
-      toast.success("Page link copied to clipboard");
+      toast.success(t("pageLinkCopied"));
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(t("failedCopyLink"));
     }
   };
 
@@ -182,15 +185,15 @@ function MenuContent({
     <ContextMenuContent className={`${styles.menu} w-52 text-xs`} align="start">
       <ContextMenuItem onClick={handleClose}>
         <X className="size-3.5 text-muted-foreground" />
-        <span>Close tab</span>
-        <ContextMenuShortcut>âŒ˜W</ContextMenuShortcut>
+        <span>{t("closeTab")}</span>
+        <ContextMenuShortcut>⌘W</ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem onClick={() => closeOtherTabs(tab.id, router)}>
-        <span>Close other tabs</span>
+        <span>{t("closeOtherTabs")}</span>
       </ContextMenuItem>
       <ContextMenuItem onClick={() => closeTabsToRight(tab.id, router)}>
-        <ArrowRightToLine className="size-3.5 text-muted-foreground" />
-        <span>Close tabs to right</span>
+        <ArrowRightToLine className="size-3.5 text-muted-foreground rtl:scale-x-[-1]" />
+        <span>{t("closeTabsToRight")}</span>
       </ContextMenuItem>
 
       <ContextMenuSeparator />
@@ -199,24 +202,24 @@ function MenuContent({
         {tab.isPinned ? (
           <>
             <PinOff className="size-3.5 text-muted-foreground" />
-            <span>Unpin tab</span>
+            <span>{t("unpinTab")}</span>
           </>
         ) : (
           <>
             <Pin className="size-3.5 text-muted-foreground" />
-            <span>Pin tab</span>
+            <span>{t("pinTab")}</span>
           </>
         )}
       </ContextMenuItem>
 
       <ContextMenuItem onClick={handleOpenBrowserTab}>
         <ExternalLink className="size-3.5 text-muted-foreground" />
-        <span>Open in browser tab</span>
+        <span>{t("openInBrowserTab")}</span>
       </ContextMenuItem>
 
       <ContextMenuItem onClick={handleCopyLink}>
         <Copy className="size-3.5 text-muted-foreground" />
-        <span>Copy link</span>
+        <span>{t("copyLink")}</span>
       </ContextMenuItem>
     </ContextMenuContent>
   );

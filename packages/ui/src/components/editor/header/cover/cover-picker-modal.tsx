@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,7 @@ export function CoverPickerModal({
   onClose,
   onSelectCover,
 }: CoverPickerModalProps) {
+  const { t } = useTranslation("editor");
   const [customUrl, setCustomUrl] = useState("");
 
   const handleApplyCustomLink = (e: React.ChangeEvent) => {
@@ -61,19 +63,19 @@ export function CoverPickerModal({
       <DialogContent className="p-6 sm:max-w-lg grid grid-cols-1">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">
-            Change cover
+            {t("changeCover")}
           </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="gallery" className="mt-2 w-full flex flex-col">
           <TabsList className="grid w-full grid-cols-1">
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="link">Link</TabsTrigger>
+            <TabsTrigger value="gallery">{t("coverGallery")}</TabsTrigger>
+            <TabsTrigger value="link">{t("coverLink")}</TabsTrigger>
           </TabsList>
 
           {/* Gallery Tab */}
           <TabsContent value="gallery" className="space-y-4 pt-3">
-            <div className="grid max-h-56 grid-cols-3 gap-2.5 overflow-y-auto pr-1">
+            <div className="grid max-h-56 grid-cols-3 gap-2.5 overflow-y-auto pe-1">
               {COVER_PRESETS.map((url, index) => (
                 <button
                   key={index}
@@ -100,7 +102,7 @@ export function CoverPickerModal({
               className="flex w-full items-center justify-center gap-2 text-xs"
             >
               <Sparkles className="size-3.5 text-amber-500" />
-              <span>Random Unsplash Image</span>
+              <span>{t("randomUnsplash")}</span>
             </Button>
           </TabsContent>
 
@@ -110,7 +112,7 @@ export function CoverPickerModal({
                 type="url"
                 value={customUrl}
                 onChange={(e) => setCustomUrl(e.target.value)}
-                placeholder="Paste an image link (https://...)"
+                placeholder={t("pasteImageLink")}
                 autoFocus
               />
               <Button
@@ -118,7 +120,7 @@ export function CoverPickerModal({
                 disabled={!customUrl.trim()}
                 className="w-full text-xs font-medium"
               >
-                Submit
+                {t("submit")}
               </Button>
             </form>
           </TabsContent>

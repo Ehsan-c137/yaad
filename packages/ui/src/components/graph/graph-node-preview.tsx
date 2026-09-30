@@ -1,5 +1,6 @@
 import { ExternalLink, FileText, SidebarOpen, X } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
@@ -26,6 +27,7 @@ export function GraphNodePreview({
   anchorY,
   onClose,
 }: GraphNodePreviewProps) {
+  const { t } = useTranslation(["editor", "common"]);
   const { openSidePeek } = useSidePeek();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -110,7 +112,7 @@ export function GraphNodePreview({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">
-            {title || "Untitled"}
+            {title || t("common:untitled")}
           </p>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">
             {pageId}
@@ -119,7 +121,7 @@ export function GraphNodePreview({
         <button
           onClick={onClose}
           className="shrink-0 rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          aria-label="Close preview"
+          aria-label={t("editor:closePreview")}
         >
           <X className="size-3.5" />
         </button>
@@ -134,7 +136,7 @@ export function GraphNodePreview({
           onClick={handleOpenSidePeek}
         >
           <SidebarOpen className="size-3.5" />
-          Side Peek
+          {t("editor:sidePeek")}
         </Button>
         <Link
           href={`/workspace/${workspaceId}/${pageId}`}
@@ -145,7 +147,7 @@ export function GraphNodePreview({
           )}
         >
           <ExternalLink className="size-3.5" />
-          Open Page
+          {t("editor:openPage")}
         </Link>
       </div>
     </div>

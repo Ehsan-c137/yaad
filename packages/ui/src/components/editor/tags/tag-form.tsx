@@ -2,6 +2,7 @@ import type { Tag, TagColor } from "@yaad/core/types/document";
 
 import { useTagStore } from "@yaad/core/store/use-tag-store";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AvailableTagList } from "./available-tag-list";
 import { EditTag } from "./edit-tag";
@@ -15,6 +16,7 @@ interface TagFormProps {
 }
 
 export function TagForm({ selectedTags, onAddTag, onRemoveTag }: TagFormProps) {
+  const { t } = useTranslation("editor");
   const allTags = useTagStore((s) => s.tags);
   const addTagToStore = useTagStore((s) => s.addTag);
   const updateTagInStore = useTagStore((s) => s.updateTag);
@@ -62,7 +64,7 @@ export function TagForm({ selectedTags, onAddTag, onRemoveTag }: TagFormProps) {
       className="flex flex-col gap-2.5"
       onKeyDown={(e) => e.stopPropagation()}
     >
-      <div className="font-semibold text-foreground">Manage Tags</div>
+      <div className="font-semibold text-foreground">{t("manageTags")}</div>
 
       <TagGenerator
         tags={allTags}
@@ -84,11 +86,11 @@ export function TagForm({ selectedTags, onAddTag, onRemoveTag }: TagFormProps) {
 
       <div className="flex flex-col gap-1.5 pt-1">
         <div className="text-[11px] font-medium text-muted-foreground">
-          Applied tags ({selectedTags.length})
+          {t("appliedTags", { count: selectedTags.length })}
         </div>
         {selectedTags.length === 0 ? (
           <div className="py-2 text-center text-[11px] text-muted-foreground/70">
-            No tags added yet.
+            {t("noTagsAdded")}
           </div>
         ) : (
           <SelectedTags

@@ -7,9 +7,12 @@ import { documentService } from "@yaad/core/services/document-service";
 import { FileText, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 export function FileBlock({ block }: { block: DocumentBlock }) {
+  const { t } = useTranslation("editor");
   const deleteBlock = useDocumentStore((state) => state.deleteBlock);
   const [url, setUrl] = useState<string | null>(null);
 
@@ -30,7 +33,7 @@ export function FileBlock({ block }: { block: DocumentBlock }) {
         download={block.properties?.fileName}
         className="flex-1 text-sm font-medium hover:underline"
       >
-        {block.properties?.fileName || "Unknown file"}
+        {block.properties?.fileName || t("unknownFile")}
       </a>
       <Button
         onClick={() => deleteBlock(block.id)}

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import {
   Command,
   CommandDialog,
@@ -14,6 +16,7 @@ import { TagFilterBanner } from "./search-tag-filter-banner";
 import { SearchTrigger } from "./search-trigger";
 
 export function SearchBox() {
+  const { t } = useTranslation("search");
   const {
     open,
     setOpen,
@@ -30,8 +33,8 @@ export function SearchBox() {
   } = useSearchCommand();
 
   const pagesHeading = selectedTagFilter
-    ? `Pages tagged with #${selectedTagFilter.name}`
-    : "Matching Pages & Blocks";
+    ? t("pagesTaggedWith", { tag: selectedTagFilter.name })
+    : t("matchingPagesAndBlocks");
 
   const hasNoSearchResults =
     hasActiveSearch && searchResults.length === 0 && tagResults.length === 0;
@@ -43,7 +46,7 @@ export function SearchBox() {
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search pages, #tags, or commands..."
+            placeholder={t("searchCommandPlaceholder")}
             value={searchQuery}
             onValueChange={setSearchQuery}
           />
@@ -73,7 +76,7 @@ export function SearchBox() {
 
                 {hasNoSearchResults && (
                   <CommandEmpty>
-                    No results found for &quot;{searchQuery}&quot;
+                    {t("noResultsFound", { query: searchQuery })}
                   </CommandEmpty>
                 )}
               </>
@@ -84,7 +87,7 @@ export function SearchBox() {
                   onSelect={handleSelectItem}
                 />
                 {recentPages.length === 0 && (
-                  <CommandEmpty>No recent pages found.</CommandEmpty>
+                  <CommandEmpty>{t("noRecentPages")}</CommandEmpty>
                 )}
               </>
             )}

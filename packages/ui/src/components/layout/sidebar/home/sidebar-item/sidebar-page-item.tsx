@@ -7,6 +7,8 @@ import { Button } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { ChevronRight, Plus } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { useSidebarPageItem } from "@/hooks/sidebar/use-sidebar-page-item";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -30,11 +32,12 @@ interface SidebarPageHeaderProps {
 
 function getIndentStyle(depth: number): React.CSSProperties {
   return {
-    paddingLeft: depth === 0 ? "4px" : `${depth * 8 + 12}px`,
+    paddingInlineStart: depth === 0 ? "4px" : `${depth * 8 + 12}px`,
   };
 }
 
 export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const {
     page,
     isActive,
@@ -72,13 +75,13 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
         />
 
         {isMobile ? (
-          <div className="shrink-0 pr-0.5">
+          <div className="shrink-0 pe-0.5">
             <SidebarItemOptions pageId={pageId} />
           </div>
         ) : (
           <div
             className={cn(
-              "ml-auto flex shrink-0 items-center gap-0.5 pr-0.5",
+              "ms-auto flex shrink-0 items-center gap-0.5 pe-0.5",
               "opacity-0 transition-opacity duration-(--press-duration)",
               "group-focus-within:opacity-100 group-hover:opacity-100",
             )}
@@ -89,8 +92,8 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
               type="button"
               size="icon-xs"
               variant="ghost"
-              title="Add sub-page"
-              aria-label="Add sub-page"
+              title={t("sidebar:addSubPage")}
+              aria-label={t("sidebar:addSubPage")}
               onClick={handleCreateSubpage}
               className="size-5 rounded-sm p-0 text-muted-foreground hover:bg-foreground/8 hover:text-foreground"
             >
@@ -137,6 +140,8 @@ function SidebarPageHeader({
   onNavigate,
   onToggleExpand,
 }: SidebarPageHeaderProps) {
+  const { t } = useTranslation(["editor", "common"]);
+
   return (
     <>
       <Button
@@ -144,7 +149,9 @@ function SidebarPageHeader({
         variant="ghost"
         size="icon-xs"
         onClick={onToggleExpand}
-        aria-label={page.isExpanded ? "Collapse" : "Expand"}
+        aria-label={
+          page.isExpanded ? t("editor:collapseToggle") : t("editor:expandToggle")
+        }
         aria-expanded={page.isExpanded}
         aria-controls={`children-${pageId}`}
         className={cn(
@@ -157,12 +164,12 @@ function SidebarPageHeader({
         <ChevronRight
           className={cn(
             "size-3.5 transition-transform duration-(--spring-duration) ease-(--spring)",
-            page.isExpanded && "rotate-90",
+            page.isExpanded && "rotate-90 rtl:-rotate-90",
           )}
         />
       </Button>
 
-      <span className="mr-1.5 shrink-0 text-lg">
+      <span className="me-1.5 shrink-0 text-lg">
         {page.icon ?? <span className="inline-block size-3.5" />}
       </span>
 
@@ -179,7 +186,7 @@ function SidebarPageHeader({
           "transition-colors duration-(--press-duration) ease-(--spring)",
         )}
       >
-        {page.title || "Untitled"}
+        {page.title || t("common:untitled")}
       </Button>
     </>
   );

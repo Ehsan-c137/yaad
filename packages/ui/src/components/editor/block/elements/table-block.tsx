@@ -5,6 +5,8 @@ import type { DocumentBlock } from "@yaad/core/types/document";
 import { Button } from "@ui/button";
 import { Plus, Trash2 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
@@ -13,6 +15,7 @@ interface TableBlockProps {
 }
 
 export function TableBlock({ block }: TableBlockProps) {
+  const { t } = useTranslation("editor");
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
   );
@@ -74,13 +77,13 @@ export function TableBlock({ block }: TableBlockProps) {
                 className="border border-border p-1 text-center"
               >
                 <div className="flex items-center justify-between px-1 text-[10px] text-muted-foreground">
-                  <span>Col {colIndex + 1}</span>
+                  <span>{t("tableColHeader", { num: colIndex + 1 })}</span>
                   {colCount > 1 && (
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDeleteColumn(colIndex)}
-                      title="Delete column"
+                      title={t("tableDeleteColumn")}
                     >
                       <Trash2 className="size-3" />
                     </Button>
@@ -97,7 +100,7 @@ export function TableBlock({ block }: TableBlockProps) {
               {row.map((cellText: string, colIndex: number) => (
                 <td
                   key={colIndex}
-                  className="min-w-[120px] border-r border-border bg-background p-2 focus-within:ring-1 focus-within:ring-ring"
+                  className="min-w-[120px] border-e border-border bg-background p-2 focus-within:ring-1 focus-within:ring-ring"
                 >
                   <input
                     type="text"
@@ -110,12 +113,12 @@ export function TableBlock({ block }: TableBlockProps) {
                 </td>
               ))}
 
-              <td className="w-8 border-none pl-1">
+              <td className="w-8 border-none ps-1">
                 {rowCount > 1 && (
                   <Button
                     variant="ghost"
                     onClick={() => handleDeleteRow(rowIndex)}
-                    title="Delete row"
+                    title={t("tableDeleteRow")}
                   >
                     <Trash2 className="size-3.5" />
                   </Button>
@@ -135,7 +138,7 @@ export function TableBlock({ block }: TableBlockProps) {
           className="flex h-7 items-center gap-1 text-xs"
         >
           <Plus className="size-3" />
-          Row
+          {t("tableAddRow")}
         </Button>
         <Button
           type="button"
@@ -145,7 +148,7 @@ export function TableBlock({ block }: TableBlockProps) {
           className="flex h-7 items-center gap-1 text-xs"
         >
           <Plus className="size-3" />
-          Column
+          {t("tableAddColumn")}
         </Button>
       </div>
     </div>

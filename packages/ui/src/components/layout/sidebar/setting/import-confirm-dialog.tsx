@@ -12,6 +12,8 @@ import {
 } from "@ui/dialog";
 import { Info, ShieldCheck } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 export interface ImportConfirmDialogProps {
   pendingImport: ImportSanitizationResult | null;
   isImporting: boolean;
@@ -25,46 +27,52 @@ export function ImportConfirmDialog({
   onConfirm,
   onCancel,
 }: ImportConfirmDialogProps) {
+  const { t } = useTranslation(["settings", "common"]);
+
   if (!pendingImport) return null;
 
   return (
     <Dialog open={!!pendingImport} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="max-w-md gap-4 p-6">
-        <DialogHeader className="gap-1.5 text-left">
+        <DialogHeader className="gap-1.5 text-start">
           <div className="flex items-center gap-2 text-base font-semibold text-foreground">
             <ShieldCheck className="size-5 text-emerald-500" />
-            Confirm Data Import
+            {t("settings:confirmDataImport")}
           </div>
           <DialogDescription className="text-xs/relaxed text-muted-foreground">
-            Backup file parsed and sanitized successfully. Review the items that
-            will be restored to your local storage:
+            {t("settings:importParsedSuccess")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2 rounded-xl border border-border/60 bg-muted/30 p-3.5 text-xs">
           <div className="flex items-center justify-between text-foreground">
-            <span className="text-muted-foreground">Workspaces:</span>
+            <span className="text-muted-foreground">
+              {t("settings:workspacesLabel")}
+            </span>
             <span className="font-medium">
               {pendingImport.stats.workspaceCount}
             </span>
           </div>
           <div className="flex items-center justify-between text-foreground">
-            <span className="text-muted-foreground">Documents / Pages:</span>
+            <span className="text-muted-foreground">
+              {t("settings:documentsLabel")}
+            </span>
             <span className="font-medium">
               {pendingImport.stats.documentCount}
             </span>
           </div>
           <div className="flex items-center justify-between text-foreground">
             <span className="text-muted-foreground">
-              Media & Attachment Blobs:
+              {t("settings:mediaBlobsLabel")}
             </span>
             <span className="font-medium">{pendingImport.stats.blobCount}</span>
           </div>
           {pendingImport.stats.sanitizedStringCount > 0 && (
             <div className="flex items-center gap-1.5 border-t border-border/40 pt-2 font-medium text-amber-500">
               <Info className="size-3.5 shrink-0" />
-              Sanitized {pendingImport.stats.sanitizedStringCount} potentially
-              unsafe tag(s)/script(s) for security.
+              {t("settings:sanitizedWarning", {
+                count: pendingImport.stats.sanitizedStringCount,
+              })}
             </div>
           )}
         </div>
@@ -76,7 +84,7 @@ export function ImportConfirmDialog({
             onClick={onCancel}
             disabled={isImporting}
           >
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button
             variant="default"
@@ -84,7 +92,7 @@ export function ImportConfirmDialog({
             onClick={onConfirm}
             disabled={isImporting}
           >
-            {isImporting ? "Importing..." : "Confirm & Import"}
+            {isImporting ? t("settings:importing") : t("settings:confirmImport")}
           </Button>
         </DialogFooter>
       </DialogContent>

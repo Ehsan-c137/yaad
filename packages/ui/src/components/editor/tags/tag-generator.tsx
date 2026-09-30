@@ -4,6 +4,7 @@ import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AvailableColorList } from "./availabe-color-list";
 
@@ -20,6 +21,7 @@ export function TagGenerator({
   search,
   onSearch,
 }: TagGeneratorProps) {
+  const { t } = useTranslation("editor");
   const [selectedColor, setSelectedColor] = useState<TagColor>("blue");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -57,7 +59,7 @@ export function TagGenerator({
   return (
     <div className="flex flex-col gap-2">
       <Input
-        placeholder="Search or create tag..."
+        placeholder={t("searchOrCreateTag")}
         value={search}
         onChange={(e) => {
           e.stopPropagation();
@@ -87,7 +89,7 @@ export function TagGenerator({
             className="mt-1 w-full gap-1 text-xs"
           >
             <Plus className="size-3.5" />
-            <span>Create tag &quot;{search.trim()}&quot;</span>
+            <span>{t("createTag", { name: search.trim() })}</span>
           </Button>
         </div>
       )}

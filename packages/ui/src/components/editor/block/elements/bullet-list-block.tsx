@@ -2,6 +2,8 @@
 
 import type { DocumentBlock } from "@yaad/core/types/document";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditableBlock } from "@/hooks/editor/use-editable-block";
 
 import { EditableContent } from "../editable-content";
@@ -11,6 +13,7 @@ interface BulletListBlockProps {
 }
 
 export function BulletListBlock({ block }: BulletListBlockProps) {
+  const { t } = useTranslation("editor");
   const {
     text,
     isFocused,
@@ -28,7 +31,7 @@ export function BulletListBlock({ block }: BulletListBlockProps) {
       </div>
       <EditableContent
         html={text}
-        placeholder="Type '/' for commands..."
+        placeholder={t("typeForCommands")}
         className="list-disc pb-0 text-base/relaxed text-foreground"
         autoFocus={isFocused}
         onFocusHandled={handleClearFocus}

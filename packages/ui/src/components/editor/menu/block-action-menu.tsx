@@ -18,6 +18,8 @@ import { useCopyBlockLink } from "@/hooks/editor/use-copy-block-link";
 import { useOpenPageInNewTab } from "@/hooks/editor/use-open-page-in-new-tab";
 import { useSidePeek } from "@/hooks/editor/use-side-peek";
 
+import { useTranslation } from "react-i18next";
+
 import type { BlockMenuAction } from "./block-menu-item";
 
 import { BlockColorSubmenu } from "./block-color-submenu";
@@ -32,6 +34,7 @@ interface BlockActionMenuProps {
 }
 
 export function BlockActionMenu({ block }: BlockActionMenuProps) {
+  const { t } = useTranslation(["editor", "common"]);
   const pageId = useEditorPageIdContext();
   const {
     changeType,
@@ -68,14 +71,14 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
     {
       id: "open-in-new-tab",
       icon: ExternalLink,
-      label: "Open in new tab",
+      label: t("editor:openInNewTab"),
       shortcut: "Ctrl+Shift+↵",
       onSelect: actions.openInNewTab,
     },
     {
       id: "open-in-side-peek",
       icon: SidePeek,
-      label: "Open in side peek",
+      label: t("editor:openInSidePeek"),
       shortcut: "Alt+Click",
       onSelect: actions.openInSidePeek,
     },
@@ -85,14 +88,14 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
     {
       id: "duplicate",
       icon: Copy,
-      label: "Duplicate",
+      label: t("editor:duplicate"),
       shortcut: "Ctrl+D",
       onSelect: actions.duplicate,
     },
     {
       id: "delete",
       icon: Trash2,
-      label: "delete",
+      label: t("common:delete"),
       variant: "destructive",
       onSelect: actions.delete,
     },

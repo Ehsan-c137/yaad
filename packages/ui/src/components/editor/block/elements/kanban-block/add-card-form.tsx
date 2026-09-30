@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,7 @@ import type { AddCardFormProps } from "./types";
 import { useKanbanActions } from "./kanban-context";
 
 export function AddCardForm({ columnId, colStyles }: AddCardFormProps) {
+  const { t } = useTranslation(["editor", "common"]);
   const { addCard } = useKanbanActions();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -32,7 +34,7 @@ export function AddCardForm({ columnId, colStyles }: AddCardFormProps) {
         <input
           type="text"
           autoFocus
-          placeholder="Enter card title..."
+          placeholder={t("editor:kanbanCardPlaceholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           onKeyDown={(e) => {
@@ -43,7 +45,7 @@ export function AddCardForm({ columnId, colStyles }: AddCardFormProps) {
         />
         <div className="flex items-center gap-1.5">
           <Button size="sm" className="h-7 text-xs px-3" onClick={handleSubmit}>
-            Add Card
+            {t("editor:kanbanAddCardButton")}
           </Button>
           <Button
             variant="ghost"
@@ -51,7 +53,7 @@ export function AddCardForm({ columnId, colStyles }: AddCardFormProps) {
             className="h-7 text-xs px-2"
             onClick={handleCancel}
           >
-            Cancel
+            {t("common:cancel")}
           </Button>
         </div>
       </div>
@@ -69,7 +71,7 @@ export function AddCardForm({ columnId, colStyles }: AddCardFormProps) {
       )}
     >
       <Plus className="size-3.5" />
-      Add card
+      {t("editor:kanbanAddCard")}
     </Button>
   );
 }

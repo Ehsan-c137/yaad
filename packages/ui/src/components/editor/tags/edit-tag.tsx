@@ -3,6 +3,7 @@ import type { TagColor } from "@yaad/core/types/document";
 import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { Check, Trash2, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export function EditTag({
   onDeleteTag,
   onClearEditingId,
 }: EditTagProps) {
+  const { t } = useTranslation(["editor", "common"]);
   const handleSaveEdit = () => {
     const trimmed = editData.name.trim();
     if (!trimmed) return;
@@ -42,7 +44,7 @@ export function EditTag({
   return (
     <div className="flex flex-col gap-2 rounded-md border p-2 bg-muted/40">
       <div className="flex items-center justify-between text-xs font-medium">
-        <span>Edit Tag</span>
+        <span>{t("editor:editTag")}</span>
         <Button
           variant="ghost"
           size="xs"
@@ -58,7 +60,7 @@ export function EditTag({
           onEditData({ ...editData, name: e.target.value });
         }}
         className="h-7 text-xs"
-        placeholder="Tag name"
+        placeholder={t("editor:tagName")}
       />
       <div className="flex flex-wrap gap-1">
         {COLOR_OPTIONS.map((c) => (
@@ -90,7 +92,7 @@ export function EditTag({
           className="h-6 gap-1 text-[11px]"
         >
           <Trash2 className="size-3" />
-          <span>Delete</span>
+          <span>{t("common:delete")}</span>
         </Button>
         <Button
           variant="default"
@@ -99,7 +101,7 @@ export function EditTag({
           className="h-6 gap-1 text-[11px]"
         >
           <Check className="size-3" />
-          <span>Save</span>
+          <span>{t("common:save")}</span>
         </Button>
       </div>
     </div>

@@ -26,6 +26,7 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Ellipsis } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
@@ -39,6 +40,7 @@ interface SidebarItemOptionsProps {
 }
 
 export function SidebarItemOptions({ pageId }: SidebarItemOptionsProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -54,16 +56,16 @@ export function SidebarItemOptions({ pageId }: SidebarItemOptionsProps) {
   const handleMoveToTrash = () => {
     setIsDeleteDialogOpen(false);
     setIsOpen(false);
-    const pageTitle = page.title || "Untitled";
+    const pageTitle = page.title || t("common:untitled");
 
     moveToTrash(pageId);
 
-    toast.success(`Moved "${pageTitle}" to trash`, {
+    toast.success(t("sidebar:movedToTrash", { title: pageTitle }), {
       action: {
-        label: "Undo",
+        label: t("common:undo"),
         onClick: () => {
           restorePage(pageId);
-          toast.success(`Restored "${pageTitle}"`);
+          toast.success(t("sidebar:restoredPage", { title: pageTitle }));
         },
       },
     });
@@ -92,22 +94,22 @@ export function SidebarItemOptions({ pageId }: SidebarItemOptionsProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Move to trash?</AlertDialogTitle>
+            <AlertDialogTitle>{t("sidebar:moveToTrashTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              &quot;{page.title || "Untitled"}&quot; and any sub-pages it
-              contains will be moved to the trash. You can restore them anytime
-              from Trash.
+              {t("sidebar:moveToTrashDesc", {
+                title: page.title || t("common:untitled"),
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
+              {t("common:cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={handleMoveToTrash}
             >
-              Move to trash
+              {t("sidebar:moveToTrash")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -121,6 +123,7 @@ function OptionsMenu({
   setIsOpen,
   sharedActionsProps,
 }: Record<string, any>) {
+  const { t } = useTranslation("common");
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const handleTriggerClick = (e: React.MouseEvent) => {
@@ -146,7 +149,7 @@ function OptionsMenu({
               id="page-options-title"
               className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
             >
-              Page Options
+              {t("pageOptions")}
             </DrawerTitle>
           </DrawerHeader>
           <div className="flex flex-col gap-1 pb-4">
@@ -155,7 +158,7 @@ function OptionsMenu({
           <DrawerClose
             render={
               <Button variant="outline" className="w-full">
-                Close
+                {t("close")}
               </Button>
             }
           />
@@ -187,11 +190,13 @@ function OptionsButton({
 }: {
   onClick: (e: React.MouseEvent) => void;
 }) {
+  const { t } = useTranslation("common");
+
   return (
     <Button
       onClick={onClick}
-      title="Page options"
-      aria-label="Page options"
+      title={t("pageOptions")}
+      aria-label={t("pageOptions")}
       variant="ghost"
       size="icon-xs"
       className={cn(

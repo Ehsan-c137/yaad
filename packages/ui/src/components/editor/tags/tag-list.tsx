@@ -9,6 +9,8 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { useTranslation } from "react-i18next";
+
 import { TagBadge } from "./tag-badge";
 import { TagPickerPopover } from "./tag-picker-popover";
 
@@ -31,6 +33,7 @@ export function TagList({
   size = "md",
   showAddButton = true,
 }: TagListProps) {
+  const { t } = useTranslation("editor");
   const addTags = useTagStore((state) => state.addTags);
   const hasTags = tags.length > 0;
   const canEdit = !readOnly && !!onAddTag && !!onRemoveTag && showAddButton;
@@ -76,7 +79,7 @@ export function TagList({
               className={cn(size === "md" && "h-6 text-xs")}
             >
               <Plus className="size-3" />
-              <span>{hasTags ? "Add tag" : "Add tags"}</span>
+              <span>{hasTags ? t("addTag") : t("addTags")}</span>
             </Button>
           }
         />

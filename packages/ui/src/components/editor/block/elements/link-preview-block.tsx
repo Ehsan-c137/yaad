@@ -7,6 +7,8 @@ import { fetchLinkPreview } from "@yaad/core/services/link-preview-service";
 import { ExternalLink, Globe, Loader2 } from "lucide-react";
 import { useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
@@ -16,6 +18,7 @@ interface LinkPreviewBlockProps {
 }
 
 export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
+  const { t } = useTranslation("editor");
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
   );
@@ -51,7 +54,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
         url: data.url,
       });
     } catch (err: any) {
-      setErrorMessage(err.message || "Failed to generate link preview");
+      setErrorMessage(err.message || t("failedLinkPreview"));
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +70,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
             type="text"
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
-            placeholder="Paste web link here and press Enter..."
+            placeholder={t("pasteLinkPlaceholder")}
             className="flex-1 bg-transparent text-sm text-neutral-800 placeholder-neutral-400 outline-none dark:text-neutral-200"
           />
           <Button
@@ -76,7 +79,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
             className="flex items-center gap-1.5 rounded-sm bg-neutral-900 px-3 py-1 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
           >
             {isLoading && <Loader2 className="size-3 animate-spin" />}
-            <span>Create bookmark</span>
+            <span>{t("createBookmark")}</span>
           </Button>
         </form>
         {errorMessage && (
@@ -93,7 +96,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
         href={linkData.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex max-h-32 items-stretch overflow-hidden rounded-lg border border-neutral-200 text-left transition-colors duration-150 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800/50"
+        className="flex max-h-32 items-stretch overflow-hidden rounded-lg border border-neutral-200 text-start transition-colors duration-150 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800/50"
       >
         {/* Left Side: Title, Description, Favicon & Domain */}
         <div className="flex min-w-0 flex-1 flex-col justify-between overflow-hidden p-3">
@@ -121,7 +124,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
             <span className="truncate text-[11px] text-neutral-500 dark:text-neutral-400">
               {linkData.domain}
             </span>
-            <ExternalLink className="ml-auto size-3 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100" />
+            <ExternalLink className="ms-auto size-3 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
         </div>
 

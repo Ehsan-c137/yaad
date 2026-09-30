@@ -4,6 +4,7 @@ import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { ChevronRight } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useEditableBlock } from "@/hooks/editor/use-editable-block";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ interface ToggleListBlockProps {
 }
 
 export function ToggleListBlock({ block }: ToggleListBlockProps) {
+  const { t } = useTranslation("editor");
   const {
     pageId,
     text,
@@ -52,7 +54,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
         <button
           type="button"
           aria-expanded={isOpen}
-          aria-label={isOpen ? "Collapse toggle" : "Expand toggle"}
+          aria-label={isOpen ? t("collapseToggle") : t("expandToggle")}
           onClick={handleToggle}
           className={cn(
             "mt-1 flex size-5 shrink-0 items-center justify-center rounded-sm",
@@ -66,7 +68,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
           <ChevronRight
             className={cn(
               "size-4 transition-transform duration-200 ease-out",
-              isOpen && "rotate-90",
+              isOpen && "rotate-90 rtl:-rotate-90",
             )}
           />
         </button>
@@ -80,7 +82,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
         >
           <EditableContent
             html={text}
-            placeholder="Toggle heading"
+            placeholder={t("toggleHeading")}
             className="text-base/relaxed text-foreground"
             autoFocus={isFocused}
             onFocusHandled={handleClearFocus}
@@ -100,7 +102,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
         )}
       >
         <div className="overflow-hidden min-h-0">
-          <div className="ml-5 border-l border-border/50 pl-1">
+          <div className="ms-5 border-s border-border/50 ps-1">
             {childrenIds.length > 0 ? (
               childrenIds.map((childId) => (
                 <BlockRow key={childId} blockId={childId} />
@@ -119,7 +121,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
                 )}
                 onClick={() => void addBlock(block.id, block.id, "paragraph")}
               >
-                Empty toggle. Click to add content.
+                {t("emptyToggle")}
               </div>
             )}
           </div>

@@ -8,10 +8,13 @@ import { documentService } from "@yaad/core/services/document-service";
 import { Image as ImageIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 export function ImageBlock({ block }: { block: DocumentBlock }) {
+  const { t } = useTranslation("editor");
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
   );
@@ -54,7 +57,7 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
       <label className="my-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 hover:bg-accent">
         <ImageIcon className="mb-2 size-8 text-muted-foreground" />
         <span className="text-sm text-muted-foreground">
-          Click to upload image
+          {t("clickToUploadImage")}
         </span>
         <input
           type="file"
@@ -66,7 +69,7 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
     );
   }
 
-  const fileName = block.properties?.fileName || "Uploaded image";
+  const fileName = block.properties?.fileName || t("uploadedImage");
 
   return (
     <>
@@ -90,7 +93,7 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
             e.stopPropagation();
             void deleteBlock(block.id);
           }}
-          className="absolute top-2 right-2 rounded-full bg-black/50 p-1 text-white opacity-0 group-hover:opacity-100"
+          className="absolute top-2 end-2 rounded-full bg-black/50 p-1 text-white opacity-0 group-hover:opacity-100"
         >
           <X className="size-4" />
         </Button>

@@ -2,20 +2,25 @@
 
 import { styles } from "@yaad/core/lib/design-token";
 import { Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
 import { SettingsRow } from "../settings-row";
 
 export function AboutSection() {
+  const { t } = useTranslation(["settings", "common"]);
+
   return (
     <>
-      <p className={cn(styles.sectionLabel, "px-5 pt-3 pb-1")}>About</p>
+      <p className={cn(styles.sectionLabel, "px-5 pt-3 pb-1")}>
+        {t("settings:about")}
+      </p>
 
       <SettingsRow
         icon={<Info className="size-3.5" strokeWidth={1.5} />}
-        title="Yaad"
-        subtitle="A calm space for your notes 📝 v0.1"
+        title={t("common:appName")}
+        subtitle={t("settings:aboutSubtitle")}
       />
 
       {/* <SettingsRow

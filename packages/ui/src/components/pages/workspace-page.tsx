@@ -2,6 +2,8 @@
 
 import type { Workspace } from "@yaad/core/types/workspace";
 
+import { useTranslation } from "react-i18next";
+
 import { RecentDocsList } from "@/components/pages/recent-docs-list/recent-docs-list";
 
 interface WorkspaceHomePageProps {
@@ -9,6 +11,8 @@ interface WorkspaceHomePageProps {
 }
 
 export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
+  const { t } = useTranslation("common");
+
   if (!workspace) return null;
 
   return (
@@ -20,7 +24,7 @@ export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
         </h1>
       </div>
       <p className="text-sm text-muted-foreground">
-        Select a page from the sidebar or press{" "}
+        {t("selectPageHint")}{" "}
         <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
           ⌘ + K
         </kbd>{" "}
@@ -28,7 +32,7 @@ export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
         <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
           Ctrl + K
         </kbd>{" "}
-        to search.
+        {t("toSearch")}
       </p>
       <RecentDocsList workspaceId={workspace.id} />
     </div>

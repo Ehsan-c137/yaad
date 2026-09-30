@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const COMMON_EMOJIS = [
   "📄",
@@ -63,6 +64,7 @@ export function IconPickerPopover({
   triggerClassName,
   children,
 }: IconPickerPopoverProps) {
+  const { t } = useTranslation("editor");
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -94,7 +96,7 @@ export function IconPickerPopover({
       <PopoverContent className={cn("w-72 p-3", styles.menu)} align="start">
         <div className="space-y-3">
           <Input
-            placeholder="Search emoji..."
+            placeholder={t("searchEmoji")}
             value={search}
             onChange={handleIconChange}
             className="h-8 text-xs"
@@ -108,7 +110,7 @@ export function IconPickerPopover({
               className="flex h-7 flex-1 items-center gap-1.5 text-xs"
             >
               <Sparkles className="size-3 text-amber-500" />
-              <span>Random</span>
+              <span>{t("random")}</span>
             </Button>
             {currentIcon && onRemoveIcon && (
               <Button
@@ -120,13 +122,13 @@ export function IconPickerPopover({
                 }}
                 className="h-7 text-xs text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40"
               >
-                <Trash2 className="mr-1 size-3" />
-                <span>Remove</span>
+                <Trash2 className="me-1 size-3" />
+                <span>{t("remove")}</span>
               </Button>
             )}
           </div>
 
-          <div className="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto pr-1">
+          <div className="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto pe-1">
             {filteredEmojis.length === 0 && !!search && (
               <Button
                 variant="ghost"

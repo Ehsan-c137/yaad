@@ -9,6 +9,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@ui/dropdown-menu";
 import { Repeat } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { TURN_INTO_OPTIONS } from "./menu-constant";
 
@@ -19,11 +20,12 @@ interface BlockTurnIntoSubmenuProps {
 export function BlockTurnIntoSubmenu({
   onChangeType,
 }: BlockTurnIntoSubmenuProps) {
+  const { t } = useTranslation("editor");
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>
         <Repeat className="size-3.5 text-muted-foreground" />
-        <span>Turn into</span>
+        <span>{t("turnInto")}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="max-h-64 w-48 overflow-y-auto">
         {TURN_INTO_OPTIONS.map((item) => {

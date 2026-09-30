@@ -1,6 +1,8 @@
 import { ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
@@ -9,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { CoverPickerModal } from "./cover-picker-modal";
 
 export function PageHeaderCover() {
+  const { t } = useTranslation("editor");
   const updatePageCover = useDocumentStore((store) => store.updateCoverImage);
   const removeCoverImage = useDocumentStore((store) => store.removeCoverImage);
 
@@ -43,7 +46,7 @@ export function PageHeaderCover() {
         >
           {isFaildToLoad ? (
             <div className="w-full h-full flex items-end justify-start p-3 bg-linear-to-r from-blue-200 to-cyan-200 ">
-              <p className=" opacity-80">Oooops, image not loaded</p>
+              <p className=" opacity-80">{t("imageNotLoaded")}</p>
             </div>
           ) : (
             <Image
@@ -61,7 +64,7 @@ export function PageHeaderCover() {
           <div
             className={cn(
               "material",
-              "absolute right-4 bottom-4 flex items-center gap-1 rounded-xl px-2 py-1",
+              "absolute end-4 bottom-4 flex items-center gap-1 rounded-xl px-2 py-1",
             )}
           >
             <Button
@@ -70,7 +73,7 @@ export function PageHeaderCover() {
               onClick={() => setIsCoverModalOpen(true)}
               className="text-xs"
             >
-              Change cover
+              {t("changeCover")}
             </Button>
             <span className="text-border">|</span>
             <Button
@@ -79,7 +82,7 @@ export function PageHeaderCover() {
               onClick={handleRemoveCover}
               className="text-xs"
             >
-              Remove
+              {t("removeCover")}
             </Button>
           </div>
         </div>
@@ -93,7 +96,7 @@ export function PageHeaderCover() {
               className="text-xs text-muted-foreground"
             >
               <ImageIcon className="size-3.5" />
-              <span>Add cover</span>
+              <span>{t("addCover")}</span>
             </Button>
           </div>
         </div>

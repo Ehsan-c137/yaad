@@ -1,5 +1,6 @@
 import { Check, Edit2, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export function KanbanColumnItem({
   isLastCol,
   totalColumns,
 }: KanbanColumnProps) {
+  const { t } = useTranslation("editor");
   const { updateColumnTitle, deleteColumn, handleDragOver, handleDrop } =
     useKanbanActions();
 
@@ -98,7 +100,7 @@ export function KanbanColumnItem({
                 "cursor-pointer text-xs hover:opacity-80 transition-opacity",
                 colStyles.headerText,
               )}
-              title="Click to rename"
+              title={t("kanbanRenameColumn")}
             >
               {column.title}
             </h3>
@@ -119,7 +121,7 @@ export function KanbanColumnItem({
             size="icon"
             className="size-6 text-muted-foreground hover:text-foreground"
             onClick={handleStartEditingTitle}
-            title="Rename column"
+            title={t("kanbanRenameColumn")}
           >
             <Edit2 className="size-3" />
           </Button>
@@ -130,7 +132,7 @@ export function KanbanColumnItem({
               size="icon"
               className="size-6 text-muted-foreground hover:text-destructive"
               onClick={() => deleteColumn(column.id)}
-              title="Delete column"
+              title={t("kanbanDeleteColumn")}
             >
               <Trash2 className="size-3" />
             </Button>

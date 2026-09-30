@@ -3,6 +3,7 @@
 import { Button } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { BookmarkCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useSidebarPageItem } from "@/hooks/sidebar/use-sidebar-page-item";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -15,6 +16,7 @@ interface SidebarBookmarkItemProps {
 }
 
 export function SidebarBookmarkItem({ pageId }: SidebarBookmarkItemProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
   const { page, isActive, handleNavigate } = useSidebarPageItem(pageId);
   const toggleBookmarked = useSidebarStore((s) => s.toggleBookmarked);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -33,7 +35,7 @@ export function SidebarBookmarkItem({ pageId }: SidebarBookmarkItemProps) {
             : "hover:bg-foreground/5 dark:hover:bg-white/6",
         )}
       >
-        <span className="mr-1.5 ml-1 shrink-0 text-lg">
+        <span className="me-1.5 ms-1 shrink-0 text-lg">
           {page.icon ?? <span className="inline-block size-3.5" />}
         </span>
 
@@ -50,17 +52,17 @@ export function SidebarBookmarkItem({ pageId }: SidebarBookmarkItemProps) {
             "transition-colors duration-(--press-duration) ease-(--spring)",
           )}
         >
-          {page.title || "Untitled"}
+          {page.title || t("common:untitled")}
         </Button>
 
         {isMobile ? (
-          <div className="shrink-0 pr-0.5">
+          <div className="shrink-0 pe-0.5">
             <SidebarItemOptions pageId={pageId} />
           </div>
         ) : (
           <div
             className={cn(
-              "ml-auto flex shrink-0 items-center gap-0.5 pr-0.5",
+              "ms-auto flex shrink-0 items-center gap-0.5 pe-0.5",
               "opacity-0 transition-opacity duration-(--press-duration)",
               "group-focus-within:opacity-100 group-hover:opacity-100",
             )}
@@ -69,8 +71,8 @@ export function SidebarBookmarkItem({ pageId }: SidebarBookmarkItemProps) {
               type="button"
               size="icon-xs"
               variant="ghost"
-              title="Remove from bookmarks"
-              aria-label="Remove from bookmarks"
+              title={t("sidebar:removeFromBookmarks")}
+              aria-label={t("sidebar:removeFromBookmarks")}
               onClick={(e) => {
                 e.stopPropagation();
                 toggleBookmarked(pageId);

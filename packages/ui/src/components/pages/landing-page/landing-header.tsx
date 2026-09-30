@@ -130,7 +130,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
               className="gap-1.5 shadow-sm shadow-primary/20 cursor-pointer"
             >
               <span>Open Yaad</span>
-              <ArrowRight className="size-3.5" />
+              <ArrowRight className="size-3.5 rtl:rotate-180" />
             </Button>
           ) : (
             <Link to={targetWorkspaceHref}>
@@ -139,7 +139,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
                 className="gap-1.5 shadow-sm shadow-primary/20 cursor-pointer"
               >
                 <span>Open Yaad</span>
-                <ArrowRight className="size-3.5" />
+                <ArrowRight className="size-3.5 rtl:rotate-180" />
               </Button>
             </Link>
           )}

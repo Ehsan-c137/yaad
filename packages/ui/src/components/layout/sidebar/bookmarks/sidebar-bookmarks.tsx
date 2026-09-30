@@ -3,6 +3,7 @@
 import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useBookmarkedPages } from "@/hooks/sidebar/use-bookmarked-pages";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { SidebarBookmarkItem } from "./sidebar-bookmark-item";
 
 export function SidebarBookmarks() {
+  const { t } = useTranslation("sidebar");
   const isHydrated = useSidebarStore((store) => store._hasHydrated);
   const bookmarkedPages = useBookmarkedPages();
 
@@ -29,15 +31,15 @@ export function SidebarBookmarks() {
         <div className="flex flex-col items-center gap-3 px-2 py-8 text-center select-none">
           <Bookmark strokeWidth={1} className="vibrancy-tertiary size-9" />
           <p className="vibrancy-secondary text-sm leading-relaxed text-foreground">
-            No bookmarks yet.
+            {t("noBookmarksYet")}
             <br />
-            Bookmark pages to quickly access them here.
+            {t("bookmarkPagesHint")}
           </p>
         </div>
       )}
 
       {isHydrated && bookmarkedPages.length > 0 && (
-        <nav className="pb-2" aria-label="Bookmarked Pages">
+        <nav className="pb-2" aria-label={t("bookmarked")}>
           {bookmarkedPages.map((page) => (
             <SidebarBookmarkItem key={page.id} pageId={page.id} />
           ))}
@@ -48,6 +50,8 @@ export function SidebarBookmarks() {
 }
 
 function SidebarBookmarksHeader({ count }: { count: number }) {
+  const { t } = useTranslation("sidebar");
+
   return (
     <div
       className={cn(
@@ -55,7 +59,7 @@ function SidebarBookmarksHeader({ count }: { count: number }) {
         "flex items-center justify-between px-2 pt-3 pb-1",
       )}
     >
-      <span>Bookmarked</span>
+      <span>{t("bookmarked")}</span>
       {count > 0 && (
         <span className="text-[11px] font-normal text-muted-foreground">
           {count}

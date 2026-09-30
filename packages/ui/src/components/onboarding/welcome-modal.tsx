@@ -12,6 +12,7 @@ import { Input } from "@ui/input";
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface WelcomeModalProps {
   /**
@@ -23,6 +24,7 @@ interface WelcomeModalProps {
 }
 
 export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
+  const { t } = useTranslation(["settings", "common"]);
   const isControlled = open !== undefined && onOpenChange !== undefined;
 
   const hasHydrated = useUserStore((state) => state._hasHydrated);
@@ -91,29 +93,29 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
             id="welcome-modal-title"
             className="text-lg font-semibold tracking-tight"
           >
-            {isControlled ? "Your name" : "Welcome to Yaad"}
+            {isControlled ? t("settings:yourName") : t("settings:welcomeTitle")}
           </DialogTitle>
 
           <DialogDescription className="mx-auto max-w-64 text-balance">
             {isControlled
-              ? "This is how your profile appears across the app."
-              : "A calm space for your notes. What should we call you?"}
+              ? t("settings:yourNameSubtitle")
+              : t("settings:welcomeSubtitle")}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
           <Input
-            aria-label="Your name"
+            aria-label={t("settings:yourName")}
             autoComplete="off"
             maxLength={40}
-            placeholder="Your name"
+            placeholder={t("settings:yourName")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="h-9 text-center"
           />
 
           <Button type="submit" size="lg" className="mt-1 w-full">
-            {isControlled ? "Save" : "Continue"}
+            {isControlled ? t("common:save") : t("common:continue")}
           </Button>
 
           {!isControlled && (
@@ -124,7 +126,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
               className="w-full text-muted-foreground"
               onClick={() => handleOpenChange(false)}
             >
-              Skip for now
+              {t("common:skipForNow")}
             </Button>
           )}
         </form>

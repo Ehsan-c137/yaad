@@ -8,6 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@ui/breadcrumb";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { Link } from "@/components/ui/link";
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { SidebarToggleButton } from "./sidebar-button";
 
 export function BreadcrumbDemo() {
+  const { t } = useTranslation(["sidebar", "common"]);
   const { pathname } = useLocation();
   const pages = useSidebarStore((store) => store.pages);
 
@@ -26,7 +28,7 @@ export function BreadcrumbDemo() {
       <SidebarToggleButton />
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink render={<Link href="/">Home</Link>} />
+          <BreadcrumbLink render={<Link href="/">{t("sidebar:home")}</Link>} />
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         {pathname.split("/").map((p, i) => {
@@ -38,7 +40,11 @@ export function BreadcrumbDemo() {
           return (
             <BreadcrumbItem key={`${p}-${i}`}>
               <BreadcrumbLink
-                render={<a href={`/${page.id}`}>{page.title}</a>}
+                render={
+                  <a href={`/${page.id}`}>
+                    {page.title || t("common:untitled")}
+                  </a>
+                }
               />
             </BreadcrumbItem>
           );

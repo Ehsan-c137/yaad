@@ -6,6 +6,8 @@ import { styles } from "@yaad/core/lib/design-token";
 import { useEffect, useState } from "react";
 import { bundledLanguages, codeToHtml } from "shiki";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
@@ -71,6 +73,7 @@ function normalizeLanguage(language: string) {
 }
 
 export function CodeBlock({ block }: CodeBlockProps) {
+  const { t } = useTranslation("editor");
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
   );
@@ -155,7 +158,7 @@ export function CodeBlock({ block }: CodeBlockProps) {
 
         <EditableContent
           html={text}
-          placeholder="// Type code here..."
+          placeholder={t("codePlaceholder")}
           className="relative z-10 min-h-[24px] w-full bg-transparent font-mono text-sm/relaxed text-transparent caret-background selection:bg-white/15"
           onChange={(newText: string) =>
             updateBlockProperties(block.id, pageId, {

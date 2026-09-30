@@ -2,6 +2,8 @@
 
 import type { DocumentBlock } from "@yaad/core/types/document";
 
+import { useTranslation } from "react-i18next";
+
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
@@ -12,6 +14,7 @@ interface CalloutBlockProps {
 }
 
 export function CalloutBlock({ block }: CalloutBlockProps) {
+  const { t } = useTranslation("editor");
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
   );
@@ -34,7 +37,7 @@ export function CalloutBlock({ block }: CalloutBlockProps) {
       <div className="min-w-0 flex-1">
         <EditableContent
           html={text}
-          placeholder="Callout text..."
+          placeholder={t("calloutPlaceholder")}
           className="text-base text-foreground"
           autoFocus={isFocused}
           onFocusHandled={() => setFocusedBlockId(null)}

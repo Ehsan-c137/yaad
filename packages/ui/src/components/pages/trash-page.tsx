@@ -20,6 +20,7 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowLeft, RotateCcw, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ interface TrashPageProps {
 }
 
 export function TrashPage({ workspaceId }: TrashPageProps) {
+  const { t } = useTranslation(["search", "common", "editor"]);
   const navigate = useNavigate();
   const workspace = useWorkspaceStore((s) => s.workspaces[workspaceId]);
   const pages = useSidebarStore((s) => s.pages);
@@ -56,16 +58,17 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return trashedPages;
     return trashedPages.filter((page) =>
-      (page.title || "Untitled").toLowerCase().includes(query),
+      (page.title || t("common:untitled")).toLowerCase().includes(query),
     );
-  }, [trashedPages, searchQuery]);
+  }, [trashedPages, searchQuery, t]);
 
   const handleRestore = (page: SidebarPageItem) => {
     restorePage(page.id);
-    const title = page.title || "Untitled";
-    toast.success(`Restored "${title}"`, {
+    const title = page.title || t("common:untitled");
+    toast.success(t("editor:pageRestored"), {
+      description: title,
       action: {
-        label: "Open",
+        label: t("common:open"),
         onClick: () => {
           navigate(`/${ROUTES.workspace}/${workspaceId}/${page.id}`);
         },
@@ -82,9 +85,13 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
 
     try {
       await permanentlyDeletePage(page.id);
-      toast.success(`Permanently deleted "${page.title || "Untitled"}"`);
+      toast.success(
+        t("search:permanentlyDeleted", {
+          title: page.title || t("common:untitled"),
+        }),
+      );
     } catch {
-      toast.error("Failed to delete page permanently");
+      toast.error(t("search:failedDeletePermanently"));
     } finally {
       setIsActionLoading(false);
     }
@@ -96,9 +103,9 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
 
     try {
       await emptyTrash();
-      toast.success("Trash emptied successfully");
+      toast.success(t("search:trashEmptied"));
     } catch {
-      toast.error("Failed to empty trash");
+      toast.error(t("search:failedEmptyTrash"));
     } finally {
       setIsActionLoading(false);
     }
@@ -115,8 +122,8 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
             "hover:text-foreground",
           )}
         >
-          <ArrowLeft className="size-3.5" />
-          <span>Back to {workspace?.name || "Workspace"}</span>
+          <ArrowLeft className="size-3.5 rtl:rotate-180" />
+          <span>{t("search:backTo", { name: workspace?.name || "Workspace" })}</span>
         </Link>
       </div>
 
@@ -128,10 +135,10 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
           </div>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Trash
+              {t("search:trash")}
             </h1>
             <p className="text-xs text-muted-foreground sm:text-sm">
-              Pages in the trash can be restored or permanently deleted.
+              {t("search:trashSubtitle")}
             </p>
           </div>
         </div>
@@ -145,7 +152,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
             className="self-start text-xs text-destructive hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive sm:self-auto"
           >
             <Trash2 className="size-3.5" />
-            <span>Empty Trash</span>
+            <span>{t("search:emptyTrash")}</span>
           </Button>
         )}
       </div>
@@ -154,14 +161,14 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
       {trashedPages.length > 0 && (
         <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative max-w-sm flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Search className="pointer-events-none absolute top-1/2 start-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search trash..."
+              placeholder={t("search:searchTrash")}
               className={cn(
-                "h-8 w-full rounded-lg border border-border/60 bg-muted/30 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground/70",
+                "h-8 w-full rounded-lg border border-border/60 bg-muted/30 pe-3 ps-8 text-xs text-foreground placeholder:text-muted-foreground/70",
                 "focus:border-(--accent-blue) focus:bg-background focus:ring-1 focus:ring-(--accent-blue) focus:outline-none",
                 "transition-colors",
               )}
@@ -169,7 +176,7 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
           </div>
           <span className="text-[11px] text-muted-foreground">
             {filteredPages.length}{" "}
-            {filteredPages.length === 1 ? "page" : "pages"}
+            {filteredPages.length === 1 ? t("search:page") : t("search:pages")}
           </span>
         </div>
       )}
@@ -181,16 +188,15 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
             <Trash2 className="size-6 opacity-75" strokeWidth={1.5} />
           </div>
           <h2 className="text-base font-semibold text-foreground">
-            Trash is empty
+            {t("search:trashIsEmpty")}
           </h2>
           <p className="mt-1 max-w-xs text-xs/relaxed text-muted-foreground">
-            Pages you move to trash will appear here. You can restore them
-            anytime or delete them permanently.
+            {t("search:trashEmptyDesc")}
           </p>
         </div>
       ) : filteredPages.length === 0 ? (
         <div className="rounded-xl border border-border/50 bg-card/40 py-12 text-center text-xs text-muted-foreground">
-          No trashed pages match &quot;{searchQuery}&quot;.
+          {t("search:noTrashedMatch", { query: searchQuery })}
         </div>
       ) : (
         <div className="divide-y divide-border/40 overflow-hidden rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm">
@@ -211,24 +217,27 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
                   className="flex min-w-0 flex-1 items-center gap-2.5 transition-opacity hover:opacity-80"
                 >
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-muted/50 text-base select-none">
-                    {page.icon ?? "ðŸ“„"}
+                    {page.icon ?? "📄"}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="truncate text-sm font-medium text-foreground">
-                        {page.title || "Untitled"}
+                        {page.title || t("common:untitled")}
                       </span>
                       {hasSubpages && (
                         <span className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                          {page.childrenIds.length} sub-page
-                          {page.childrenIds.length > 1 ? "s" : ""}
+                          {t("search:subPages", {
+                            count: page.childrenIds.length,
+                          })}
                         </span>
                       )}
                     </div>
                     <p className="text-[11px] text-muted-foreground/80">
                       {page.deletedAt
-                        ? `Deleted ${formatRelativeTime(page.deletedAt)}`
-                        : "In trash"}
+                        ? t("search:deletedAt", {
+                            time: formatRelativeTime(page.deletedAt),
+                          })
+                        : t("search:inTrash")}
                     </p>
                   </div>
                 </Link>
@@ -240,12 +249,12 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRestore(page)}
-                    title="Restore page"
-                    aria-label={`Restore ${page.title || "Untitled"}`}
+                    title={t("search:restorePage")}
+                    aria-label={`${t("search:restorePage")} ${page.title || t("common:untitled")}`}
                     className="h-8 gap-1.5 text-xs text-foreground hover:bg-foreground/8 hover:text-foreground"
                   >
                     <RotateCcw className="size-3.5 text-(--accent-blue)" />
-                    <span className="hidden sm:inline">Restore</span>
+                    <span className="hidden sm:inline">{t("common:restore")}</span>
                   </Button>
 
                   <Button
@@ -253,12 +262,12 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setPageToDeletePermanently(page)}
-                    title="Delete permanently"
-                    aria-label={`Delete permanently ${page.title || "Untitled"}`}
+                    title={t("editor:deletePermanently")}
+                    aria-label={`${t("editor:deletePermanently")} ${page.title || t("common:untitled")}`}
                     className="h-8 gap-1.5 text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="size-3.5" />
-                    <span className="hidden sm:inline">Delete</span>
+                    <span className="hidden sm:inline">{t("common:delete")}</span>
                   </Button>
                 </div>
               </div>
@@ -276,25 +285,29 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Permanently delete page?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("search:deletePermanentlyTitle")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to permanently delete &quot;
-              {pageToDeletePermanently?.title || "Untitled"}&quot;
-              {pageToDeletePermanently?.childrenIds?.length
-                ? ` and its ${pageToDeletePermanently.childrenIds.length} sub-page(s)`
-                : ""}
-              ? This action cannot be undone.
+              {t("search:deletePermanentlyDesc", {
+                title: pageToDeletePermanently?.title || t("common:untitled"),
+                subPages: pageToDeletePermanently?.childrenIds?.length
+                  ? t("search:andSubPages", {
+                      count: pageToDeletePermanently.childrenIds.length,
+                    })
+                  : "",
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setPageToDeletePermanently(null)}>
-              Cancel
+              {t("common:cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={handlePermanentDeleteConfirm}
             >
-              Delete permanently
+              {t("editor:deletePermanently")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -304,22 +317,20 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
       <AlertDialog open={isEmptyTrashOpen} onOpenChange={setIsEmptyTrashOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Empty Trash?</AlertDialogTitle>
+            <AlertDialogTitle>{t("search:emptyTrashTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to permanently delete all{" "}
-              {trashedPages.length} page{trashedPages.length === 1 ? "" : "s"}{" "}
-              in the trash? This action cannot be undone.
+              {t("search:emptyTrashDesc", { count: trashedPages.length })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setIsEmptyTrashOpen(false)}>
-              Cancel
+              {t("common:cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={handleEmptyTrashConfirm}
             >
-              Empty Trash
+              {t("search:emptyTrash")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

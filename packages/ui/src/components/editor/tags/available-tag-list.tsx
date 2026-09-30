@@ -2,6 +2,7 @@ import type { Tag } from "@yaad/core/types/document";
 
 import { Button } from "@ui/button";
 import { Edit2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { TagBadge } from "./tag-badge";
 
@@ -16,10 +17,11 @@ export function AvailableTagList({
   onAddTag,
   onStartEditingTag,
 }: AvailableTagList) {
+  const { t } = useTranslation("editor");
   return (
     <div className="flex flex-col gap-1 pt-1">
       <div className="text-[11px] font-medium text-muted-foreground">
-        Available tags
+        {t("availableTags")}
       </div>
       <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto p-1">
         {tags.map((tag) => (
@@ -35,7 +37,7 @@ export function AvailableTagList({
               variant="outline"
               onClick={() => onStartEditingTag(tag)}
               className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 text-muted-foreground hover:text-foreground"
-              title="Edit tag"
+              title={t("editTag")}
             >
               <Edit2 className="size-3" />
             </Button>
