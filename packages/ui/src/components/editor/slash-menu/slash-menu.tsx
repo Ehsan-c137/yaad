@@ -74,8 +74,8 @@ export function SlashMenu({
     const menuH = menuRef.current.scrollHeight;
     const menuW = menuRef.current.offsetWidth;
 
-    let top = position.top;
-    let left = position.left;
+    let { top } = position;
+    let { left } = position;
     let maxHeight = DEFAULT_MAX_HEIGHT;
     let originY = "top";
 
@@ -178,7 +178,6 @@ export function SlashMenu({
         return (
           <Button
             id={`slash-option-${index}`}
-            type="button"
             key={option.id}
             variant="ghost"
             onClick={() => onSelect(option)}
@@ -187,6 +186,7 @@ export function SlashMenu({
               styles.listRow,
               "h-auto w-full justify-start gap-2.5 py-1.5 text-left",
               isSelected && styles.listRowActive,
+              isSelected && "bg-accent/50",
               isKeyboardNav &&
                 !isSelected &&
                 "pointer-events-none hover:!bg-transparent",
