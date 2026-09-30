@@ -71,7 +71,13 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
           />
         </button>
 
-        <div className="min-w-0 flex-1">
+        <div
+          className="min-w-0 flex-1"
+          onClick={handleToggle}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleToggle();
+          }}
+        >
           <EditableContent
             html={text}
             placeholder="Toggle heading"
