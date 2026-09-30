@@ -1,9 +1,9 @@
 "use client";
 
 import { Handle, Position } from "@xyflow/react";
-import { FileText } from "lucide-react";
 import { memo } from "react";
 
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 import type { PageNodeData } from "./use-graph-data";
@@ -13,64 +13,90 @@ interface PageNodeProps {
   selected?: boolean;
 }
 
-export const PageNode = memo(function PageNodeData({
+export const PageNode = memo(function PageNode({
   data,
   selected,
 }: PageNodeProps) {
-  const hasIcon = Boolean(data.icon && data.icon !== "ðŸ“„");
+  const isDark = useTheme();
+
+  const radius = data.radius ?? 8;
+  const isHovered = Boolean(data.isHovered);
+  const isNeighbor = Boolean(data.isNeighbor);
+  const isDimmed = Boolean(data.isDimmed);
+  const isHighlighted = isHovered || isNeighbor || selected;
+  const showLabels = data.showLabels !== false;
+
+  const color = data.color ?? {
+    fill: "var(--primary)",
+    stroke: "var(--primary)",
+    glow: "var(--ring)",
+  };
+
+  const hasIcon = Boolean(data.icon && data.icon !== "📄");
 
   return (
     <div
+      style={{
+        width: `${radius * 2}px`,
+        height: `${radius * 2}px`,
+      }}
       className={cn(
-        "group relative flex max-w-[180px] min-w-[120px] cursor-pointer flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-200",
-        "border-border/60 bg-background/80 backdrop-blur-md",
-        "shadow-[0_2px_12px_rgba(0,0,0,0.08)]",
-        "hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--color-primary)/0.25)]",
-        selected &&
-          "border-primary/70 shadow-[0_0_28px_rgba(var(--color-primary)/0.35)] ring-1 ring-primary/30",
+        "group relative flex items-center justify-center cursor-pointer select-none transition-all duration-150",
+        isDimmed ? "opacity-40" : "opacity-100",
       )}
     >
-      {/* Glow overlay on hover/selected */}
+      {/* Main Obsidian circular dot: 100% solid, fully opaque */}
       <div
+        style={{
+          width: `${radius * 2}px`,
+          height: `${radius * 2}px`,
+          backgroundColor: color.fill,
+          borderColor: isHovered || selected ? "#ffffff" : color.stroke,
+        }}
         className={cn(
-          "pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300",
-          "bg-[radial-gradient(ellipse_at_center,rgba(var(--tw-ring-color)/0.08)_0%,transparent_70%)]",
-          "group-hover:opacity-100",
-          selected && "opacity-100",
+          "relative flex items-center justify-center rounded-full border-2 transition-all duration-150 ease-out",
+          (isHovered || selected) &&
+            "scale-125 shadow-lg ring-2 ring-white/70",
+          isNeighbor && "scale-110",
         )}
-      />
-
-      {/* Icon */}
-      <div className="flex size-8 items-center justify-center rounded-xl bg-muted/60 text-base leading-none">
-        {hasIcon ? (
-          <span role="img">{data.icon}</span>
-        ) : (
-          <FileText
-            className="size-4 text-muted-foreground"
-            strokeWidth={1.5}
-          />
+      >
+        {/* Subtle icon indicator for large hubs or on hover */}
+        {hasIcon && (radius >= 13 || isHovered) && (
+          <span
+            className="pointer-events-none text-[10px] leading-none select-none text-white font-bold"
+            role="img"
+          >
+            {data.icon}
+          </span>
         )}
       </div>
 
-      {/* Title */}
-      <span
-        className={cn(
-          "line-clamp-2 text-xs/tight font-medium text-foreground/90 transition-colors",
-          "group-hover:text-foreground",
-        )}
-        title={data.title}
-      >
-        {data.title}
-      </span>
-
-      {/* Child count badge */}
-      {data.childCount > 0 && (
-        <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-          {data.childCount}
-        </span>
+      {/* Floating text label underneath node */}
+      {showLabels && (
+        <div
+          className={cn(
+            "pointer-events-none absolute top-full left-1/2 mt-1.5 -translate-x-1/2 whitespace-nowrap transition-all duration-200",
+            isHighlighted ? "z-30" : "z-10",
+          )}
+        >
+          <span
+            className={cn(
+              "block max-w-[150px] truncate text-center text-[11px] leading-tight tracking-tight transition-colors duration-200",
+              isDark
+                ? "text-neutral-300 [text-shadow:_0_1px_3px_rgba(0,0,0,0.95)]"
+                : "text-neutral-700 [text-shadow:_0_1px_2px_rgba(255,255,255,0.95)]",
+              (isHovered || selected) &&
+                "scale-105 font-semibold text-foreground",
+              isNeighbor && "font-medium text-foreground",
+            )}
+            title={data.title}
+          >
+            {data.title}
+          </span>
+        </div>
       )}
 
-      {/* CENTERED HANDLES (Placed directly in the physical center of the card) */}
+      {/* Centered handles: placed precisely in the physical center of the circular dot */}
       <Handle
         type="target"
         position={Position.Top}

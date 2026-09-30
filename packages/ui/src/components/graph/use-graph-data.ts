@@ -13,11 +13,25 @@ import {
 } from "d3-force";
 import { useMemo } from "react";
 
+export interface NodeColorPalette {
+  fill: string;
+  stroke: string;
+  glow: string;
+}
+
 export interface PageNodeData extends Record<string, unknown> {
   id: string;
   title: string;
   icon?: string;
   childCount: number;
+  connectionCount: number;
+  radius: number;
+  color: NodeColorPalette;
+  isRoot: boolean;
+  showLabels?: boolean;
+  isHovered?: boolean;
+  isNeighbor?: boolean;
+  isDimmed?: boolean;
 }
 
 interface SimNode extends SimulationNodeDatum {
@@ -25,7 +39,33 @@ interface SimNode extends SimulationNodeDatum {
   title: string;
   icon?: string;
   childCount: number;
+  connectionCount: number;
+  radius: number;
+  color: NodeColorPalette;
   rootIndex: number;
+  isRoot: boolean;
+}
+
+const OBSIDIAN_PALETTE: NodeColorPalette[] = [
+  { fill: "var(--primary)", stroke: "var(--primary)", glow: "var(--ring)" }, // App main color (Primary)
+  { fill: "#06b6d4", stroke: "#22d3ee", glow: "rgba(6, 182, 212, 0.45)" }, // Cyan
+  { fill: "#10b981", stroke: "#34d399", glow: "rgba(16, 185, 129, 0.45)" }, // Emerald
+  { fill: "#f59e0b", stroke: "#fbbf24", glow: "rgba(245, 158, 11, 0.45)" }, // Amber
+  { fill: "#ec4899", stroke: "#f472b6", glow: "rgba(236, 72, 153, 0.45)" }, // Pink
+  { fill: "#8b5cf6", stroke: "#a78bfa", glow: "rgba(139, 92, 246, 0.45)" }, // Violet
+];
+
+const ORPHAN_COLOR: NodeColorPalette = {
+  fill: "#64748b",
+  stroke: "#475569",
+  glow: "#94a3b8",
+};
+
+/** Calculates circle dot radius based on connection degree and root status */
+function computeNodeRadius(degree: number, isRoot: boolean): number {
+  if (degree === 0) return 6;
+  const base = isRoot ? 8 : 6;
+  return Math.min(20, Math.round(base + Math.sqrt(degree) * 3.5));
 }
 
 /** Page ids visible in the graph: the focused page's subtree, or every page */
@@ -99,11 +139,7 @@ function buildLinks(
           id: `${id}→${childId}`,
           source: id,
           target: childId,
-          type: "default",
-          style: {
-            stroke: "#cccccc",
-            strokeWidth: 1.5,
-          },
+          type: "straight",
         });
 
         simLinks.push({ source: id, target: childId });
@@ -124,7 +160,6 @@ export function useGraphData(
     if (!pageIds.length) return { nodes: [], edges: [] };
 
     // When focused on a page, scope the graph to that page's subtree
-    // (the page itself plus all of its descendants)
     const focusId =
       focusPageId && focusPageId in pages && !pages[focusPageId]?.isDeleted
         ? focusPageId
@@ -138,42 +173,69 @@ export function useGraphData(
     const pinnedId = focusId ?? fallbackRootId;
     const rootIndexByPage = buildRootIndexMap(pages, rootIds);
 
+    const { edges, simLinks } = buildLinks(pages, visibleIds, visibleIdSet);
+
+    // Calculate total connections (in-degree + out-degree) for each node
+    const degreeMap = new Map<string, number>();
+    visibleIds.forEach((id) => degreeMap.set(id, 0));
+    simLinks.forEach(({ source, target }) => {
+      degreeMap.set(source, (degreeMap.get(source) || 0) + 1);
+      degreeMap.set(target, (degreeMap.get(target) || 0) + 1);
+    });
+
     const simNodes: SimNode[] = visibleIds.map((id, index) => {
       const page = pages[id];
+      const isRoot = rootIds.includes(id);
       const rootIndex = focusId
         ? 0
         : (rootIndexByPage.get(id) ?? rootIds.length + index);
+      const degree = degreeMap.get(id) || 0;
+      const radius = computeNodeRadius(degree, isRoot);
+      const color =
+        degree === 0
+          ? ORPHAN_COLOR
+          : OBSIDIAN_PALETTE[rootIndex % OBSIDIAN_PALETTE.length];
+
       const seedAngle = (Math.PI * 2 * index) / Math.max(visibleIds.length, 1);
-      const seedRadius = rootIndex === 0 ? 160 : 260;
+      const seedRadius = rootIndex === 0 ? 120 : 200;
 
       return {
         id,
         title: page?.title || "Untitled",
         icon: page?.icon,
         childCount: page?.childrenIds?.length || 0,
+        connectionCount: degree,
+        radius,
+        color,
         rootIndex,
-        x: rootIndex === 0 ? Math.cos(seedAngle) * seedRadius : rootIndex * 420,
+        isRoot,
+        x: rootIndex === 0 ? Math.cos(seedAngle) * seedRadius : rootIndex * 260,
         y: rootIndex === 0 ? Math.sin(seedAngle) * seedRadius : 0,
         ...(id === pinnedId ? { fx: 0, fy: 0 } : {}),
       };
     });
 
-    const { edges, simLinks } = buildLinks(pages, visibleIds, visibleIdSet);
-
-    // Run force calculation
+    // Run force-directed simulation tuned for Obsidian-style constellation density
     const simulation = forceSimulation<SimNode>(simNodes)
       .force(
         "link",
         forceLink<SimNode, { source: string; target: string }>(simLinks)
           .id((d) => d.id)
-          .distance(200), // Distance between connected cards
+          .distance(75)
+          .strength(0.7),
       )
-      .force("charge", forceManyBody().strength(-500))
+      .force(
+        "charge",
+        forceManyBody<SimNode>().strength((d) => -120 - d.connectionCount * 12),
+      )
       .force("center", forceCenter(0, 0))
-      .force("collide", forceCollide(110))
+      .force(
+        "collide",
+        forceCollide<SimNode>((d) => d.radius + 22).iterations(2),
+      )
       .stop();
 
-    for (let i = 0; i < 120; ++i) simulation.tick();
+    for (let i = 0; i < 160; ++i) simulation.tick();
 
     const nodes: Node<PageNodeData>[] = simNodes.map((node) => ({
       id: node.id,
@@ -184,6 +246,10 @@ export function useGraphData(
         title: node.title,
         icon: node.icon,
         childCount: node.childCount,
+        connectionCount: node.connectionCount,
+        radius: node.radius,
+        color: node.color,
+        isRoot: node.isRoot,
       },
     }));
 
