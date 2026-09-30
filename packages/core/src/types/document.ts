@@ -31,7 +31,8 @@ export type DocumentBlockType =
   /** @deprecated Legacy spelling alias; use "separator" instead */
   | "seperator"
   | "table"
-  | "todo";
+  | "todo"
+  | "toggle_list";
 
 export interface DocumentBlock {
   id: string;

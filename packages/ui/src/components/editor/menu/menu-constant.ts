@@ -7,6 +7,7 @@ import {
   Heading2,
   Heading3,
   List,
+  ListCollapse,
   Quote,
   Type,
 } from "lucide-react";
@@ -18,6 +19,11 @@ export const TURN_INTO_OPTIONS = [
   { label: "Heading 3", type: "heading_3" as BlockType, icon: Heading3 },
   { label: "To-do list", type: "todo" as BlockType, icon: CheckSquare },
   { label: "Bulleted list", type: "bulleted_list" as BlockType, icon: List },
+  {
+    label: "Toggle list",
+    type: "toggle_list" as BlockType,
+    icon: ListCollapse,
+  },
   { label: "Code", type: "code" as BlockType, icon: Code },
   { label: "Quote", type: "quote" as BlockType, icon: Quote },
 ];

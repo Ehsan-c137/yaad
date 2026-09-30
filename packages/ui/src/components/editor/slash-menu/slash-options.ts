@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
   Kanban as KanbanIcon,
   List,
+  ListCollapse,
   Quote,
   Table,
   Text,
@@ -61,6 +62,13 @@ export const SLASH_OPTIONS: SlashOption[] = [
     description: "Create a simple bulleted list.",
     type: "bulleted_list",
     icon: List,
+  },
+  {
+    id: "toggle_list",
+    title: "Toggle list",
+    description: "Collapsible content with a heading.",
+    type: "toggle_list",
+    icon: ListCollapse,
   },
   {
     id: "todo",
