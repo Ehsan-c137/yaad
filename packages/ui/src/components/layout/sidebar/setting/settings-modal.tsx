@@ -16,11 +16,6 @@ import { KeyboardSection } from "./sections/keyboard-section";
 import { LanguageSection } from "./sections/language-section";
 
 interface SettingsModalProps {
-  /**
-   * Controlled open state — used when settings is opened from other UI
-   * (e.g. the sidebar Profile menu). When omitted, the modal manages its
-   * own state via the trigger button.
-   */
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }

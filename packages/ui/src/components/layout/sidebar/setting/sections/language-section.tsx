@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
 import { styles } from "@yaad/core/lib/design-token";
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -28,21 +35,34 @@ export function LanguageSection() {
         title={t("languageLabel")}
         subtitle={t("languageSubtitle")}
         control={
-          <select
+          <Select
             value={currentLanguage}
-            onChange={(e) => void i18n.changeLanguage(e.target.value)}
-            aria-label={t("languageLabel")}
-            className={cn(
-              "h-7 cursor-pointer rounded-lg border border-border/60 bg-muted/30 px-2 text-xs text-foreground",
-              "transition-colors focus:border-(--accent-blue) focus:outline-none focus:ring-1 focus:ring-(--accent-blue)",
-            )}
+            onValueChange={(val) => {
+              if (val) {
+                void i18n.changeLanguage(val);
+              }
+            }}
+            items={LANGUAGE_OPTIONS}
           >
-            {LANGUAGE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger
+              size="sm"
+              aria-label={t("languageLabel")}
+              className="min-w-28 text-xs"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end" alignItemWithTrigger={false}>
+              {LANGUAGE_OPTIONS.map((opt) => (
+                <SelectItem
+                  key={opt.value}
+                  value={opt.value}
+                  className="text-xs"
+                >
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         }
       />
     </>
