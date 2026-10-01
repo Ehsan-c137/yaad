@@ -12,9 +12,9 @@ import {
   getRandomPreset,
   getRandomUnsplashUrl,
 } from "../cover-presets";
-import { CoverGalleryCategories } from "./cover-gallery-categories";
-import { CoverGalleryForm } from "./cover-gallery-form";
-import { CoverGalleryItem } from "./cover-gallery-item";
+import { CoverGalleryCategories } from "./gallery-categories";
+import { CoverGalleryForm } from "./gallery-form";
+import { CoverGalleryItem } from "./gallery-item";
 
 export function CoverGalleryTab({
   onSelectCover,

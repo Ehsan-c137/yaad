@@ -222,9 +222,6 @@ describe("DocumentService (Integration Test)", () => {
     expect(mockedStorage.deleteDocument).toHaveBeenCalledWith("c1");
     expect(mockedStorage.removeBlob).toHaveBeenCalledWith("blob_1");
     expect(useTabStore.getState().tabs).toHaveLength(0);
-    expect(useSidebarStore.getState().pages.p1).toBeUndefined();
-    expect(useSidebarStore.getState().pages.c1).toBeUndefined();
-    expect(useSidebarStore.getState().rootPageIds).toEqual([]);
   });
 
   it("deletePageAndSubTree clears the in-memory document of deleted pages", async () => {

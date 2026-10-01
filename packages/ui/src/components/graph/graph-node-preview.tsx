@@ -61,7 +61,7 @@ export function GraphNodePreview({
     };
   }, [onClose]);
 
-  const hasIcon = Boolean(icon && icon !== "ðŸ“„");
+  const hasIcon = Boolean(icon && icon !== "📄");
 
   const handleOpenSidePeek = () => {
     openSidePeek(pageId);

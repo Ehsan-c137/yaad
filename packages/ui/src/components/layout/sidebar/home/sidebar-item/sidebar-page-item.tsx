@@ -150,7 +150,9 @@ function SidebarPageHeader({
         size="icon-xs"
         onClick={onToggleExpand}
         aria-label={
-          page.isExpanded ? t("editor:collapseToggle") : t("editor:expandToggle")
+          page.isExpanded
+            ? t("editor:collapseToggle")
+            : t("editor:expandToggle")
         }
         aria-expanded={page.isExpanded}
         aria-controls={`children-${pageId}`}

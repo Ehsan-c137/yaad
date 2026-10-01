@@ -74,9 +74,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
         type="button"
         role="checkbox"
         aria-checked={isChecked}
-        aria-label={
-          isChecked ? t("markTodoIncomplete") : t("markTodoComplete")
-        }
+        aria-label={isChecked ? t("markTodoIncomplete") : t("markTodoComplete")}
         onClick={handleToggleCheck}
         className={cn(
           "group relative mt-1 flex size-4 shrink-0 items-center justify-center rounded-[5px] border outline-none select-none",

@@ -12,7 +12,7 @@ import { useRecentPages } from "@/hooks/search/use-recent-pages";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
-import { DocsListItem } from "./docs-list";
+import { DocsListItem } from "./docs-list-item";
 
 const DEFAULT_LIMIT = 10;
 

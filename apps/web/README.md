@@ -30,6 +30,7 @@ pnpm preview
 ## Vercel Deployment
 
 To deploy `@yaad/web` to Vercel:
+
 - **Framework Preset**: Vite
 - **Root Directory**: `.` (monorepo root)
 - **Build Command**: `pnpm --filter @yaad/web build`

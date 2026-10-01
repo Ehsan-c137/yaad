@@ -8,13 +8,14 @@ import { useEffect, useMemo, useState } from "react";
 export function usePageSearch(
   debouncedQuery: string,
   selectedTagId?: string | null,
+  enabled: boolean = true,
 ): SearchItem[] {
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
   const pages = useSidebarStore((s) => s.pages);
   const [indexedResults, setIndexedResults] = useState<SearchItem[]>([]);
 
   const pageResults = useMemo(() => {
-    if (!activeWorkspaceId) return [];
+    if (!enabled || !activeWorkspaceId) return [];
 
     const rawQuery = debouncedQuery.trim();
     const isHashtag = rawQuery.startsWith("#");
@@ -57,6 +58,11 @@ export function usePageSearch(
 
   useEffect(() => {
     let cancelled = false;
+
+    if (!enabled) {
+      setIndexedResults([]);
+      return;
+    }
 
     async function loadTaggedBlocks() {
       if (!activeWorkspaceId || !storage.getTagsIndex) {
@@ -118,7 +124,7 @@ export function usePageSearch(
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery, selectedTagId, activeWorkspaceId, pages]);
+  }, [enabled, debouncedQuery, selectedTagId, activeWorkspaceId, pages]);
 
   return useMemo(() => {
     const results = [...pageResults];

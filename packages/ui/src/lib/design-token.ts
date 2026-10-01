@@ -1,6 +1,3 @@
-/**
- * @deprecated Design tokens have moved to `@yaad/ui/lib/design-token` to maintain Clean Architecture boundaries.
- */
 export const styles = {
   material: "material",
   materialHeavy: "material-heavy",

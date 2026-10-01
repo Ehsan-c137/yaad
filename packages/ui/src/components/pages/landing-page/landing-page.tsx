@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 
-import { LandingBento } from "./landing-bento";
-import { LandingDownloads } from "./landing-downloads";
-import { LandingFaq } from "./landing-faq";
-import { LandingFooter } from "./landing-footer";
-import { LandingHeader } from "./landing-header";
-import { LandingHero } from "./landing-hero";
-import { LandingWorkflow } from "./landing-workflow";
+import { LandingBento } from "./bento";
+import { LandingDownloads } from "./downloads";
+import { LandingFaq } from "./faq";
+import { LandingFooter } from "./footer";
+import { LandingHeader } from "./header";
+import { LandingHero } from "./hero";
+import { LandingWorkflow } from "./workflow";
 
 interface LandingPageProps {
   onOpenApp?: () => void;

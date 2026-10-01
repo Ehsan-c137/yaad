@@ -15,9 +15,7 @@ export const BookmarkButton = () => {
   );
   const toggleBookmarked = useSidebarStore((state) => state.toggleBookmarked);
 
-  const label = isBookmarked
-    ? t("removeFromBookmarks")
-    : t("addToBookmarks");
+  const label = isBookmarked ? t("removeFromBookmarks") : t("addToBookmarks");
 
   return (
     <Button

@@ -1,7 +1,7 @@
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
 
 import { formatRelativeTime } from "@yaad/core/lib/date-formatter";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ export function DocsListItem({
         className={cn(styles.listRow, "w-full cursor-pointer text-left")}
       >
         <span className="flex size-5 shrink-0 items-center justify-center text-sm select-none">
-          {item.icon ?? "ðŸ“„"}
+          {item.icon ?? "📄"}
         </span>
         <span className="min-w-0 flex-1 truncate text-foreground">
           {item.title}

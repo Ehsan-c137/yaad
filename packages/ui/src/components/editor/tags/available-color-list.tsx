@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { COLOR_OPTIONS } from "./tag-constants";
 
 interface AvailableColorListProps {
-  selectedColor: string;
+  selectedColor: TagColor;
   setSelectedColor: React.Dispatch<React.SetStateAction<TagColor>>;
 }
 

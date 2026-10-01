@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 import { BlockActionMenu } from "../menu/block-action-menu";
-import { COLOR_OPTIONS } from "../menu/menu-constant";
+import { COLOR_OPTIONS } from "../menu/menu-constants";
 import { BlockRenderer } from "./block-renderer";
 import { BlockTags } from "./block-tags";
 

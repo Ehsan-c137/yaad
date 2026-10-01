@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { AvailableColorList } from "./availabe-color-list";
+import { AvailableColorList } from "./available-color-list";
 
 interface TagGeneratorProps {
   tags: Tag[];

@@ -1,8 +1,10 @@
 "use client";
 
-import type { DocumentBlock } from "@yaad/core/types/document";
+import type {
+  CodeBlockProperties,
+  DocumentBlock,
+} from "@yaad/core/types/document";
 
-import { styles } from "@yaad/core/lib/design-token";
 import { useEffect, useState } from "react";
 import { bundledLanguages, codeToHtml } from "shiki";
 
@@ -10,12 +12,13 @@ import { useTranslation } from "react-i18next";
 
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { EditableContent } from "../editable-content";
 
 interface CodeBlockProps {
-  block: DocumentBlock;
+  block: DocumentBlock<CodeBlockProperties>;
 }
 
 function escapeHtml(value: string): string {

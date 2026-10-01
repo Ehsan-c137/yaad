@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
-    "@tauri-apps/api": "^2",
     "@xyflow/react": "^12.11.6",
     "@yaad/core": "workspace:*",
     "class-variance-authority": "^0.7.1",

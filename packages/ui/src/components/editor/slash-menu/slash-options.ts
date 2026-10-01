@@ -27,7 +27,10 @@ export interface SlashOption {
   icon: any;
 }
 
-export const SLASH_OPTION_KEYS: Record<string, { titleKey: string; descKey: string }> = {
+export const SLASH_OPTION_KEYS: Record<
+  string,
+  { titleKey: string; descKey: string }
+> = {
   text: { titleKey: "slashText", descKey: "slashTextDesc" },
   h1: { titleKey: "slashH1", descKey: "slashH1Desc" },
   h2: { titleKey: "slashH2", descKey: "slashH2Desc" },
@@ -42,7 +45,10 @@ export const SLASH_OPTION_KEYS: Record<string, { titleKey: string; descKey: stri
   table: { titleKey: "slashTable", descKey: "slashTableDesc" },
   image: { titleKey: "slashImage", descKey: "slashImageDesc" },
   page: { titleKey: "slashPage", descKey: "slashPageDesc" },
-  link_preview: { titleKey: "slashLinkPreview", descKey: "slashLinkPreviewDesc" },
+  link_preview: {
+    titleKey: "slashLinkPreview",
+    descKey: "slashLinkPreviewDesc",
+  },
   separator: { titleKey: "slashSeparator", descKey: "slashSeparatorDesc" },
 };
 

@@ -1,7 +1,6 @@
 import type { Workspace } from "@yaad/core/types/workspace";
 
 import { workspaceService } from "@yaad/core/services/workspace-service";
-import { toast } from "sonner";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { WorkspaceUpdates } from "../use-workspace-store";
@@ -9,22 +8,13 @@ import type { WorkspaceUpdates } from "../use-workspace-store";
 import { useSidebarStore } from "../use-sidebar-store";
 import { useWorkspaceStore } from "../use-workspace-store";
 
-vi.mock("@/services/workspace-service", () => ({
+vi.mock("@yaad/core/services/workspace-service", () => ({
   workspaceService: {
     getWorkspaces: vi.fn(),
     saveWorkspace: vi.fn(),
     deleteWorkspace: vi.fn(),
     getWorkspaceTree: vi.fn(),
     saveWorkspaceTree: vi.fn(),
-  },
-}));
-
-vi.mock("sonner", () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-    loading: vi.fn(),
-    dismiss: vi.fn(),
   },
 }));
 
@@ -171,19 +161,18 @@ describe("useWorkspaceStore (Unit Test)", () => {
       );
     });
 
-    it("rejects blank names with a toast and without persisting", async () => {
+    it("rejects blank names without persisting", async () => {
       useWorkspaceStore.setState({
         workspaces: { ws_a: makeWorkspace("ws_a") },
         activeWorkspaceId: "ws_a",
       });
 
-      await useWorkspaceStore
+      const res = await useWorkspaceStore
         .getState()
         .updateWorkspace("ws_a", { name: "   " });
 
-      expect(toast.error).toHaveBeenCalledWith(
-        "Workspace name cannot be empty.",
-      );
+      expect(res.success).toBe(false);
+      expect(res.error).toBe("Workspace name cannot be empty.");
       expect(mockedWorkspaceService.saveWorkspace).not.toHaveBeenCalled();
     });
 
@@ -203,11 +192,10 @@ describe("useWorkspaceStore (Unit Test)", () => {
         activeWorkspaceId: "ws_a",
       });
 
-      await useWorkspaceStore.getState().deleteWorkspace("ws_a");
+      const res = await useWorkspaceStore.getState().deleteWorkspace("ws_a");
 
-      expect(toast.error).toHaveBeenCalledWith(
-        "You must have at least one active workspace.",
-      );
+      expect(res.success).toBe(false);
+      expect(res.error).toBe("You must have at least one active workspace.");
       expect(mockedWorkspaceService.deleteWorkspace).not.toHaveBeenCalled();
       expect(useWorkspaceStore.getState().workspaces.ws_a).toBeDefined();
     });

@@ -64,8 +64,11 @@ export function ManageWorkspacesModal({
     }
   }, [isCreating]);
 
-  const handleRename = (ws: Workspace, name: string) => {
-    void updateWorkspace(ws.id, { name });
+  const handleRename = async (ws: Workspace, name: string) => {
+    const res = await updateWorkspace(ws.id, { name });
+    if (!res.success && res.error) {
+      toast.error(res.error);
+    }
   };
 
   const handleSelectIcon = (ws: Workspace, icon: string) => {
@@ -78,9 +81,13 @@ export function ManageWorkspacesModal({
     setIsDeleting(true);
 
     try {
-      await deleteWorkspace(deletingWorkspace.id);
-      toast.success(t("sidebar:deleted", { name: deletingWorkspace.name }));
-      setDeletingWorkspace(null);
+      const res = await deleteWorkspace(deletingWorkspace.id);
+      if (!res.success && res.error) {
+        toast.error(res.error);
+      } else {
+        toast.success(t("sidebar:deleted", { name: deletingWorkspace.name }));
+        setDeletingWorkspace(null);
+      }
     } finally {
       setIsDeleting(false);
     }

@@ -11,7 +11,7 @@ import {
 import { Repeat } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { TURN_INTO_OPTIONS } from "./menu-constant";
+import { TURN_INTO_OPTIONS } from "./menu-constants";
 
 interface BlockTurnIntoSubmenuProps {
   onChangeType: (type: DocumentBlockType) => void;

@@ -100,24 +100,4 @@ describe("LandingPage", () => {
 
     expect(screen.getByText(/100% locally on your own machine/i)).toBeDefined();
   });
-
-  it("allows switching terminal package manager tabs and copying command", () => {
-    render(
-      <MemoryRouter>
-        <LandingPage />
-      </MemoryRouter>,
-    );
-
-    const wingetTab = screen.getByRole("button", { name: /winget/i });
-    fireEvent.click(wingetTab);
-
-    expect(screen.getByText("winget install yaad")).toBeDefined();
-
-    const copyBtn = screen.getByRole("button", { name: /copy/i });
-    fireEvent.click(copyBtn);
-
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "winget install yaad",
-    );
-  });
 });

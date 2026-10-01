@@ -1,14 +1,14 @@
 "use client";
 
-import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useBookmarkedPages } from "@/hooks/sidebar/use-bookmarked-pages";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
-import { SidebarBookmarkItem } from "./sidebar-bookmark-item";
+import { SidebarBookmarkItem } from "./bookmark-item";
 
 export function SidebarBookmarks() {
   const { t } = useTranslation("sidebar");

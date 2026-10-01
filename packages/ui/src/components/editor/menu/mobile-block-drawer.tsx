@@ -40,7 +40,7 @@ import { useSidePeek } from "@/hooks/editor/use-side-peek";
 import { cn } from "@/lib/utils";
 
 import { TagPickerPopover } from "../tags/tag-picker-popover";
-import { COLOR_OPTIONS, TURN_INTO_OPTIONS } from "./menu-constant";
+import { COLOR_OPTIONS, TURN_INTO_OPTIONS } from "./menu-constants";
 
 interface MobileBlockDrawerProps {
   block: DocumentBlock;

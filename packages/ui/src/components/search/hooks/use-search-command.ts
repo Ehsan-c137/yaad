@@ -41,7 +41,11 @@ export function useSearchCommand(): UseSearchCommandReturn {
 
   const recentPages = useRecentPages(5);
   const tagResults = useTagSearch(debouncedQuery);
-  const searchResults = usePageSearch(debouncedQuery, selectedTagFilter?.id);
+  const searchResults = usePageSearch(
+    debouncedQuery,
+    selectedTagFilter?.id,
+    open,
+  );
 
   const handleOpenChange = useCallback((isOpen: boolean) => {
     setOpen(isOpen);

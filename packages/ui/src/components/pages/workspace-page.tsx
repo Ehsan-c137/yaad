@@ -26,11 +26,7 @@ export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
       <p className="text-sm text-muted-foreground">
         {t("selectPageHint")}{" "}
         <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
-          ⌘ + K
-        </kbd>{" "}
-        /{" "}
-        <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
-          Ctrl + K
+          ⌘ / ctrl K
         </kbd>{" "}
         {t("toSearch")}
       </p>

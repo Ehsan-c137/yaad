@@ -35,7 +35,7 @@ describe("CoverPickerModal", () => {
     expect(screen.getByText(/paintings/i)).toBeDefined();
 
     // Still Life Floral Oil painting preset should be present
-    const paintingPreset = screen.getByTitle("Still Life Floral Oil");
+    const paintingPreset = screen.getByAltText("Still Life Floral Oil");
     expect(paintingPreset).toBeDefined();
 
     // Clicking a preset triggers onSelectCover
@@ -47,7 +47,7 @@ describe("CoverPickerModal", () => {
   });
 
   it("switches to upload tab and handles file input", async () => {
-    const { container } = render(
+    render(
       <CoverPickerModal
         isOpen={true}
         onClose={onClose}
@@ -213,10 +213,10 @@ describe("CoverPickerModal", () => {
     fireEvent.change(searchInput, { target: { value: "hokusai" } });
 
     // Hokusai preset should be visible
-    expect(screen.getByTitle("Ukiyo-e Woodblock Print")).toBeDefined();
+    expect(screen.getByAltText("Ukiyo-e Woodblock Print")).toBeDefined();
 
     // Still Life Floral Oil should not be visible
-    expect(screen.queryByTitle("Still Life Floral Oil")).toBeNull();
+    expect(screen.queryByAltText("Still Life Floral Oil")).toBeNull();
   });
 
   it("selects a surprise preset when clicking surprise me", () => {

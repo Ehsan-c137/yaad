@@ -2,11 +2,15 @@ import type { Workspace } from "@yaad/core/types/workspace";
 
 import { generateWorkspaceId } from "@yaad/core/lib/id";
 import { workspaceService } from "@yaad/core/services/workspace-service";
-import { toast } from "sonner";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { useSidebarStore } from "./use-sidebar-store";
+
+export interface WorkspaceOperationResult {
+  success: boolean;
+  error?: string;
+}
 
 interface WorkspaceState {
   workspaces: Record<string, Workspace>;
@@ -17,8 +21,11 @@ interface WorkspaceState {
   setHasHydrated: (state: boolean) => void;
   setActiveWorkspace: (id: string) => Promise<void>;
   createWorkspace: (name: string, icon?: string) => Promise<string>;
-  updateWorkspace: (id: string, updates: WorkspaceUpdates) => Promise<void>;
-  deleteWorkspace: (id: string) => Promise<void>;
+  updateWorkspace: (
+    id: string,
+    updates: WorkspaceUpdates,
+  ) => Promise<WorkspaceOperationResult>;
+  deleteWorkspace: (id: string) => Promise<WorkspaceOperationResult>;
   loadInitialWorkspaces: () => Promise<void>;
 }
 
@@ -99,13 +106,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       updateWorkspace: async (id: string, updates: WorkspaceUpdates) => {
         const current = get().workspaces[id];
-        if (!current) return;
+        if (!current) return { success: false, error: "Workspace not found" };
 
         const name = updates.name?.trim();
 
         if (updates.name !== undefined && !name) {
-          toast.error("Workspace name cannot be empty.");
-          return;
+          return { success: false, error: "Workspace name cannot be empty." };
         }
 
         const updatedWs: Workspace = {
@@ -120,14 +126,18 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         set((state) => ({
           workspaces: { ...state.workspaces, [id]: updatedWs },
         }));
+
+        return { success: true };
       },
 
       deleteWorkspace: async (id: string) => {
         const state = get();
 
         if (Object.keys(state.workspaces).length <= 1) {
-          toast.error("You must have at least one active workspace.");
-          return;
+          return {
+            success: false,
+            error: "You must have at least one active workspace.",
+          };
         }
 
         await workspaceService.deleteWorkspace(id);
@@ -147,6 +157,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         });
 
         await useSidebarStore.getState().loadWorkspacePages(nextActiveId);
+        return { success: true };
       },
     }),
     {

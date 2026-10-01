@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
-import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/link";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
@@ -55,19 +54,18 @@ function PageHeaderTitle() {
         className="text-sf-large-title leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem]"
         onChange={handleTitleChange}
       />
-      <Button variant="ghost" size="icon" title={t("editor:graphView")}>
-        <Link
-          href={`/${ROUTES.workspace}/${encodeURI(workspaceId ?? "")}/${encodeURI(pageId ?? "")}/graph`}
-          title={t("editor:graphView")}
-          className={cn(
-            "inline-flex size-7 items-center justify-center rounded-lg",
-            "text-muted-foreground transition-colors",
-            "hover:bg-muted hover:text-foreground",
-          )}
-        >
-          <Network className="size-4" strokeWidth={1.5} />
-        </Link>
-      </Button>
+      <Link
+        href={`/${ROUTES.workspace}/${encodeURI(workspaceId ?? "")}/${encodeURI(pageId ?? "")}/graph`}
+        title={t("editor:graphView")}
+        aria-label={t("editor:graphView")}
+        className={cn(
+          "inline-flex size-8 items-center justify-center rounded-xl",
+          "text-muted-foreground transition-[background-color,color,box-shadow,transform] duration-250 ease-(--spring)",
+          "hover:bg-foreground/[0.06] hover:text-foreground active:scale-95",
+        )}
+      >
+        <Network className="size-4" strokeWidth={1.5} />
+      </Link>
     </div>
   );
 }

@@ -456,6 +456,7 @@ export const createPagesSlice: StateCreator<
 
     permanentlyDeletePage: async (pageId: string) => {
       await documentService.deletePageAndSubTree(pageId);
+      get().deletePage(pageId);
     },
 
     emptyTrash: async () => {
@@ -473,6 +474,10 @@ export const createPagesSlice: StateCreator<
             : Promise.resolve();
         }),
       );
+
+      trashedIds.forEach((id) => {
+        get().deletePage(id);
+      });
     },
 
     /* eslint-disable-next-line max-params */

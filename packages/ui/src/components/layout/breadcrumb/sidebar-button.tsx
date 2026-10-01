@@ -29,10 +29,7 @@ export function SidebarToggleButton() {
         data-tauri-no-drag-region="true"
         className="[app-region:no-drag]"
       >
-        <PanelLeftOpen
-          strokeWidth={1.75}
-          className="size-4 rtl:scale-x-[-1]"
-        />
+        <PanelLeftOpen strokeWidth={1.75} className="size-4 rtl:scale-x-[-1]" />
       </Button>
       <div className="mx-0.5 h-4 w-px bg-border/60 dark:bg-white/10" />
     </div>

@@ -34,12 +34,61 @@ export type DocumentBlockType =
   | "todo"
   | "toggle_list";
 
-export interface DocumentBlock {
+export interface TextBlockProperties {
+  title?: RichTextSegment[];
+  icon?: string;
+}
+
+export interface TodoBlockProperties extends TextBlockProperties {
+  checked?: boolean;
+}
+
+export interface CodeBlockProperties extends TextBlockProperties {
+  language?: string;
+}
+
+export interface TableBlockProperties {
+  cells?: string[][];
+}
+
+export interface ImageBlockProperties {
+  source?: string;
+  caption?: string;
+  blobId?: string;
+}
+
+export interface PageBlockProperties {
+  title?: RichTextSegment[];
+  targetPageId?: string;
+  icon?: string;
+}
+
+export interface KanbanBlockProperties {
+  columns?: Array<{
+    id: string;
+    title: string;
+    cardIds: string[];
+  }>;
+}
+
+export type BlockProperties =
+  | TextBlockProperties
+  | TodoBlockProperties
+  | CodeBlockProperties
+  | TableBlockProperties
+  | ImageBlockProperties
+  | PageBlockProperties
+  | KanbanBlockProperties
+  | Record<string, any>;
+
+export interface DocumentBlock<
+  TProperties extends Record<string, any> = Record<string, any>,
+> {
   id: string;
   type: DocumentBlockType;
   parentId: string | null;
   childrenIds: string[];
-  properties: Record<string, any>;
+  properties: TProperties;
   format?: Record<string, any>;
   tags?: Tag[];
   createdAt: number;

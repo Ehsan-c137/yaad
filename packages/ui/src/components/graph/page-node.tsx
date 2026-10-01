@@ -55,8 +55,7 @@ export const PageNode = memo(function PageNode({
         }}
         className={cn(
           "relative flex items-center justify-center rounded-full border-2 transition-all duration-150 ease-out",
-          (isHovered || selected) &&
-            "scale-125 shadow-lg ring-2 ring-white/70",
+          (isHovered || selected) && "scale-125 shadow-lg ring-2 ring-white/70",
           isNeighbor && "scale-110",
         )}
       >

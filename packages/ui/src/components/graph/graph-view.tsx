@@ -93,7 +93,7 @@ function GraphCanvas({ nodes, edges, workspaceId }: GraphCanvasProps) {
   // Derive display nodes with hover/neighbor/dimmed states
   const displayNodes = useMemo(() => {
     const neighbors = hoveredNodeId
-      ? adjacencyMap.get(hoveredNodeId) ?? new Set<string>()
+      ? (adjacencyMap.get(hoveredNodeId) ?? new Set<string>())
       : null;
 
     return canvasNodes.map((node) => {

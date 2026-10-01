@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import { WelcomeModal } from "@/components/onboarding/welcome-modal";
 
-import { SettingsModal } from "../setting/settings-modal";
+import { SettingsModal } from "../settings/settings-modal";
 
 export function Profile() {
   const { t } = useTranslation("sidebar");

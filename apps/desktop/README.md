@@ -36,6 +36,7 @@ pnpm tauri build
 
 After running `pnpm tauri build`, the generated installers and standalone binaries are saved in:
 `apps/desktop/src-tauri/target/release/bundle/`
+
 - **Windows**: `.msi` and `.exe` (NSIS)
 - **macOS**: `.dmg` and `.app`
 - **Linux**: `.deb` and `.AppImage`

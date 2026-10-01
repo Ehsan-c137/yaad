@@ -14,7 +14,7 @@ import { Paintbrush } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import { BlockMenuLabel } from "./block-menu-label";
-import { COLOR_OPTIONS } from "./menu-constant";
+import { COLOR_OPTIONS } from "./menu-constants";
 
 interface BlockColorSubmenuProps {
   onApplyColor: (color: BlockColorUpdate) => void;

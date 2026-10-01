@@ -132,9 +132,7 @@ export function SidebarActions({
         >
           <Copy className="size-3.5 text-muted-foreground" />
           <span>
-            {isDuplicating
-              ? t("sidebar:duplicating")
-              : t("sidebar:duplicate")}
+            {isDuplicating ? t("sidebar:duplicating") : t("sidebar:duplicate")}
           </span>
         </Button>
 

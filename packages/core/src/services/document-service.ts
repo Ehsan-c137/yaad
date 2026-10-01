@@ -201,8 +201,6 @@ export class DocumentService {
       useTabStore.getState().removeTabByPageId(id);
     });
 
-    useSidebarStore.getState().deletePage(pageId);
-
     pageIdsArray.forEach((id) => {
       const docStore = getDocumentStore(id);
 

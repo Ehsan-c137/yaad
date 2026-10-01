@@ -37,9 +37,9 @@ export function ToggleThemeButton() {
 
     await document.startViewTransition(() => {
       flushSync(() => {
-        setIsDarkMode(isDarkMode);
-        setTheme(isDarkMode ? "dark" : "light");
-        handleTheme(isDarkMode);
+        setIsDarkMode(isDark);
+        setTheme(isDark ? "dark" : "light");
+        handleTheme(isDark);
       });
     }).ready;
 

@@ -1,14 +1,14 @@
 import { Tabs, TabsList, TabsTrigger } from "@ui/tabs";
-import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark, House } from "lucide-react";
 import { useState } from "react";
 
 import { useTranslation } from "react-i18next";
 
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
-import { SidebarBookmarks } from "./bookmarks/sidebar-bookmarks";
+import { SidebarBookmarks } from "./bookmarks/bookmarks";
 import { SidebarHome } from "./home/sidebar-home";
 
 type Tab = "bookmarked" | "home";

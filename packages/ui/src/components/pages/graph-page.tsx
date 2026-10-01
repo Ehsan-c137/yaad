@@ -52,7 +52,7 @@ interface GraphPageHeaderProps {
 
 function GraphPageHeader({ workspaceId, pageId, page }: GraphPageHeaderProps) {
   const { t } = useTranslation(["editor", "common"]);
-  const pageIcon = page?.icon && page.icon !== "ðŸ“„" ? page.icon : undefined;
+  const pageIcon = page?.icon && page.icon !== "📄" ? page.icon : undefined;
 
   return (
     <div className="flex shrink-0 items-center gap-2.5 border-b border-border/50 px-6 py-3">

@@ -123,7 +123,9 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
           )}
         >
           <ArrowLeft className="size-3.5 rtl:rotate-180" />
-          <span>{t("search:backTo", { name: workspace?.name || "Workspace" })}</span>
+          <span>
+            {t("search:backTo", { name: workspace?.name || "Workspace" })}
+          </span>
         </Link>
       </div>
 
@@ -254,7 +256,9 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
                     className="h-8 gap-1.5 text-xs text-foreground hover:bg-foreground/8 hover:text-foreground"
                   >
                     <RotateCcw className="size-3.5 text-(--accent-blue)" />
-                    <span className="hidden sm:inline">{t("common:restore")}</span>
+                    <span className="hidden sm:inline">
+                      {t("common:restore")}
+                    </span>
                   </Button>
 
                   <Button
@@ -267,7 +271,9 @@ export function TrashPage({ workspaceId }: TrashPageProps) {
                     className="h-8 gap-1.5 text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   >
                     <Trash2 className="size-3.5" />
-                    <span className="hidden sm:inline">{t("common:delete")}</span>
+                    <span className="hidden sm:inline">
+                      {t("common:delete")}
+                    </span>
                   </Button>
                 </div>
               </div>

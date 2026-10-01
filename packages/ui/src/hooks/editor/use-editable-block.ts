@@ -5,6 +5,8 @@ import type {
   DocumentBlockType,
 } from "@yaad/core/types/document";
 
+import { useCallback } from "react";
+
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
@@ -25,29 +27,38 @@ export function useEditableBlock(block: DocumentBlock) {
 
   const text = block.properties?.title?.[0]?.text ?? "";
 
-  const handleChange = (newText: string) => {
-    void updateBlockProperties(block.id, pageId, {
-      title: [{ text: newText }],
-    });
-  };
+  const handleChange = useCallback(
+    (newText: string) => {
+      void updateBlockProperties(block.id, pageId, {
+        title: [{ text: newText }],
+      });
+    },
+    [block.id, pageId, updateBlockProperties],
+  );
 
-  const handleBackspaceEmpty = () => {
+  const handleBackspaceEmpty = useCallback(() => {
     if (block.id !== "root") {
       void deleteBlock(block.id);
     }
-  };
+  }, [block.id, deleteBlock]);
 
-  const handleClearFocus = () => {
+  const handleClearFocus = useCallback(() => {
     setFocusedBlockId(null);
-  };
+  }, [setFocusedBlockId]);
 
-  const handleTransformType = (newType: DocumentBlockType) => {
-    void changeBlockType(block.id, newType);
-  };
+  const handleTransformType = useCallback(
+    (newType: DocumentBlockType) => {
+      void changeBlockType(block.id, newType);
+    },
+    [block.id, changeBlockType],
+  );
 
-  const insertBlockBelow = (type: DocumentBlockType = "paragraph") => {
-    void addBlock(block.parentId ?? "root", block.id, type);
-  };
+  const insertBlockBelow = useCallback(
+    (type: DocumentBlockType = "paragraph") => {
+      void addBlock(block.parentId ?? "root", block.id, type);
+    },
+    [block.parentId, block.id, addBlock],
+  );
 
   return {
     pageId,

@@ -10,7 +10,7 @@ import { ImageBlock } from "./elements/image-block";
 import { LinkPreviewBlock } from "./elements/link-preview-block";
 import { PageBlock } from "./elements/page-block";
 import { QuoteBlock } from "./elements/quote-block";
-import { SeparatorBlock } from "./elements/seperator-block";
+import { SeparatorBlock } from "./elements/separator-block";
 import { TableBlock } from "./elements/table-block";
 import { TextBlock } from "./elements/text-block";
 import { TodoBlock } from "./elements/todo-block";

@@ -90,6 +90,7 @@ Yaad utilizes [Zustand](https://github.com/pmndrs/zustand) for reactive state ma
 To prevent race conditions and cross-document state bleeding, each open document has an independent store instance managed via a store registry in `use-document-store.ts`.
 
 #### Memory Leak Prevention
+
 When tabs are closed (`closeTab`, `closeOtherTabs`, `closeTabsToRight`, `closeAllTabs`, or switching workspaces), [`useTabStore`](file:///d:/CODE/CODE/yaad/packages/core/src/store/use-tab-store.ts) automatically triggers:
 
 ```typescript
@@ -110,13 +111,13 @@ Each document is structured as a flat dictionary of blocks with hierarchical par
 
 ```typescript
 export interface DocumentBlock {
-  id: string;                      // blk_<nanoid>
-  type: DocumentBlockType;         // "paragraph", "heading_1", "todo", etc.
-  parentId: string | null;         // Parent block ID or null for root
-  childrenIds: string[];           // Ordered array of child block IDs
+  id: string; // blk_<nanoid>
+  type: DocumentBlockType; // "paragraph", "heading_1", "todo", etc.
+  parentId: string | null; // Parent block ID or null for root
+  childrenIds: string[]; // Ordered array of child block IDs
   properties: Record<string, any>; // Block-specific payload (text, checked, language, etc.)
-  format?: Record<string, any>;    // Visual formatting (align, bgColor, etc.)
-  tags?: Tag[];                    // Block-level tags
+  format?: Record<string, any>; // Visual formatting (align, bgColor, etc.)
+  tags?: Tag[]; // Block-level tags
   createdAt: number;
   updatedAt: number;
 }
@@ -141,12 +142,12 @@ Common block behaviors (focus management, cursor position, Enter to split, Backs
 
 All system entities use strongly-typed, prefixed identifiers generated via [`packages/core/src/lib/id.ts`](file:///d:/CODE/CODE/yaad/packages/core/src/lib/id.ts):
 
-| Entity | Prefix Format | Generator Function | Example |
-|---|---|---|---|
-| Page | `page_<nanoid>` | `generatePageId()` | `page_V1StGXR8_Z` |
-| Block | `blk_<nanoid>` | `generateBlockId()` | `blk_u47f8B-9L` |
-| Workspace | `ws_<nanoid>` | `generateWorkspaceId()` | `ws_9m18Zpx0` |
-| Kanban Card | `crd_<nanoid>` | `generateCardId()` | `crd_k87a1F0z` |
+| Entity      | Prefix Format   | Generator Function      | Example           |
+| ----------- | --------------- | ----------------------- | ----------------- |
+| Page        | `page_<nanoid>` | `generatePageId()`      | `page_V1StGXR8_Z` |
+| Block       | `blk_<nanoid>`  | `generateBlockId()`     | `blk_u47f8B-9L`   |
+| Workspace   | `ws_<nanoid>`   | `generateWorkspaceId()` | `ws_9m18Zpx0`     |
+| Kanban Card | `crd_<nanoid>`  | `generateCardId()`      | `crd_k87a1F0z`    |
 
 This standard eliminates ambiguity across URLs, tree nodes, block parent pointers, and database foreign keys.
 
@@ -155,6 +156,7 @@ This standard eliminates ambiguity across URLs, tree nodes, block parent pointer
 ## 6. Knowledge Graph Visualization
 
 The interactive knowledge graph (`GraphPage` in `@yaad/ui`) is implemented using `@xyflow/react` coupled with a `d3-force` simulation:
+
 - **Global View**: Renders all pages in the current workspace as nodes and cross-page links as directed edges.
 - **Local View**: Scopes the graph to a single target `pageId` and its immediate 1st and 2nd-degree neighbors.
 - **Node Interaction**: Clicking a node navigates immediately to `/workspace/:workspaceId/:pageId`.

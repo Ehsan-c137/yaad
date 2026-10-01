@@ -6,6 +6,7 @@ import { Check, ChevronsUpDown, Settings2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 import {
   Popover,
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { ManageWorkspacesModal } from "./manage-workspace/manage-workspaces-modal";
+import { ManageWorkspacesModal } from "./manage-workspaces/manage-workspaces-modal";
 import { WorkspaceForm } from "./workspace-form";
 
 export function WorkspaceSwitcher() {
@@ -38,7 +39,9 @@ export function WorkspaceSwitcher() {
     : null;
 
   if (!activeWorkspace)
-    return <p className="text-sm text-muted-foreground">{t("common:loading")}</p>;
+    return (
+      <p className="text-sm text-muted-foreground">{t("common:loading")}</p>
+    );
 
   return (
     <>
@@ -117,7 +120,10 @@ export function WorkspaceSwitcher() {
                         type="button"
                         onClick={async (e) => {
                           e.stopPropagation();
-                          await deleteWorkspace(ws.id);
+                          const res = await deleteWorkspace(ws.id);
+                          if (!res.success && res.error) {
+                            toast.error(res.error);
+                          }
                         }}
                         aria-label={t("sidebar:deleteWorkspace", {
                           name: ws.name,

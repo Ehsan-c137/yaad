@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 
 import { documentService } from "@yaad/core/services/document-service";
+import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 
 import type { DocumentCoreSlice, DocumentState } from "./types";
 
@@ -33,5 +34,6 @@ export const createCoreSlice: StateCreator<
     if (!documentId) return;
 
     await documentService.deletePageAndSubTree(documentId);
+    useSidebarStore.getState().deletePage(documentId);
   },
 });

@@ -2,7 +2,7 @@ import type { DocumentBlockType } from "@yaad/core/types/document";
 
 import { describe, expect, it } from "vitest";
 
-import { COLOR_OPTIONS, TURN_INTO_OPTIONS } from "../menu-constant";
+import { COLOR_OPTIONS, TURN_INTO_OPTIONS } from "../menu-constants";
 
 const VALID_BLOCK_TYPES: DocumentBlockType[] = [
   "bulleted_list",

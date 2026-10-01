@@ -92,7 +92,9 @@ export function ImportConfirmDialog({
             onClick={onConfirm}
             disabled={isImporting}
           >
-            {isImporting ? t("settings:importing") : t("settings:confirmImport")}
+            {isImporting
+              ? t("settings:importing")
+              : t("settings:confirmImport")}
           </Button>
         </DialogFooter>
       </DialogContent>

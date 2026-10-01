@@ -37,9 +37,7 @@ export function AccountSection() {
             size="xs"
             onClick={() => setIsEditOpen(true)}
             aria-label={
-              userName
-                ? t("settings:editYourName")
-                : t("settings:addYourName")
+              userName ? t("settings:editYourName") : t("settings:addYourName")
             }
           >
             {userName ? t("common:edit") : t("common:add")}

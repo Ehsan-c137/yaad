@@ -105,8 +105,7 @@ export function SidePeekPanel() {
     const minWidth = Math.min(MIN_WIDTH, maxWidth);
     const STEP = 24;
     const isRtl =
-      typeof document !== "undefined" &&
-      document.documentElement.dir === "rtl";
+      typeof document !== "undefined" && document.documentElement.dir === "rtl";
 
     const isExpand =
       (!isRtl && e.key === "ArrowLeft") || (isRtl && e.key === "ArrowRight");

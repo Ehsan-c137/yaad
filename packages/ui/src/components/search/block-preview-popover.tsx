@@ -225,7 +225,7 @@ function PreviewCard({
     >
       {/* Header: page title */}
       <div className="flex items-center gap-1.5 border-b border-border/50 bg-muted/30 px-3 py-1.5">
-        <span className="text-xs select-none">{item.icon ?? "ðŸ“„"}</span>
+        <span className="text-xs select-none">{item.icon ?? "📄"}</span>
         <span className="truncate text-[11px] font-medium text-muted-foreground">
           {item.title}
         </span>

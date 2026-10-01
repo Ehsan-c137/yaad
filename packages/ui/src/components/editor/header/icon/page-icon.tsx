@@ -1,5 +1,4 @@
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
-import { useEffect, useState } from "react";
 
 import { IconPickerPopover } from "@/components/shared/icon-picker-popover";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
@@ -16,23 +15,16 @@ export function PageIcon() {
     (store) => store.updatePageTitleInTree,
   );
 
-  const [icon, setIcon] = useState<string | undefined>("ðŸ“„");
-
-  useEffect(() => {
-    setIcon(savedIcon);
-  }, [savedIcon]);
+  const icon = savedIcon ?? "📄";
 
   if (!currentDocumentId) return null;
 
   const handleIcon = async (newIcon: string) => {
-    setIcon(newIcon);
-    updatePageTitleInTree(currentDocumentId, undefined, icon);
-
+    updatePageTitleInTree(currentDocumentId, undefined, newIcon);
     await updateIcon(newIcon);
   };
 
   const handleRemoveIcon = async () => {
-    setIcon(undefined);
     updatePageTitleInTree(currentDocumentId, undefined, undefined);
     await removePageIcon();
   };

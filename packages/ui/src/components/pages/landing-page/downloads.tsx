@@ -2,7 +2,7 @@ import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Download, Globe, ShieldCheck, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
-import { AppleIcon, LinuxIcon, WindowsIcon } from "./landing-platform-utils";
+import { AppleIcon, LinuxIcon, WindowsIcon } from "./platform-utils";
 
 export function LandingDownloads() {
   const activeWorkspaceId = useWorkspaceStore(

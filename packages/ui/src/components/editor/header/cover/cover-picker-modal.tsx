@@ -12,9 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import type { CoverPickerModalProps } from "./cover-picker-types";
 
-import { CoverGalleryTab } from "./tabs/cover-gallery-tab";
-import { CoverLinkTab } from "./tabs/cover-link-tab";
-import { CoverUploadTab } from "./tabs/cover-upload-tab";
+import { CoverGalleryTab } from "./tabs/gallery-tab";
+import { CoverLinkTab } from "./tabs/link-tab";
+import { CoverUploadTab } from "./tabs/upload-tab";
 
 export function CoverPickerModal({
   isOpen,

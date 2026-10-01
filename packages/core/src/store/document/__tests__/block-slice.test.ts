@@ -324,7 +324,9 @@ describe("document block-slice (Unit Test)", () => {
 
     await vi.advanceTimersByTimeAsync(500);
 
-    expect(mockedDocumentService.saveDocument).toHaveBeenCalledWith();
+    expect(mockedDocumentService.saveDocument).toHaveBeenCalledWith(
+      expect.objectContaining({ id: pageId }),
+    );
   });
 
   it("removeTagFromBlock removes a tag from the target block", async () => {

@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { lazy } from "react";
 import {
   BrowserRouter,
@@ -54,10 +55,16 @@ function PageGraphRoute() {
   return <GraphPage workspaceId={workspaceId ?? ""} pageId={pageId} />;
 }
 
+const desktopWindowControls = {
+  minimize: () => void getCurrentWindow().minimize(),
+  toggleMaximize: () => void getCurrentWindow().toggleMaximize(),
+  close: () => void getCurrentWindow().close(),
+};
+
 export default function App() {
   return (
     <BrowserRouter>
-      <Providers>
+      <Providers windowControls={desktopWindowControls}>
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />

@@ -3,7 +3,7 @@ import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowRight, Download, Heart, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
-import { GithubIcon } from "./landing-platform-utils";
+import { GithubIcon } from "./platform-utils";
 
 export function LandingFooter() {
   const activeWorkspaceId = useWorkspaceStore(

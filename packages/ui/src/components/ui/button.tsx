@@ -103,7 +103,6 @@ function Button({
     return (
       <Tooltip>
         <TooltipTrigger
-          delay={200}
           render={
             disabled ? (
               <span tabIndex={0} className="inline-flex">

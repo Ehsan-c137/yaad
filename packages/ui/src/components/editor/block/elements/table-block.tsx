@@ -1,6 +1,9 @@
 "use client";
 
-import type { DocumentBlock } from "@yaad/core/types/document";
+import type {
+  DocumentBlock,
+  TableBlockProperties,
+} from "@yaad/core/types/document";
 
 import { Button } from "@ui/button";
 import { Plus, Trash2 } from "lucide-react";
@@ -11,7 +14,7 @@ import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 interface TableBlockProps {
-  block: DocumentBlock;
+  block: DocumentBlock<TableBlockProperties>;
 }
 
 export function TableBlock({ block }: TableBlockProps) {
@@ -73,7 +76,7 @@ export function TableBlock({ block }: TableBlockProps) {
           <tr className="bg-muted/30">
             {Array.from({ length: colCount }).map((_, colIndex) => (
               <th
-                key={colIndex}
+                key={`th_${block.id}_${colIndex}`}
                 className="border border-border p-1 text-center"
               >
                 <div className="flex items-center justify-between px-1 text-[10px] text-muted-foreground">
@@ -96,10 +99,13 @@ export function TableBlock({ block }: TableBlockProps) {
         </thead>
         <tbody>
           {rows.map((row: string[], rowIndex: number) => (
-            <tr key={rowIndex} className="group/row border-b border-border">
+            <tr
+              key={`row_${block.id}_${rowIndex}`}
+              className="group/row border-b border-border"
+            >
               {row.map((cellText: string, colIndex: number) => (
                 <td
-                  key={colIndex}
+                  key={`cell_${block.id}_${rowIndex}_${colIndex}`}
                   className="min-w-[120px] border-e border-border bg-background p-2 focus-within:ring-1 focus-within:ring-ring"
                 >
                   <input

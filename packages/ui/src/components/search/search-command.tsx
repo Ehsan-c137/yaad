@@ -15,7 +15,7 @@ import { MatchingTagsGroup } from "./search-group-tags";
 import { TagFilterBanner } from "./search-tag-filter-banner";
 import { SearchTrigger } from "./search-trigger";
 
-export function SearchBox() {
+export function SearchCommand() {
   const { t } = useTranslation("search");
   const {
     open,
@@ -97,3 +97,5 @@ export function SearchBox() {
     </div>
   );
 }
+
+export const SearchBox = SearchCommand;
