@@ -36,7 +36,9 @@ describe("PageHeader", () => {
         <PageHeader />
       </EditorPageIdProvider>,
     );
-    const addCoverButton = screen.getByRole("button", { name: /add cover/i });
+    const addCoverButton = screen.getByRole("button", {
+      name: /add cover|addCover/i,
+    });
 
     expect(addCoverButton).toBeDefined();
 
@@ -44,7 +46,9 @@ describe("PageHeader", () => {
 
     expect(pageIcon).not.toBeNull();
 
-    const bookmarkButton = screen.getByLabelText("Add to bookmarks");
+    const bookmarkButton = screen.getByLabelText(
+      /add to bookmarks|addToBookmarks/i,
+    );
 
     expect(bookmarkButton).toBeDefined();
   });

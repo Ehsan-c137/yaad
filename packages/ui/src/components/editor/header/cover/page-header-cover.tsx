@@ -1,6 +1,6 @@
+import { documentService } from "@yaad/core/services/document-service";
 import { ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -24,15 +24,57 @@ export function PageHeaderCover() {
   const [isFaildToLoad, setFaildToLoad] = useState(false);
 
   useEffect(() => {
-    setCoverUrl(coverImage);
+    let active = true;
+    let objectUrl: string | null = null;
+
+    setFaildToLoad(false);
+
+    if (!coverImage) {
+      setCoverUrl(undefined);
+      return;
+    }
+
+    if (coverImage.startsWith("blob_")) {
+      void documentService
+        .getBlob(coverImage)
+        .then((blob) => {
+          if (!active) return;
+          if (blob) {
+            objectUrl = URL.createObjectURL(blob);
+            setCoverUrl(objectUrl);
+            setFaildToLoad(false);
+          } else {
+            setFaildToLoad(true);
+          }
+        })
+        .catch(() => {
+          if (active) setFaildToLoad(true);
+        });
+    } else {
+      setCoverUrl(coverImage);
+      setFaildToLoad(false);
+    }
+
+    return () => {
+      active = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
   }, [coverImage]);
 
   const handleRemoveCover = async () => {
+    if (coverImage?.startsWith("blob_")) {
+      await documentService.deleteBlobs([coverImage]);
+    }
     setCoverUrl(undefined);
     await removeCoverImage();
   };
 
   const handleCover = async (url: string) => {
+    if (coverImage?.startsWith("blob_") && coverImage !== url) {
+      await documentService.deleteBlobs([coverImage]);
+    }
     setCoverUrl(url);
     await updatePageCover(url);
   };
@@ -46,7 +88,7 @@ export function PageHeaderCover() {
         >
           {isFaildToLoad ? (
             <div className="w-full h-full flex items-end justify-start p-3 bg-linear-to-r from-blue-200 to-cyan-200 ">
-              <p className=" opacity-80">{t("imageNotLoaded")}</p>
+              <p className="opacity-80">{t("imageNotLoaded")}</p>
             </div>
           ) : (
             <Image
@@ -79,7 +121,7 @@ export function PageHeaderCover() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleRemoveCover}
+              onClick={() => void handleRemoveCover()}
               className="text-xs"
             >
               {t("removeCover")}
@@ -104,7 +146,8 @@ export function PageHeaderCover() {
       <CoverPickerModal
         isOpen={isCoverModalOpen}
         onClose={() => setIsCoverModalOpen(false)}
-        onSelectCover={(url) => handleCover(url)}
+        onSelectCover={(url) => void handleCover(url)}
+        currentCover={coverImage}
       />
     </>
   );

@@ -179,6 +179,10 @@ export class DocumentService {
       pageIdsArray.map(async (id) => {
         const doc = await storage.getDocument(id);
 
+        if (doc?.coverImage?.startsWith("blob_")) {
+          blobsToDelete.add(doc.coverImage);
+        }
+
         if (doc?.blocks) {
           for (const block of Object.values(doc.blocks)) {
             if (block.properties?.blobId) {
