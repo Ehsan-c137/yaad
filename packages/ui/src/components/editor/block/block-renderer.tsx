@@ -77,7 +77,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
 
     case "kanban":
       return (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="h-68" />}>
           <KanbanBlock block={block} />
         </Suspense>
       );
