@@ -17,7 +17,17 @@ export function WorkspaceInitializer({ children }: WorkspaceInitializerProps) {
   const loadInitialWorkspaces = useWorkspaceStore(
     (state) => state.loadInitialWorkspaces,
   );
+  const isTauri =
+    typeof window !== "undefined" &&
+    ("__TAURI_INTERNALS__" in window || "__TAURI__" in window);
+  const isLanding = !isTauri && (pathname === "/" || pathname === "/landing");
+
   useEffect(() => {
+    if (isLanding) {
+      setIsHydrated(true);
+      return;
+    }
+
     let unsubscribeSidebar: (() => void) | undefined;
 
     async function boot() {
@@ -74,11 +84,6 @@ export function WorkspaceInitializer({ children }: WorkspaceInitializerProps) {
       }
     };
   }, [loadInitialWorkspaces]);
-
-  const isTauri =
-    typeof window !== "undefined" &&
-    ("__TAURI_INTERNALS__" in window || "__TAURI__" in window);
-  const isLanding = !isTauri && pathname === "/";
 
   // Prevent UI flashing or hydration mismatch while reading from IndexedDB
   if (!isHydrated && !isLanding) {
