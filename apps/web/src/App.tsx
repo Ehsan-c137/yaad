@@ -69,7 +69,7 @@ function WorkspaceTrashRoute() {
 
 function WorkspacePageRoute() {
   const { pageId } = useParams();
-  return <EditorShell pageId={pageId ?? ""} />;
+  return <EditorShell key={pageId} pageId={pageId ?? ""} />;
 }
 
 function PageGraphRoute() {
@@ -81,7 +81,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <PwaManager />
-      <Analytics />
+      {!import.meta.env.DEV && <Analytics />}
       <Providers>
         <Routes>
           <Route path="/" element={<LandingRoute />} />
