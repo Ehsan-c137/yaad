@@ -1,8 +1,7 @@
-"use client";
-
 import { Button } from "@ui/button";
 import { styles } from "@yaad/core/lib/design-token";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
@@ -38,6 +37,11 @@ export function SlashMenu({
   const menuRef = useRef<HTMLDivElement>(null);
   const isKeyboardNavRef = useRef(false);
   const [isKeyboardNav, setIsKeyboardNav] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [layout, setLayout] = useState<{
     top: number;
@@ -85,8 +89,9 @@ export function SlashMenu({
 
     const viewportH = window.innerHeight;
     const viewportW = window.innerWidth;
-    const menuH = menuRef.current.scrollHeight;
-    const menuW = menuRef.current.offsetWidth;
+    const menuRect = menuRef.current.getBoundingClientRect();
+    const menuH = menuRect.height || menuRef.current.offsetHeight || 280;
+    const menuW = menuRect.width || menuRef.current.offsetWidth || 288;
 
     let { top } = position;
     let { left } = position;
@@ -102,20 +107,26 @@ export function SlashMenu({
       top = position.anchorTop - Math.min(menuH, constrainedH) - ANCHOR_GAP;
       maxHeight = constrainedH;
       originY = "bottom";
-    } else if (spaceBelow < DEFAULT_MAX_HEIGHT) {
-      // Keep below but shrink to fit
-      maxHeight = Math.max(spaceBelow, MIN_VISIBLE_HEIGHT);
+    } else {
+      // Keep below; constrain maxHeight if space below is limited
+      maxHeight = Math.min(
+        DEFAULT_MAX_HEIGHT,
+        Math.max(spaceBelow, MIN_VISIBLE_HEIGHT),
+      );
     }
 
-    // Horizontal clamping
+    // Horizontal clamping within viewport
     let originX = "left";
 
     if (left + menuW > viewportW - VIEWPORT_PADDING) {
-      left = viewportW - menuW - VIEWPORT_PADDING;
+      left = Math.max(VIEWPORT_PADDING, viewportW - menuW - VIEWPORT_PADDING);
       originX = "right";
     }
 
-    if (left < VIEWPORT_PADDING) left = VIEWPORT_PADDING;
+    if (left < VIEWPORT_PADDING) {
+      left = VIEWPORT_PADDING;
+      originX = "left";
+    }
 
     setLayout({
       top,
@@ -123,12 +134,36 @@ export function SlashMenu({
       maxHeight,
       transformOrigin: `${originY} ${originX}`,
     });
-  }, [position, filteredOptions.length]);
+  }, [position.top, position.left, position.anchorTop, filteredOptions.length]);
 
-  // Reset layout when the menu content changes so the next paint re-measures
-  useLayoutEffect(() => {
-    setLayout(null);
-  }, [position.top, position.left, position.anchorTop]);
+  // Close menu on scroll outside or click outside
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      if (menuRef.current && menuRef.current.contains(e.target as Node)) {
+        return;
+      }
+      onClose();
+    };
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      capture: true,
+      passive: true,
+    });
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll, { capture: true });
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [onClose]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -159,11 +194,12 @@ export function SlashMenu({
     return () => window.removeEventListener("keydown", handleKeyDown, true);
   }, [filteredOptions, selectedIndex, onSelect, onClose]);
 
-  if (filteredOptions.length === 0) return null;
+  if (filteredOptions.length === 0 || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
       ref={menuRef}
+      onMouseDown={(e) => e.preventDefault()}
       style={{
         top: `${layout?.top ?? position.top}px`,
         left: `${layout?.left ?? position.left}px`,
@@ -218,6 +254,7 @@ export function SlashMenu({
           </Button>
         );
       })}
-    </div>
+    </div>,
+    document.body,
   );
 }
