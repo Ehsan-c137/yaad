@@ -1,3 +1,5 @@
+import type { Plugin } from "vite";
+
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
@@ -48,6 +50,45 @@ function atAliasPlugin(baseDirs: string[]) {
       }
 
       return null;
+    },
+  };
+}
+
+function removeManifestFromLanding(): Plugin {
+  return {
+    name: "remove-manifest-from-landing",
+    enforce: "post",
+    generateBundle(_, bundle) {
+      const htmlFile = bundle["index.html"];
+      if (
+        htmlFile &&
+        "source" in htmlFile &&
+        typeof htmlFile.source === "string"
+      ) {
+        htmlFile.source = htmlFile.source.replace(
+          /<link rel="manifest"[^>]*>/g,
+          "",
+        );
+      }
+    },
+  };
+}
+
+function mpaDevPlugin(): Plugin {
+  return {
+    name: "mpa-dev-plugin",
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const url = req.url?.split("?")[0] || "";
+        if (
+          url === "/app" ||
+          url.startsWith("/app/") ||
+          url.startsWith("/workspace")
+        ) {
+          req.url = "/app.html";
+        }
+        next();
+      });
     },
   };
 }
@@ -124,11 +165,21 @@ export default defineConfig(() => ({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/$/, /^\/landing$/],
+        navigateFallback: "/app.html",
+        navigateFallbackDenylist: [/^\/$/, /^\/landing$/, /^\/index\.html$/],
       },
     }),
+    removeManifestFromLanding(),
+    mpaDevPlugin(),
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        landing: path.resolve(import.meta.dirname, "index.html"),
+        app: path.resolve(import.meta.dirname, "app.html"),
+      },
+    },
+  },
   resolve: {
     alias: [
       {

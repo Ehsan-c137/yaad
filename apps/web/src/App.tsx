@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/react";
-import { lazy, useState } from "react";
+import { Suspense, lazy } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -8,15 +8,35 @@ import {
   useParams,
 } from "react-router";
 
-import { EditorShell } from "@/components/editor/editor-shell";
-import { MainLayout } from "@/components/layout/main-layout";
-import { HomePage } from "@/components/pages/home-page";
-import { LandingPage } from "@/components/pages/landing-page";
-import { WorkspaceHomePage } from "@/components/pages/workspace-page";
 import { Providers } from "@/providers/providers-index";
 import { useWorkspaceStore } from "@/store/use-workspace-store";
+import { WorkspaceLayoutSkeleton } from "@ui/skeleton";
 
 import { PwaManager } from "./pwa-manager";
+
+const MainLayout = lazy(() =>
+  import("@/components/layout/main-layout").then((m) => ({
+    default: m.MainLayout,
+  })),
+);
+
+const HomePage = lazy(() =>
+  import("@/components/pages/home-page").then((m) => ({
+    default: m.HomePage,
+  })),
+);
+
+const WorkspaceHomePage = lazy(() =>
+  import("@/components/pages/workspace-page").then((m) => ({
+    default: m.WorkspaceHomePage,
+  })),
+);
+
+const EditorShell = lazy(() =>
+  import("@/components/editor/editor-shell").then((m) => ({
+    default: m.EditorShell,
+  })),
+);
 
 const TrashPage = lazy(() =>
   import("@/components/pages/trash-page").then((m) => ({
@@ -30,23 +50,20 @@ const GraphPage = lazy(() =>
   })),
 );
 
-function LandingRoute() {
-  const [isStandalone] = useState(() => {
-    if (typeof window === "undefined") return false;
-
-    return (
-      window.matchMedia("(display-mode: standalone)").matches ||
+function RootRedirect() {
+  const isStandalone =
+    typeof window !== "undefined" &&
+    (window.matchMedia("(display-mode: standalone)").matches ||
       Boolean(
         (window.navigator as unknown as { standalone?: boolean }).standalone,
-      )
-    );
-  });
+      ));
 
   if (isStandalone) {
     return <Navigate to="/workspace/ws_personal" replace />;
   }
 
-  return <LandingPage />;
+  window.location.assign("/");
+  return null;
 }
 
 function WorkspaceHomeRoute() {
@@ -84,9 +101,15 @@ export default function App() {
       {!import.meta.env.DEV && <Analytics />}
       <Providers>
         <Routes>
-          <Route path="/" element={<LandingRoute />} />
-          <Route path="/landing" element={<Navigate to="/" replace />} />
-          <Route element={<MainLayout />}>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/landing" element={<RootRedirect />} />
+          <Route
+            element={
+              <Suspense fallback={<WorkspaceLayoutSkeleton />}>
+                <MainLayout />
+              </Suspense>
+            }
+          >
             <Route path="/app" element={<HomePage />} />
             <Route
               path="/workspace/:workspaceId"
