@@ -1,7 +1,6 @@
-"use client";
-
 import { Button } from "@ui/button";
 import { GripVertical, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   DropdownMenu,
@@ -10,8 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
-
-import { useTranslation } from "react-i18next";
 
 import { BlockActionMenu } from "../menu/block-action-menu";
 import { COLOR_OPTIONS } from "../menu/menu-constants";
@@ -39,13 +36,15 @@ export function BlockRow({ blockId }: BlockRowProps) {
 
   return (
     <div
+      onKeyDown={() => {
+        // TODO: fix this
+      }}
       onFocus={() => setActiveBlockId(block.id)}
       onClick={() => setActiveBlockId(block.id)}
       className={cn(
         "group relative flex min-h-8 w-full items-start rounded-lg px-2 transition-colors md:px-1 mx-auto max-w-3xl",
         backgroundStyle?.bgClass,
         backgroundStyle?.bgClass ? "hover:saturate-200" : "hover:bg-accent/40",
-        block.type === "bulleted_list" && "items-center",
       )}
     >
       <div
@@ -56,7 +55,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
           variant="ghost"
           size="icon-xs"
           onClick={() =>
-            addBlock(block.parentId ?? "root", block.id, "paragraph")
+            void addBlock(block.parentId ?? "root", block.id, "paragraph")
           }
           title={t("addBlockBelow")}
           tooltipSide="bottom"
