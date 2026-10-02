@@ -4,6 +4,7 @@ export type CoverCategory =
 export interface CoverPresetItem {
   id: string;
   url: string;
+  previewUrl?: string;
   title: string;
   category: CoverCategory;
   keywords?: string[];

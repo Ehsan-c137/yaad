@@ -353,7 +353,7 @@ export const COVER_PRESETS: CoverPresetItem[] = [
 
 export function filterPresets(
   presets: CoverPresetItem[],
-  category: CoverCategory | "all",
+  category: "all" | CoverCategory,
   searchQuery: string,
 ): CoverPresetItem[] {
   let list = presets;
@@ -363,6 +363,7 @@ export function filterPresets(
   }
 
   const query = searchQuery.trim().toLowerCase();
+
   if (query) {
     list = list.filter((item) => {
       const titleMatch = item.title.toLowerCase().includes(query);
@@ -379,7 +380,7 @@ export function filterPresets(
 
 export function getRandomPreset(
   presets: CoverPresetItem[],
-  category: CoverCategory | "all" = "all",
+  category: "all" | CoverCategory = "all",
 ): CoverPresetItem | undefined {
   const pool =
     category === "all"
@@ -393,4 +394,51 @@ export function getRandomPreset(
 
 export function getRandomUnsplashUrl(): string {
   return `https://images.unsplash.com/photo-${Date.now()}?auto=format&fit=crop&w=1600&q=80`;
+}
+
+export function getCoverPreviewUrl(url: string, width = 150): string {
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname.includes("unsplash.com")) {
+      parsed.searchParams.set("w", String(width));
+      parsed.searchParams.set("auto", "format");
+      parsed.searchParams.set("fit", "crop");
+      parsed.searchParams.set("q", "75");
+      return parsed.toString();
+    }
+  } catch {
+    if (url.includes("images.unsplash.com")) {
+      return url.replace(/w=\d+/, `w=${width}`).replace(/q=\d+/, "q=75");
+    }
+  }
+
+  return url;
+}
+
+/**
+ * Transforms an image URL to a high-resolution version suitable for the full-width page cover banner.
+ */
+export function getCoverFullUrl(url: string, width = 1600): string {
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname.includes("unsplash.com")) {
+      parsed.searchParams.set("w", String(width));
+      parsed.searchParams.set("auto", "format");
+      parsed.searchParams.set("fit", "crop");
+      parsed.searchParams.set("q", "80");
+      return parsed.toString();
+    }
+  } catch {
+    if (url.includes("images.unsplash.com")) {
+      return url.replace(/w=\d+/, `w=${width}`).replace(/q=\d+/, "q=80");
+    }
+  }
+
+  return url;
 }

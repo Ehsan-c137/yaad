@@ -2,11 +2,13 @@ import { Button } from "@ui/button";
 import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { getCoverFullUrl, getCoverPreviewUrl } from "../cover-presets";
 
 interface CoverGalleryItemProps {
   isSelected: boolean;
   preset: {
     url: string;
+    previewUrl?: string;
     title: string;
   };
   onClose: () => void;
@@ -19,11 +21,14 @@ export function CoverGalleryItem({
   onClose,
   onSelectCover,
 }: CoverGalleryItemProps) {
+  const previewUrl = preset.previewUrl || getCoverPreviewUrl(preset.url);
+  const fullCoverUrl = getCoverFullUrl(preset.url);
+
   return (
     <Button
       variant={isSelected ? "default" : "outline"}
       onClick={() => {
-        onSelectCover(preset.url);
+        onSelectCover(fullCoverUrl);
         onClose();
       }}
       className={cn(
@@ -35,7 +40,7 @@ export function CoverGalleryItem({
       )}
     >
       <img
-        src={preset.url}
+        src={previewUrl}
         alt={preset.title}
         loading="lazy"
         className="size-full object-cover transition-transform duration-300 group-hover:scale-105"

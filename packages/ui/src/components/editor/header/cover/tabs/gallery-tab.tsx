@@ -9,12 +9,29 @@ import type { CoverCategory, CoverTabProps } from "../cover-picker-types";
 import {
   COVER_PRESETS,
   filterPresets,
+  getCoverFullUrl,
+  getCoverPreviewUrl,
   getRandomPreset,
   getRandomUnsplashUrl,
 } from "../cover-presets";
 import { CoverGalleryCategories } from "./gallery-categories";
 import { CoverGalleryForm } from "./gallery-form";
 import { CoverGalleryItem } from "./gallery-item";
+
+function isPresetSelected(presetUrl: string, currentCover?: string): boolean {
+  if (!currentCover) return false;
+  if (currentCover === presetUrl) return true;
+
+  try {
+    const current = new URL(currentCover);
+    const preset = new URL(presetUrl);
+    return (
+      current.origin === preset.origin && current.pathname === preset.pathname
+    );
+  } catch {
+    return false;
+  }
+}
 
 export function CoverGalleryTab({
   onSelectCover,
@@ -37,7 +54,7 @@ export function CoverGalleryTab({
     const randomItem = getRandomPreset(COVER_PRESETS, selectedCategory);
 
     if (randomItem) {
-      onSelectCover(randomItem.url);
+      onSelectCover(getCoverFullUrl(randomItem.url));
       onClose();
     }
   };
@@ -68,13 +85,17 @@ export function CoverGalleryTab({
       ) : (
         <div className="grid max-h-[320px] grid-cols-3 sm:grid-cols-4 gap-2.5 overflow-y-auto pe-1">
           {filteredPresets.map((preset) => {
-            const isSelected = currentCover === preset.url;
+            const isSelected = isPresetSelected(preset.url, currentCover);
             return (
               <CoverGalleryItem
                 isSelected={isSelected}
                 onClose={onClose}
                 onSelectCover={onSelectCover}
-                preset={preset}
+                preset={{
+                  ...preset,
+                  previewUrl:
+                    preset.previewUrl || getCoverPreviewUrl(preset.url),
+                }}
                 key={preset.id}
               />
             );

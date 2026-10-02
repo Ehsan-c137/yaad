@@ -34,14 +34,15 @@ describe("CoverPickerModal", () => {
     // Paintings category button should be present
     expect(screen.getByText(/paintings/i)).toBeDefined();
 
-    // Still Life Floral Oil painting preset should be present
+    // Still Life Floral Oil painting preset should use lower resolution for preview thumbnail
     const paintingPreset = screen.getByAltText("Still Life Floral Oil");
     expect(paintingPreset).toBeDefined();
+    expect(paintingPreset.getAttribute("src")).toContain("w=400");
 
-    // Clicking a preset triggers onSelectCover
+    // Clicking a preset triggers onSelectCover with big version for cover
     fireEvent.click(paintingPreset);
     expect(onSelectCover).toHaveBeenCalledWith(
-      expect.stringContaining("images.unsplash.com"),
+      expect.stringContaining("w=1600"),
     );
     expect(onClose).toHaveBeenCalled();
   });
