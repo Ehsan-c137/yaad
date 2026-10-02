@@ -4,14 +4,12 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   fill?: boolean;
   priority?: boolean;
   quality?: number | string;
-  unoptimized?: boolean;
 }
 
 export function Image({
   fill,
   priority,
   quality,
-  unoptimized,
   className,
   style,
   ...props
@@ -22,10 +20,11 @@ export function Image({
 
   return (
     <img
+      {...props}
+      alt={props.alt}
       loading={priority ? "eager" : "lazy"}
       className={combinedClassName}
       style={style}
-      {...props}
     />
   );
 }

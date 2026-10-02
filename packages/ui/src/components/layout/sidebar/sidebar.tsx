@@ -1,13 +1,14 @@
 "use client";
 
-import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
-import { styles } from "@yaad/core/lib/design-token";
-import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
-import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 
+import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
+import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { Profile } from "./profile/profile";

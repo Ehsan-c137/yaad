@@ -51,7 +51,7 @@ export function WorkspaceSwitcher() {
             <Button
               variant="ghost"
               className={cn(
-                "w-auto max-w-45 justify-between gap-2 p-1.5 text-start",
+                "w-auto max-w-50 justify-between gap-2 p-1.5 text-start",
                 "rounded-lg hover:bg-foreground/5",
               )}
             />
