@@ -30,7 +30,7 @@
   "import": "Import",
   "importing": "Importing...",
   "about": "About",
-  "aboutSubtitle": "A calm space for your notes 📝 v0.1",
+  "aboutSubtitle": "A calm space for your notes 📝 v{{version}}",
   "confirmDataImport": "Confirm Data Import",
   "importParsedSuccess": "Backup file parsed and sanitized successfully. Review the items that will be restored to your local storage:",
   "workspacesLabel": "Workspaces:",

@@ -1,16 +1,15 @@
-"use client";
-
-import { styles } from "@yaad/core/lib/design-token";
 import { Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import pkg from "@/../package.json";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { SettingsRow } from "../settings-row";
 
 export function AboutSection() {
   const { t } = useTranslation(["settings", "common"]);
-
+  console.log(pkg);
   return (
     <>
       <p className={cn(styles.sectionLabel, "px-5 pt-3 pb-1")}>
@@ -20,7 +19,7 @@ export function AboutSection() {
       <SettingsRow
         icon={<Info className="size-3.5" strokeWidth={1.5} />}
         title={t("common:appName")}
-        subtitle={t("settings:aboutSubtitle")}
+        subtitle={t("settings:aboutSubtitle", { version: pkg.version })}
       />
 
       {/* <SettingsRow
