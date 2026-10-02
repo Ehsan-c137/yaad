@@ -1,5 +1,6 @@
+import { WorkspaceLayoutSkeleton } from "@ui/skeleton";
 import { Analytics } from "@vercel/analytics/react";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -10,7 +11,6 @@ import {
 
 import { Providers } from "@/providers/providers-index";
 import { useWorkspaceStore } from "@/store/use-workspace-store";
-import { WorkspaceLayoutSkeleton } from "@ui/skeleton";
 
 import { PwaManager } from "./pwa-manager";
 
@@ -51,18 +51,27 @@ const GraphPage = lazy(() =>
 );
 
 function RootRedirect() {
-  const isStandalone =
-    typeof window !== "undefined" &&
-    (window.matchMedia("(display-mode: standalone)").matches ||
+  const [isStandalone] = useState(() => {
+    if (typeof window === "undefined") return false;
+
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
       Boolean(
         (window.navigator as unknown as { standalone?: boolean }).standalone,
-      ));
+      )
+    );
+  });
+
+  useEffect(() => {
+    if (!isStandalone) {
+      window.location.replace("/");
+    }
+  }, [isStandalone]);
 
   if (isStandalone) {
     return <Navigate to="/workspace/ws_personal" replace />;
   }
 
-  window.location.assign("/");
   return null;
 }
 
