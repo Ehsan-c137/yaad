@@ -31,15 +31,15 @@ export function SidebarTabs() {
   ];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="px-1 pt-2 pb-1">
+    <div className="flex min-h-0 flex-1 flex-col px-1">
+      <div className="pt-2">
         {!hasHydrated ? (
           <div className={cn(styles.skeleton, "h-9 w-full rounded-full")} />
         ) : (
           <Tabs
             value={activeTab}
             onValueChange={(val) => setActiveTab(val as Tab)}
-            className="w-full"
+            className="w-full px-0"
           >
             <TabsList variant="segmented" className="w-full">
               {tabs.map((tab) => (

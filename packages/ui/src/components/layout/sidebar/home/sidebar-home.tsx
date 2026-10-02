@@ -1,5 +1,4 @@
 import { Button } from "@ui/button";
-import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { FileText, Network, Plus, Trash2 } from "lucide-react";
@@ -9,6 +8,7 @@ import { useLocation } from "react-router";
 import { SearchBox } from "@/components/search/search-command";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { SidebarPageItem } from "./sidebar-item/sidebar-page-item";
@@ -112,12 +112,7 @@ function SidebarHomeHeader() {
         )}
       </div>
       <Separator />
-      <div
-        className={cn(
-          styles.sectionLabel,
-          "flex items-center justify-between pt-3 pb-1",
-        )}
-      >
+      <div className="text-xs font-semibold uppercase tracking-widest flex items-center justify-between">
         <span>{t("private")}</span>
 
         <Button
@@ -127,7 +122,7 @@ function SidebarHomeHeader() {
           onClick={() => void createPage(null)}
           title={t("createPage")}
           aria-label={t("createNewPage")}
-          className="relative text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-(--accent-blue)"
+          className="text-muted-foreground hover:text-(--accent-blue)"
         >
           <Plus className="size-3.5" />
         </Button>

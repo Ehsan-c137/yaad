@@ -30,7 +30,7 @@ export function Profile() {
           render={
             <Button
               variant="ghost"
-              className="size-auto w-full flex-1 justify-start gap-2 rounded-full px-2 py-2.5"
+              className="size-auto w-full flex-1 justify-start gap-2 rounded-full p-2"
               aria-label={t("openProfileMenu")}
             />
           }
@@ -44,7 +44,7 @@ export function Profile() {
         <PopoverContent
           align="start"
           side="top"
-          className="flex flex-col gap-1 p-2"
+          className="flex flex-col gap-1 p-1"
         >
           <Button
             variant="ghost"

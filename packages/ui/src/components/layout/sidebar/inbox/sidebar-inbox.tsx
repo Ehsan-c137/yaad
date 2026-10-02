@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@ui/button";
-import { styles } from "@yaad/core/lib/design-token";
 import { useInboxStore } from "@yaad/core/store/inbox/use-inbox-store";
 import { CheckCheck, Inbox, Sparkles, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { NotificationItem } from "./notification-item";
@@ -14,7 +14,7 @@ export function SidebarInbox() {
   const { t } = useTranslation("sidebar");
   const notifications = useInboxStore((state) => state.notifications);
   const filter = useInboxStore((state) => state.filter);
-  const _hasHydrated = useInboxStore((state) => state._hasHydrated);
+  const hasHydrated = useInboxStore((state) => state._hasHydrated);
   const setFilter = useInboxStore((state) => state.setFilter);
   const markAllAsRead = useInboxStore((state) => state.markAllAsRead);
   const clearAll = useInboxStore((state) => state.clearAll);
@@ -108,7 +108,7 @@ export function SidebarInbox() {
       </div>
 
       {/* Skeleton Loading State */}
-      {!_hasHydrated && (
+      {!hasHydrated && (
         <div className="space-y-2 p-1">
           <div className={cn(styles.skeleton, "h-16 w-full rounded-xl")} />
           <div className={cn(styles.skeleton, "h-16 w-full rounded-xl")} />
@@ -117,7 +117,7 @@ export function SidebarInbox() {
       )}
 
       {/* Empty State */}
-      {_hasHydrated && filteredNotifications.length === 0 && (
+      {hasHydrated && filteredNotifications.length === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center gap-2.5 px-4 py-12 text-center select-none">
           <div className="flex size-11 items-center justify-center rounded-2xl bg-foreground/5 dark:bg-white/5">
             {filter === "unread" ? (
@@ -134,7 +134,7 @@ export function SidebarInbox() {
                   ? t("noMentionsYet")
                   : t("noNotifications")}
             </p>
-            <p className="max-w-[200px] text-xs/normal text-muted-foreground">
+            <p className="max-w-50 text-xs/normal text-muted-foreground">
               {filter === "unread"
                 ? t("readAllNotifications")
                 : filter === "mentions"
@@ -146,7 +146,7 @@ export function SidebarInbox() {
       )}
 
       {/* Notification List */}
-      {_hasHydrated && filteredNotifications.length > 0 && (
+      {hasHydrated && filteredNotifications.length > 0 && (
         <div className="space-y-1.5">
           {filteredNotifications.map((item) => (
             <NotificationItem key={item.id} notification={item} />
