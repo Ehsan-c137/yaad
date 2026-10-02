@@ -17,10 +17,18 @@ import faSidebar from "./locales/fa/sidebar.json";
 const RTL_LANGUAGES = new Set(["ar", "fa", "he", "ur"]);
 
 function applyDirection(lng: string) {
+  if (typeof document === "undefined") return;
   const baseLng = lng ? lng.split("-")[0].toLowerCase() : "en";
   const isRtl = RTL_LANGUAGES.has(baseLng);
-  document.documentElement.lang = lng || "en";
-  document.documentElement.dir = isRtl ? "rtl" : "ltr";
+  const targetDir = isRtl ? "rtl" : "ltr";
+  const targetLang = lng || "en";
+
+  if (document.documentElement.lang !== targetLang) {
+    document.documentElement.lang = targetLang;
+  }
+  if (document.documentElement.dir !== targetDir) {
+    document.documentElement.dir = targetDir;
+  }
 }
 
 void i18n

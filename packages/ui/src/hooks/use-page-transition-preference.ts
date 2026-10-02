@@ -69,12 +69,15 @@ export function usePageTransitionPreference(): PageTransitionPreferenceResult {
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.documentElement.dataset.lowDevice = deviceInfo.isLowEndDevice
-        ? "true"
-        : "false";
-      document.documentElement.dataset.pageTransitions = transitionsEnabled
-        ? "enabled"
-        : "disabled";
+      const lowVal = deviceInfo.isLowEndDevice ? "true" : "false";
+      const transVal = transitionsEnabled ? "enabled" : "disabled";
+
+      if (document.documentElement.dataset.lowDevice !== lowVal) {
+        document.documentElement.dataset.lowDevice = lowVal;
+      }
+      if (document.documentElement.dataset.pageTransitions !== transVal) {
+        document.documentElement.dataset.pageTransitions = transVal;
+      }
     }
   }, [deviceInfo.isLowEndDevice, transitionsEnabled]);
 
