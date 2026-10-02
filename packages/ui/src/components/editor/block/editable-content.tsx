@@ -122,25 +122,87 @@ export function EditableContent({
     // Detect '/' trigger and query string
     const lastSlashIndex = text.lastIndexOf("/");
 
-    if (lastSlashIndex !== -1 && offset > lastSlashIndex) {
+    // The slash trigger should either be at the start of text/line or preceded by whitespace
+    const isTriggerValid =
+      lastSlashIndex !== -1 &&
+      (lastSlashIndex === 0 || /\s/.test(text[lastSlashIndex - 1] ?? ""));
+
+    if (onTransformType && isTriggerValid && offset > lastSlashIndex) {
       const query = text.slice(lastSlashIndex + 1, offset);
 
-      // Get cursor coordinates for fixed positioning
-      const selection = window.getSelection();
+      if (!/[\s\n]/.test(query)) {
+        // Get cursor coordinates for fixed positioning
+        const selection = window.getSelection();
 
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0).cloneRange();
-        const rect = range.getBoundingClientRect();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          let rect: DOMRect | null = null;
 
-        setSlashMenuState({
-          isOpen: true,
-          query,
-          position: {
-            top: rect.bottom + 6,
-            left: direction === "rtl" ? rect.right + 10 : rect.left + 10,
-            anchorTop: rect.top,
-          },
-        });
+          // 1. Try range.getClientRects()
+          const clientRects = range.getClientRects();
+
+          if (clientRects.length > 0) {
+            const r = clientRects[0];
+            if (r.top !== 0 || r.bottom !== 0 || r.left !== 0) {
+              rect = r;
+            }
+          }
+
+          // 2. Try range.getBoundingClientRect()
+          if (!rect) {
+            const bounding = range.getBoundingClientRect();
+            if (
+              bounding.top !== 0 ||
+              bounding.bottom !== 0 ||
+              bounding.left !== 0
+            ) {
+              rect = bounding;
+            }
+          }
+
+          // 3. If range is collapsed, select the character preceding the caret (the slash or query char)
+          if (!rect && range.startContainer) {
+            try {
+              const tempRange = range.cloneRange();
+
+              if (range.startOffset > 0) {
+                tempRange.setStart(range.startContainer, range.startOffset - 1);
+                const tempRect = tempRange.getBoundingClientRect();
+                if (
+                  tempRect.top !== 0 ||
+                  tempRect.bottom !== 0 ||
+                  tempRect.left !== 0
+                ) {
+                  rect = tempRect;
+                }
+              }
+            } catch {
+              // Ignore range adjustment error
+            }
+          }
+
+          // 4. Fallback to the contentEditable element rect
+          if (!rect && contentRef.current) {
+            rect = contentRef.current.getBoundingClientRect();
+          }
+
+          if (rect) {
+            // For RTL, align right edge of 288px menu with rect.right; for LTR, align left edge with rect.left
+            const leftPos = direction === "rtl" ? rect.right - 288 : rect.left;
+
+            setSlashMenuState({
+              isOpen: true,
+              query,
+              position: {
+                top: rect.bottom + 6,
+                left: leftPos,
+                anchorTop: rect.top,
+              },
+            });
+          }
+        }
+      } else if (slashMenuState.isOpen) {
+        setSlashMenuState((prev) => ({ ...prev, isOpen: false }));
       }
     } else if (slashMenuState.isOpen) {
       setSlashMenuState((prev) => ({ ...prev, isOpen: false }));
