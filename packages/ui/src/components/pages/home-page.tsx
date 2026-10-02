@@ -1,10 +1,10 @@
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@yaad/core/lib/design-token";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { Image } from "@/components/ui/image";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 export function HomePage() {
@@ -15,7 +15,9 @@ export function HomePage() {
 
   const handleNavigation = useCallback(
     (activeWorkspace: string) => {
-      navigate(`/${ROUTES.workspace}/${activeWorkspace}`, { replace: true });
+      void navigate(`/${ROUTES.workspace}/${activeWorkspace}`, {
+        replace: true,
+      });
     },
     [navigate],
   );
@@ -40,7 +42,6 @@ export function HomePage() {
               alt="Illustrated character sitting calmly"
               width={200}
               height={320}
-              unoptimized
               className="drop-shadow-sm"
             />
           </div>
@@ -51,7 +52,7 @@ export function HomePage() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => navigate("/")}
+                onClick={() => void navigate("/")}
                 className="rounded-lg border border-border/70 bg-card px-4 py-2 text-xs font-semibold text-foreground shadow-xs hover:bg-muted cursor-pointer"
               >
                 Explore Landing Page & Downloads
