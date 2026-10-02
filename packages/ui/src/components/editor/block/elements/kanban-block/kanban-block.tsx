@@ -65,7 +65,7 @@ export function KanbanBlock({ block }: KanbanBlockProps) {
 
   return (
     <KanbanActionsProvider value={actionsValue}>
-      <div className="max-w-[100%] mx-auto">
+      <div className="max-w-[100%] mx-auto min-h-68">
         <div className="group/kanban overflow-x-auto my-4 select-none rounded-xl border border-border bg-card/40 p-4 shadow-sm gap-2 space-y-2 mx-auto ">
           <Button variant="outline" size="sm" onClick={addColumn}>
             <Plus className="size-3.5" />
