@@ -1,6 +1,8 @@
 import type { DocumentJSON } from "@yaad/core/types/document";
 import type { StateCreator } from "zustand";
 
+import { documentService } from "@yaad/core/services/document-service";
+
 import type { DocumentMetaSlice, DocumentState } from "./types";
 
 import { useSidebarStore } from "../use-sidebar-store";
@@ -33,10 +35,15 @@ export const createMetaSlice: StateCreator<
       };
     });
   },
-
   updateCoverImage: async (coverUrl: string) => {
     const currentDoc = get().currentDocument;
     if (!currentDoc) return;
+
+    const oldCover = currentDoc.coverImage;
+
+    if (oldCover?.startsWith("blob_") && oldCover !== coverUrl) {
+      void documentService.deleteBlobs([oldCover]);
+    }
 
     const rootBlock = currentDoc.blocks["root"];
 
@@ -64,6 +71,12 @@ export const createMetaSlice: StateCreator<
   removeCoverImage: async () => {
     const currentDoc = get().currentDocument;
     if (!currentDoc) return;
+
+    const oldCover = currentDoc.coverImage;
+
+    if (oldCover?.startsWith("blob_")) {
+      void documentService.deleteBlobs([oldCover]);
+    }
 
     const rootBlock = currentDoc.blocks["root"];
     const updatedProperties = { ...rootBlock?.properties };

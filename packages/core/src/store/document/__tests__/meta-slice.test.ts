@@ -129,6 +129,34 @@ describe("document meta-slice (Unit Test)", () => {
     );
   });
 
+  it("updateCoverImage deletes previous blob cover if it was a blob", async () => {
+    const store = getDocumentStore(pageId);
+    const withBlobCover = createNewBlankDocument(pageId);
+    withBlobCover.coverImage = "blob_old_cover_123";
+    store.setState({ currentDocument: withBlobCover });
+
+    await store
+      .getState()
+      .updateCoverImage("https://img.example/new-cover.png");
+
+    expect(documentService.deleteBlobs).toHaveBeenCalledWith([
+      "blob_old_cover_123",
+    ]);
+  });
+
+  it("removeCoverImage deletes previous blob cover if it was a blob", async () => {
+    const store = getDocumentStore(pageId);
+    const withBlobCover = createNewBlankDocument(pageId);
+    withBlobCover.coverImage = "blob_old_cover_456";
+    store.setState({ currentDocument: withBlobCover });
+
+    await store.getState().removeCoverImage();
+
+    expect(documentService.deleteBlobs).toHaveBeenCalledWith([
+      "blob_old_cover_456",
+    ]);
+  });
+
   it("updateIcon updates the document, root block, and sidebar tree", async () => {
     const store = getDocumentStore(pageId);
 
