@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";

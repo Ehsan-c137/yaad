@@ -1,14 +1,13 @@
 import type { DocumentBlock } from "@yaad/core/types/document";
 
-import { styles } from "@yaad/core/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowUpRight, FileText, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Link } from "@/components/ui/link";
-// import { documentService } from "@yaad/core/services/document-service";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 interface PageBlockProps {
@@ -62,7 +61,7 @@ export function PageBlock({ block }: PageBlockProps) {
       >
         <div className="flex items-center gap-1">
           <span className="flex size-5 items-center justify-center text-base">
-            {icon || <FileText className="size-4 text-muted-foreground" />}
+            {icon ?? <FileText className="size-4 text-muted-foreground" />}
           </span>
 
           <span className="flex-1 truncate text-sm font-medium underline-offset-4 group-hover/link:underline">
@@ -75,11 +74,11 @@ export function PageBlock({ block }: PageBlockProps) {
             role="button"
             tabIndex={0}
             onClick={handleDelete}
-            onKeyDown={async (e) => {
+            onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
-                await handleDelete(e as any);
+                void handleDelete(e as any);
               }
             }}
             title={t("sidebar:deletePage")}
