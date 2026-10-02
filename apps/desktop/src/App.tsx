@@ -47,7 +47,7 @@ function WorkspaceTrashRoute() {
 
 function WorkspacePageRoute() {
   const { pageId } = useParams();
-  return <EditorShell pageId={pageId ?? ""} />;
+  return <EditorShell key={pageId} pageId={pageId ?? ""} />;
 }
 
 function PageGraphRoute() {
