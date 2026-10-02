@@ -121,6 +121,7 @@ export function WorkspaceSwitcher() {
                         onClick={async (e) => {
                           e.stopPropagation();
                           const res = await deleteWorkspace(ws.id);
+
                           if (!res.success && res.error) {
                             toast.error(res.error);
                           }

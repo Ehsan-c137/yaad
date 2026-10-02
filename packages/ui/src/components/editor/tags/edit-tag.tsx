@@ -35,6 +35,7 @@ export function EditTag({
   onClearEditingId,
 }: EditTagProps) {
   const { t } = useTranslation(["editor", "common"]);
+
   const handleSaveEdit = () => {
     const trimmed = editData.name.trim();
     if (!trimmed) return;

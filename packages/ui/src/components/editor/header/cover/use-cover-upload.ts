@@ -9,11 +9,11 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_IMAGE_DIMENSION = 8192; // 8K max width/height
 
 const ALLOWED_MIME_TYPES = new Set([
+  "image/avif",
+  "image/gif",
   "image/jpeg",
   "image/png",
   "image/webp",
-  "image/gif",
-  "image/avif",
 ]);
 
 async function validateImageMagicBytes(file: File): Promise<boolean> {
@@ -88,6 +88,7 @@ async function validateImageDimensions(file: File): Promise<boolean> {
       return true;
     }
   }
+
   return true;
 }
 
@@ -128,6 +129,7 @@ export function useCoverUpload({ onSuccess, onClose }: UseCoverUploadOptions) {
       }
 
       const isValidSignature = await validateImageMagicBytes(file);
+
       if (!isValidSignature) {
         const errorMsg = t("invalidFileType");
         setUploadError(errorMsg);
@@ -136,6 +138,7 @@ export function useCoverUpload({ onSuccess, onClose }: UseCoverUploadOptions) {
       }
 
       const isValidDimensions = await validateImageDimensions(file);
+
       if (!isValidDimensions) {
         const errorMsg = t("fileTooLarge");
         setUploadError(errorMsg);
@@ -165,6 +168,7 @@ export function useCoverUpload({ onSuccess, onClose }: UseCoverUploadOptions) {
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
+
       if (file) {
         void processFile(file);
       }
@@ -194,6 +198,7 @@ export function useCoverUpload({ onSuccess, onClose }: UseCoverUploadOptions) {
       setIsDragging(false);
 
       const file = e.dataTransfer.files?.[0];
+
       if (file) {
         void processFile(file);
       }

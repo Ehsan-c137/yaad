@@ -7,7 +7,6 @@ import type {
 
 import { Button } from "@ui/button";
 import { Plus, Trash2 } from "lucide-react";
-
 import { useTranslation } from "react-i18next";
 
 import { useEditorPageIdContext } from "@/context/use-editor-context";

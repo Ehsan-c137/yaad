@@ -47,6 +47,7 @@ export function usePageTransitionPreference(): PageTransitionPreferenceResult {
     dataMedia.addEventListener("change", handleUpdate);
 
     const nav = window.navigator as NavigatorWithConnection;
+
     if (typeof nav.connection?.addEventListener === "function") {
       nav.connection.addEventListener("change", handleUpdate);
     }
@@ -54,6 +55,7 @@ export function usePageTransitionPreference(): PageTransitionPreferenceResult {
     return () => {
       motionMedia.removeEventListener("change", handleUpdate);
       dataMedia.removeEventListener("change", handleUpdate);
+
       if (typeof nav.connection?.removeEventListener === "function") {
         nav.connection.removeEventListener("change", handleUpdate);
       }

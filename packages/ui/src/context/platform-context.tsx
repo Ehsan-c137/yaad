@@ -3,9 +3,9 @@
 import { createContext, useContext } from "react";
 
 export interface WindowControls {
-  minimize: () => void | Promise<void>;
-  toggleMaximize: () => void | Promise<void>;
-  close: () => void | Promise<void>;
+  minimize: () => Promise<void> | void;
+  toggleMaximize: () => Promise<void> | void;
+  close: () => Promise<void> | void;
 }
 
 export interface PlatformContextType {
@@ -16,6 +16,7 @@ export interface PlatformContextType {
 export const PlatformContext = createContext<PlatformContextType>({
   isDesktop: false,
 });
+PlatformContext.displayName = "PlatformContext";
 
 export const usePlatform = () => useContext(PlatformContext);
 export const PlatformProvider = PlatformContext.Provider;

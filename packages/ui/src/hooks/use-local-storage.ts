@@ -67,7 +67,7 @@ function getSnapshot<T>(key: string, initialValue: T): T {
 export function useLocalStorage<T>(
   key: LocalstorageKeys,
   initialValue: T,
-): [T, (value: T | ((prev: T) => T)) => void] {
+): [T, (value: ((prev: T) => T) | T) => void] {
   const getSnap = useCallback(
     () => getSnapshot(key, initialValue),
     [key, initialValue],
@@ -77,7 +77,7 @@ export function useLocalStorage<T>(
   const storedValue = useSyncExternalStore(subscribe, getSnap, getServerSnap);
 
   const setValue = useCallback(
-    (value: T | ((prev: T) => T)) => {
+    (value: ((prev: T) => T) | T) => {
       try {
         const currentValue = getSnapshot(key, initialValue);
         const nextValue =

@@ -16,8 +16,10 @@ describe("useCoverResolution", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    URL.createObjectURL = vi.fn((blob: Blob) => `blob:mock-url-${blob.size}`);
-    URL.revokeObjectURL = vi.fn();
+    vi.spyOn(URL, "createObjectURL").mockImplementation(
+      (blob: Blob) => `blob:mock-url-${blob.size}`,
+    );
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation();
   });
 
   afterEach(() => {

@@ -2,10 +2,9 @@ import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { RotateCcw, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
-
-import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 

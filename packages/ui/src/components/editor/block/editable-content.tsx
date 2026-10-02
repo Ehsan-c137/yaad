@@ -130,7 +130,7 @@ export function EditableContent({
     if (onTransformType && isTriggerValid && offset > lastSlashIndex) {
       const query = text.slice(lastSlashIndex + 1, offset);
 
-      if (!/[\s\n]/.test(query)) {
+      if (!/\s/.test(query)) {
         // Get cursor coordinates for fixed positioning
         const selection = window.getSelection();
 
@@ -143,6 +143,7 @@ export function EditableContent({
 
           if (clientRects.length > 0) {
             const r = clientRects[0];
+
             if (r.top !== 0 || r.bottom !== 0 || r.left !== 0) {
               rect = r;
             }
@@ -151,6 +152,7 @@ export function EditableContent({
           // 2. Try range.getBoundingClientRect()
           if (!rect) {
             const bounding = range.getBoundingClientRect();
+
             if (
               bounding.top !== 0 ||
               bounding.bottom !== 0 ||
@@ -168,6 +170,7 @@ export function EditableContent({
               if (range.startOffset > 0) {
                 tempRange.setStart(range.startContainer, range.startOffset - 1);
                 const tempRect = tempRange.getBoundingClientRect();
+
                 if (
                   tempRect.top !== 0 ||
                   tempRect.bottom !== 0 ||

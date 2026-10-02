@@ -6,11 +6,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { styles } from "@yaad/core/lib/design-token";
 import { Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
 
 const COMMON_EMOJIS = [
   "📄",

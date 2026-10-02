@@ -100,6 +100,7 @@ describe("usePageTransitionPreference", () => {
     } as unknown as MediaQueryList);
 
     const { result } = renderHook(() => usePageTransitionPreference());
+
     expect(result.current.transitionsEnabled).toBe(false);
 
     act(() => {

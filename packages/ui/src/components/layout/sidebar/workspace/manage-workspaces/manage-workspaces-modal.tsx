@@ -66,6 +66,7 @@ export function ManageWorkspacesModal({
 
   const handleRename = async (ws: Workspace, name: string) => {
     const res = await updateWorkspace(ws.id, { name });
+
     if (!res.success && res.error) {
       toast.error(res.error);
     }
@@ -82,6 +83,7 @@ export function ManageWorkspacesModal({
 
     try {
       const res = await deleteWorkspace(deletingWorkspace.id);
+
       if (!res.success && res.error) {
         toast.error(res.error);
       } else {

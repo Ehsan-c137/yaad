@@ -60,6 +60,7 @@ function removeManifestFromLanding(): Plugin {
     enforce: "post",
     generateBundle(_, bundle) {
       const htmlFile = bundle["index.html"];
+
       if (
         htmlFile &&
         "source" in htmlFile &&
@@ -80,6 +81,7 @@ function mpaDevPlugin(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
         const url = req.url?.split("?")[0] || "";
+
         if (
           url === "/app" ||
           url.startsWith("/app/") ||
@@ -87,6 +89,7 @@ function mpaDevPlugin(): Plugin {
         ) {
           req.url = "/app.html";
         }
+
         next();
       });
     },

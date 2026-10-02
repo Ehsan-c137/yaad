@@ -5,11 +5,10 @@ import type { Tag } from "@yaad/core/types/document";
 import { useTagStore } from "@yaad/core/store/use-tag-store";
 import { Plus } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-import { useTranslation } from "react-i18next";
 
 import { TagBadge } from "./tag-badge";
 import { TagPickerPopover } from "./tag-picker-popover";

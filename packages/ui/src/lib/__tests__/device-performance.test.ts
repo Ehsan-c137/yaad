@@ -89,6 +89,7 @@ describe("device-performance utility", () => {
       if (query.includes("prefers-reduced-motion: reduce")) {
         return { matches: true } as unknown as MediaQueryList;
       }
+
       return { matches: false } as unknown as MediaQueryList;
     });
 

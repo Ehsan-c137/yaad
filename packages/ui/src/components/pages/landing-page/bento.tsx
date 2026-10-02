@@ -45,10 +45,14 @@ export function LandingBento() {
           .bento .indicator {
             position-anchor: --a;
             inset: anchor(inside);
-            transition: inset var(--dur) var(--ease), background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);            
+            transition: inset var(--dur) var(--ease), background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), opacity var(--dur) var(--ease);            
             background-color: var(--hover-bg);
             border: 1px solid var(--hover-border);
-          }          
+            opacity: 0;
+          }
+          .bento:has(li:hover) .indicator {
+            opacity: 1;
+          }
           .bento:has(li[data-color="primary"]:hover) {
             --hover-bg: hsl(var(--primary) / 0.1);
             --hover-border: hsl(var(--primary) / 0.2);

@@ -19,6 +19,7 @@ export function CoverLinkTab({ onSelectCover, onClose }: CoverTabProps) {
 
     try {
       const url = new URL(trimmed);
+
       if (url.protocol !== "http:" && url.protocol !== "https:") {
         toast.error(t("invalidFileType") || "Invalid image URL");
         return;

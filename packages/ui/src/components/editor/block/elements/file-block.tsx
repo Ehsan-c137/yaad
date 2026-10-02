@@ -6,7 +6,6 @@ import { Button } from "@ui/button";
 import { documentService } from "@yaad/core/services/document-service";
 import { FileText, X } from "lucide-react";
 import { useEffect, useState } from "react";
-
 import { useTranslation } from "react-i18next";
 
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";

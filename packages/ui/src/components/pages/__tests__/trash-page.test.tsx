@@ -106,7 +106,9 @@ describe("TrashPage", () => {
 
     render(<TrashPage workspaceId="ws1" />);
 
-    const restoreButton = screen.getAllByTitle("Restore page")[0];
+    const restoreButton = screen.getAllByRole("button", {
+      name: /restore page/i,
+    })[0];
     fireEvent.click(restoreButton);
 
     expect(mockRestorePage).toHaveBeenCalledWith("page1");
@@ -127,7 +129,9 @@ describe("TrashPage", () => {
 
     render(<TrashPage workspaceId="ws1" />);
 
-    const deleteButton = screen.getAllByTitle("Delete permanently")[0];
+    const deleteButton = screen.getAllByRole("button", {
+      name: /delete permanently/i,
+    })[0];
     fireEvent.click(deleteButton);
 
     // Dialog should open

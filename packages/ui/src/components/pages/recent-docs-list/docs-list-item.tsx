@@ -1,9 +1,9 @@
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
 
 import { formatRelativeTime } from "@yaad/core/lib/date-formatter";
-import { styles } from "@/lib/design-token";
 
 import { Button } from "@/components/ui/button";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 interface DocListItemProps {

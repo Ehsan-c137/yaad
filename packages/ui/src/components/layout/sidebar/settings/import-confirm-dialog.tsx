@@ -11,7 +11,6 @@ import {
   DialogHeader,
 } from "@ui/dialog";
 import { Info, ShieldCheck } from "lucide-react";
-
 import { useTranslation } from "react-i18next";
 
 export interface ImportConfirmDialogProps {

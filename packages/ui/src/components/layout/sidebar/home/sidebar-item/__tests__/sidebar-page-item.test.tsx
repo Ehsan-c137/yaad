@@ -79,7 +79,7 @@ describe("SidebarPageItem", () => {
     const elements = screen.getAllByText("Test Page");
     fireEvent.click(elements[elements.length - 1]); // click the last one, usually the button
 
-    expect(handleNavigate).toHaveBeenCalled();
+    expect(handleNavigate).toHaveBeenCalledWith();
   });
 
   it("shows children when expanded and has children", () => {

@@ -142,6 +142,7 @@ export function SlashMenu({
       if (menuRef.current && menuRef.current.contains(e.target as Node)) {
         return;
       }
+
       onClose();
     };
 

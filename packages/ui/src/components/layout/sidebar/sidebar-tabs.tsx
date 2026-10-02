@@ -2,7 +2,6 @@ import { Tabs, TabsList, TabsTrigger } from "@ui/tabs";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark, House } from "lucide-react";
 import { useState } from "react";
-
 import { useTranslation } from "react-i18next";
 
 import { styles } from "@/lib/design-token";

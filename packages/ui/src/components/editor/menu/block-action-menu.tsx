@@ -11,14 +11,13 @@ import {
   getBlockTitle,
 } from "@yaad/core/lib/block-metadata";
 import { Copy, ExternalLink, Sidebar as SidePeek, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useBlockActions } from "@/hooks/editor/use-block-actions";
 import { useCopyBlockLink } from "@/hooks/editor/use-copy-block-link";
 import { useOpenPageInNewTab } from "@/hooks/editor/use-open-page-in-new-tab";
 import { useSidePeek } from "@/hooks/editor/use-side-peek";
-
-import { useTranslation } from "react-i18next";
 
 import type { BlockMenuAction } from "./block-menu-item";
 

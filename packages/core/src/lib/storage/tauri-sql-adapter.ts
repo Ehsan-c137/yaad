@@ -4,8 +4,6 @@ import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 import type { DatabaseDriver } from "./sql/schema";
 import type { StorageAdapter, TagIndexRecord } from "./types";
 
-export type { DatabaseDriver };
-
 import { getAllBlobs, getBlob, removeBlob, saveBlob } from "./sql/blob-ops";
 import {
   deleteDocument,
@@ -22,6 +20,8 @@ import {
   saveWorkspace,
 } from "./sql/workspace-ops";
 import { getWorkspaceTree, saveWorkspaceTree } from "./sql/workspace-tree-ops";
+
+export type { DatabaseDriver };
 
 // ---------------------------------------------------------------------------
 // Adapter

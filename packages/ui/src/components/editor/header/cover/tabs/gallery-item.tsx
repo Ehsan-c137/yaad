@@ -2,6 +2,7 @@ import { Button } from "@ui/button";
 import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
 import { getCoverFullUrl, getCoverPreviewUrl } from "../cover-presets";
 
 interface CoverGalleryItemProps {

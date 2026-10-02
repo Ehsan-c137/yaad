@@ -1,7 +1,7 @@
 import { documentService } from "@yaad/core/services/document-service";
 import { useCallback, useEffect, useState } from "react";
 
-export type CoverStatus = "idle" | "resolving" | "loading" | "loaded" | "error";
+export type CoverStatus = "error" | "idle" | "loaded" | "loading" | "resolving";
 
 export interface CoverResolutionResult {
   displayUrl: string | undefined;
@@ -55,6 +55,7 @@ export function useCoverResolution(
 
     return () => {
       active = false;
+
       if (createdObjectUrl) {
         URL.revokeObjectURL(createdObjectUrl);
       }

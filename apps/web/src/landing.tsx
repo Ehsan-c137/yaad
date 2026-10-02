@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router";
 import { LandingPage } from "@/components/pages/landing-page";
 import "@yaad/ui/assets/globals.css";
 
-function LandingApp() {
+export function LandingApp() {
   const handleOpenApp = () => {
     window.location.assign("/app");
   };

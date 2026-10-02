@@ -6,11 +6,11 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
 import { Clock } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 import { useRecentPages } from "@/hooks/search/use-recent-pages";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
 
 import { DocsListItem } from "./docs-list-item";
 

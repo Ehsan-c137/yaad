@@ -4,7 +4,6 @@ import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-
 import { useTranslation } from "react-i18next";
 
 import { useEditableBlock } from "@/hooks/editor/use-editable-block";

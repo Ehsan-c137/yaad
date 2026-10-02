@@ -6,9 +6,8 @@ import type {
 } from "@yaad/core/types/document";
 
 import { useEffect, useState } from "react";
-import { bundledLanguages, codeToHtml } from "shiki";
-
 import { useTranslation } from "react-i18next";
+import { bundledLanguages, codeToHtml } from "shiki";
 
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";

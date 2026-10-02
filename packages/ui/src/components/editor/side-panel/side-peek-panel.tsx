@@ -1,7 +1,6 @@
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Maximize2, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";

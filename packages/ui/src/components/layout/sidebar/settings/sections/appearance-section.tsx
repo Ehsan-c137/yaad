@@ -1,7 +1,5 @@
 "use client";
 
-import type { TransitionPreference } from "@/hooks/use-page-transition-preference";
-
 import {
   Select,
   SelectContent,
@@ -12,6 +10,8 @@ import {
 import { ToggleThemeButton } from "@ui/toggle-theme-button";
 import { Moon, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+import type { TransitionPreference } from "@/hooks/use-page-transition-preference";
 
 import { usePageTransitionPreference } from "@/hooks/use-page-transition-preference";
 import { styles } from "@/lib/design-token";
@@ -59,7 +59,7 @@ export function AppearanceSection() {
             value={preference}
             onValueChange={(val) => {
               if (val) {
-                setPreference(val as TransitionPreference);
+                setPreference(val);
               }
             }}
             items={transitionOptions}

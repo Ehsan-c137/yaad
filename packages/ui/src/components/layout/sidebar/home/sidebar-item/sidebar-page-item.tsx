@@ -6,7 +6,6 @@ import type React from "react";
 import { Button } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { ChevronRight, Plus } from "lucide-react";
-
 import { useTranslation } from "react-i18next";
 
 import { useSidebarPageItem } from "@/hooks/sidebar/use-sidebar-page-item";

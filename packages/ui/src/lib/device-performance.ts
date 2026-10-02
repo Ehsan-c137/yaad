@@ -92,10 +92,7 @@ export function getDevicePerformanceInfo(): DevicePerformanceInfo {
   const isConstrained = checkHardwareConstraints(cores, deviceMemory);
 
   const isLowEnd =
-    prefersReducedMotion ||
-    isSaveDataActive ||
-    isSlowNetwork ||
-    isConstrained;
+    prefersReducedMotion || isSaveDataActive || isSlowNetwork || isConstrained;
 
   return {
     cores,

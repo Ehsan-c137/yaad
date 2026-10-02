@@ -41,7 +41,7 @@ export function CoverGalleryTab({
   const { t } = useTranslation("editor");
 
   const [selectedCategory, setSelectedCategory] = useState<
-    CoverCategory | "all"
+    "all" | CoverCategory
   >("all");
   const [searchQuery, setSearchQuery] = useState("");
 

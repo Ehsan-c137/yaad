@@ -23,8 +23,8 @@ import {
   PinOff,
   X,
 } from "lucide-react";
-import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";

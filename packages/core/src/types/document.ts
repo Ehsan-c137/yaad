@@ -64,22 +64,22 @@ export interface PageBlockProperties {
 }
 
 export interface KanbanBlockProperties {
-  columns?: Array<{
+  columns?: {
     id: string;
     title: string;
     cardIds: string[];
-  }>;
+  }[];
 }
 
 export type BlockProperties =
-  | TextBlockProperties
-  | TodoBlockProperties
   | CodeBlockProperties
-  | TableBlockProperties
   | ImageBlockProperties
-  | PageBlockProperties
   | KanbanBlockProperties
-  | Record<string, any>;
+  | PageBlockProperties
+  | Record<string, any>
+  | TableBlockProperties
+  | TextBlockProperties
+  | TodoBlockProperties;
 
 export interface DocumentBlock<
   TProperties extends Record<string, any> = Record<string, any>,

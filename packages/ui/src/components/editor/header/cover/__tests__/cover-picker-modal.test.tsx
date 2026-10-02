@@ -36,15 +36,17 @@ describe("CoverPickerModal", () => {
 
     // Still Life Floral Oil painting preset should use lower resolution for preview thumbnail
     const paintingPreset = screen.getByAltText("Still Life Floral Oil");
+
     expect(paintingPreset).toBeDefined();
-    expect(paintingPreset.getAttribute("src")).toContain("w=400");
+    expect(paintingPreset.getAttribute("src")).toContain("w=150");
 
     // Clicking a preset triggers onSelectCover with big version for cover
     fireEvent.click(paintingPreset);
+
     expect(onSelectCover).toHaveBeenCalledWith(
       expect.stringContaining("w=1600"),
     );
-    expect(onClose).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalledWith();
   });
 
   it("switches to upload tab and handles file input", async () => {
@@ -57,13 +59,12 @@ describe("CoverPickerModal", () => {
     );
 
     // Click upload tab
-    const uploadTab = screen.getByRole("tab", { name: /coverUpload|upload/i });
+    const uploadTab = screen.getByRole("tab", { name: /coverupload|upload/i });
     fireEvent.click(uploadTab);
 
     // Find hidden file input in portaled dialog
-    const fileInput = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]')!;
+
     expect(fileInput).not.toBeNull();
 
     // Create a mock image file with valid PNG magic bytes
@@ -84,7 +85,7 @@ describe("CoverPickerModal", () => {
       expect(onSelectCover).toHaveBeenCalledWith(
         expect.stringMatching(/^blob_/),
       );
-      expect(onClose).toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalledWith();
     });
   });
 
@@ -98,11 +99,11 @@ describe("CoverPickerModal", () => {
     );
 
     // Click link tab
-    const linkTab = screen.getByRole("tab", { name: /coverLink|link/i });
+    const linkTab = screen.getByRole("tab", { name: /coverlink|link/i });
     fireEvent.click(linkTab);
 
     // Enter link
-    const input = screen.getByPlaceholderText(/pasteImageLink|paste an image/i);
+    const input = screen.getByPlaceholderText(/paste an image|pasteimagelink/i);
     fireEvent.change(input, {
       target: { value: "https://example.com/custom-cover.jpg" },
     });
@@ -113,7 +114,7 @@ describe("CoverPickerModal", () => {
     expect(onSelectCover).toHaveBeenCalledWith(
       "https://example.com/custom-cover.jpg",
     );
-    expect(onClose).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalledWith();
   });
 
   it("rejects svg file uploads for security", async () => {
@@ -125,12 +126,10 @@ describe("CoverPickerModal", () => {
       />,
     );
 
-    const uploadTab = screen.getByRole("tab", { name: /coverUpload|upload/i });
+    const uploadTab = screen.getByRole("tab", { name: /coverupload|upload/i });
     fireEvent.click(uploadTab);
 
-    const fileInput = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]')!;
 
     const svgFile = new File(['<svg onload="alert(1)"></svg>'], "test.svg", {
       type: "image/svg+xml",
@@ -154,12 +153,10 @@ describe("CoverPickerModal", () => {
       />,
     );
 
-    const uploadTab = screen.getByRole("tab", { name: /coverUpload|upload/i });
+    const uploadTab = screen.getByRole("tab", { name: /coverupload|upload/i });
     fireEvent.click(uploadTab);
 
-    const fileInput = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const fileInput = document.querySelector('input[type="file"]')!;
 
     // Spoofed file: claim to be png, but content is arbitrary text/binary
     const spoofedFile = new File(["malicious-script-content"], "fake.png", {
@@ -184,10 +181,10 @@ describe("CoverPickerModal", () => {
       />,
     );
 
-    const linkTab = screen.getByRole("tab", { name: /coverLink|link/i });
+    const linkTab = screen.getByRole("tab", { name: /coverlink|link/i });
     fireEvent.click(linkTab);
 
-    const input = screen.getByPlaceholderText(/pasteImageLink|paste an image/i);
+    const input = screen.getByPlaceholderText(/paste an image|pasteimagelink/i);
     fireEvent.change(input, {
       target: { value: "javascript:alert('xss')" },
     });
@@ -209,7 +206,7 @@ describe("CoverPickerModal", () => {
     );
 
     const searchInput = screen.getByPlaceholderText(
-      /searchPictures|search pictures/i,
+      /search pictures|searchpictures/i,
     );
     fireEvent.change(searchInput, { target: { value: "hokusai" } });
 
@@ -230,13 +227,13 @@ describe("CoverPickerModal", () => {
     );
 
     const surpriseBtn = screen.getByRole("button", {
-      name: /surpriseMe|surprise picture/i,
+      name: /surprise picture|surpriseme/i,
     });
     fireEvent.click(surpriseBtn);
 
     expect(onSelectCover).toHaveBeenCalledWith(
       expect.stringContaining("images.unsplash.com"),
     );
-    expect(onClose).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalledWith();
   });
 });

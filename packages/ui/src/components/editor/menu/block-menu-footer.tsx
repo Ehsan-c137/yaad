@@ -2,7 +2,6 @@
 
 import { formatDate } from "@yaad/core/lib/date-formatter";
 import { useMemo } from "react";
-
 import { useTranslation } from "react-i18next";
 
 interface BlockMenuFooterProps {

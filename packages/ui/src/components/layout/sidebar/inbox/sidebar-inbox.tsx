@@ -4,7 +4,6 @@ import { Button } from "@ui/button";
 import { styles } from "@yaad/core/lib/design-token";
 import { useInboxStore } from "@yaad/core/store/inbox/use-inbox-store";
 import { CheckCheck, Inbox, Sparkles, Trash2 } from "lucide-react";
-
 import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";

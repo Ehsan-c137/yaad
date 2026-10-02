@@ -4,6 +4,7 @@ import type { Tag } from "@yaad/core/types/document";
 
 import { Tag as TagIcon } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-import { useTranslation } from "react-i18next";
 
 import { TagForm } from "./tag-form";
 

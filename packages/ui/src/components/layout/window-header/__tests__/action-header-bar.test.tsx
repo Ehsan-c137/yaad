@@ -24,6 +24,7 @@ const resetWindowActions = () => {
 describe("ActionHeaderBar", () => {
   it("renders null when windowControls are not provided", () => {
     const { container } = render(<ActionHeaderBar />);
+
     expect(container.firstChild).toBeNull();
   });
 
@@ -68,6 +69,7 @@ describe("ActionHeaderBar", () => {
       name: /minimize window/i,
     });
     fireEvent.click(minimizeButton);
-    expect(windowActions.minimize).toHaveBeenCalledOnce();
+
+    expect(windowActions.minimize).toHaveBeenCalledExactlyOnceWith();
   });
 });

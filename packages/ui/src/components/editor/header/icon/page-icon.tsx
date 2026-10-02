@@ -12,8 +12,8 @@ export function PageIcon() {
   );
   const effectiveDocumentId = currentDocumentId ?? contextPageId;
 
-  const sidebarIcon = useSidebarStore(
-    (store) => (contextPageId ? store.pages[contextPageId]?.icon : undefined),
+  const sidebarIcon = useSidebarStore((store) =>
+    contextPageId ? store.pages[contextPageId]?.icon : undefined,
   );
   const savedIcon = useDocumentStore((state) => state.currentDocument?.icon);
   const updateIcon = useDocumentStore((state) => state.updateIcon);

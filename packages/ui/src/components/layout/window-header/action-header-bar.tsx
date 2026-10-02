@@ -2,7 +2,9 @@ import { Button } from "@ui/button";
 import { Maximize, Minus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { usePlatform, type WindowControls } from "@/context/platform-context";
+import type { WindowControls } from "@/context/platform-context";
+
+import { usePlatform } from "@/context/platform-context";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export interface ActionHeaderBarProps {

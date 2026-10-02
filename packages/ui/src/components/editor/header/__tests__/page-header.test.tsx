@@ -41,7 +41,7 @@ describe("PageHeader", () => {
       </EditorPageIdProvider>,
     );
     const addCoverButton = screen.getByRole("button", {
-      name: /add cover|addCover/i,
+      name: /add cover|addcover/i,
     });
 
     expect(addCoverButton).toBeDefined();
@@ -51,7 +51,7 @@ describe("PageHeader", () => {
     expect(pageIcon).not.toBeNull();
 
     const bookmarkButton = screen.getByLabelText(
-      /add to bookmarks|addToBookmarks/i,
+      /add to bookmarks|addtobookmarks/i,
     );
 
     expect(bookmarkButton).toBeDefined();
@@ -83,6 +83,7 @@ describe("PageHeader", () => {
     );
 
     const pageIcon = container.querySelector("#page_icon");
+
     expect(pageIcon?.textContent).toBe("🚀");
 
     expect(screen.getByText("Saved Meeting Title")).toBeDefined();
@@ -104,18 +105,21 @@ describe("PageHeader", () => {
     );
 
     // Cover container is immediately rendered
-    const coverContainer = container.querySelector("[aria-label='page_cover']");
+    const coverContainer = container.querySelector(".animate-page-cover");
+
     expect(coverContainer).not.toBeNull();
 
     // Buttons inside cover are not shown before the cover image finishes loading
-    expect(screen.queryByText(/changeCover|change cover/i)).toBeNull();
+    expect(screen.queryByText(/change cover|changecover/i)).toBeNull();
 
     // Trigger image onLoad event
     const img = coverContainer?.querySelector("img");
+
     expect(img).not.toBeNull();
+
     fireEvent.load(img!);
 
     // After cover loads, the buttons inside it appear
-    expect(screen.getByText(/changeCover|change cover/i)).toBeDefined();
+    expect(screen.getByText(/change cover|changecover/i)).toBeDefined();
   });
 });

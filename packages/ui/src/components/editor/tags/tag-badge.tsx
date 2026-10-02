@@ -4,7 +4,6 @@ import type { Tag, TagColor } from "@yaad/core/types/document";
 
 import { useTagStore } from "@yaad/core/store/use-tag-store";
 import { X } from "lucide-react";
-
 import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";

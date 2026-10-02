@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PageHeaderCover } from "../page-header-cover";
 
-let mockCoverImage: string | undefined = undefined;
+let mockCoverImage: string | undefined;
 const mockUpdateCoverImage = vi.fn();
 const mockRemoveCoverImage = vi.fn();
 
@@ -73,9 +73,11 @@ describe("PageHeaderCover", () => {
     render(<PageHeaderCover />);
 
     fireEvent.click(screen.getByRole("button", { name: /add cover/i }));
+
     expect(screen.getByTestId("cover-picker-modal")).toBeDefined();
 
     fireEvent.click(screen.getByText("Select Cover"));
+
     expect(mockUpdateCoverImage).toHaveBeenCalledWith(
       "https://img.example/selected.png",
     );
@@ -128,7 +130,8 @@ describe("PageHeaderCover", () => {
     render(<PageHeaderCover />);
 
     fireEvent.click(screen.getByRole("button", { name: /remove/i }));
-    expect(mockRemoveCoverImage).toHaveBeenCalled();
+
+    expect(mockRemoveCoverImage).toHaveBeenCalledWith();
   });
 
   it("displays error fallback with retry button when image fails to load", () => {
@@ -144,8 +147,10 @@ describe("PageHeaderCover", () => {
     render(<PageHeaderCover />);
 
     expect(screen.getByText(/image not loaded/i)).toBeDefined();
+
     const retryBtn = screen.getByRole("button", { name: /retry/i });
     fireEvent.click(retryBtn);
-    expect(mockResolutionResult.retry).toHaveBeenCalled();
+
+    expect(mockResolutionResult.retry).toHaveBeenCalledWith();
   });
 });
