@@ -1,5 +1,4 @@
 import { Button } from "@ui/button";
-import { ToggleThemeButton } from "@ui/toggle-theme-button";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
@@ -105,10 +104,6 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex sm:items-center">
-            <ToggleThemeButton />
-          </div>
-
           <a
             href="#downloads"
             onClick={(e) => handleScrollTo(e, "#downloads")}
