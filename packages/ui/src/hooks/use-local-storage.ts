@@ -2,9 +2,11 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 
-type LocalstorageKeys = "is-sidebar-open" | "locale" | "theme";
+type LocalstorageKeys =
+  "is-sidebar-open" | "locale" | "page-transition-preference" | "theme";
 
 type StorageListener = () => void;
+
 const listeners = new Set<StorageListener>();
 
 function notifyListeners() {
@@ -17,6 +19,7 @@ if (typeof window !== "undefined") {
 
 function subscribe(callback: () => void) {
   listeners.add(callback);
+
   return () => {
     listeners.delete(callback);
   };
@@ -39,6 +42,7 @@ function getSnapshot<T>(key: string, initialValue: T): T {
     }
 
     let parsed: T;
+
     if (raw === null) {
       parsed = initialValue;
     } else {

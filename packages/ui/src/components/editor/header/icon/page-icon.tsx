@@ -1,12 +1,19 @@
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 
 import { IconPickerPopover } from "@/components/shared/icon-picker-popover";
+import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
 export function PageIcon() {
+  const contextPageId = useEditorPageIdContext();
   const currentDocumentId = useDocumentStore(
     (state) => state.currentDocument?.id,
+  );
+  const effectiveDocumentId = currentDocumentId ?? contextPageId;
+
+  const sidebarIcon = useSidebarStore(
+    (store) => (contextPageId ? store.pages[contextPageId]?.icon : undefined),
   );
   const savedIcon = useDocumentStore((state) => state.currentDocument?.icon);
   const updateIcon = useDocumentStore((state) => state.updateIcon);
@@ -15,17 +22,17 @@ export function PageIcon() {
     (store) => store.updatePageTitleInTree,
   );
 
-  const icon = savedIcon ?? "📄";
+  const icon = savedIcon ?? sidebarIcon ?? "📄";
 
-  if (!currentDocumentId) return null;
+  if (!effectiveDocumentId) return null;
 
   const handleIcon = async (newIcon: string) => {
-    updatePageTitleInTree(currentDocumentId, undefined, newIcon);
+    updatePageTitleInTree(effectiveDocumentId, undefined, newIcon);
     await updateIcon(newIcon);
   };
 
   const handleRemoveIcon = async () => {
-    updatePageTitleInTree(currentDocumentId, undefined, undefined);
+    updatePageTitleInTree(effectiveDocumentId, undefined, undefined);
     await removePageIcon();
   };
 
@@ -41,6 +48,7 @@ export function PageIcon() {
           "cursor-pointer text-start text-5xl leading-none select-none",
           "transition-transform duration-(--spring-duration) ease-(--spring)",
           "inline-block hover:scale-110",
+          "animate-page-icon",
         )}
       >
         {icon}

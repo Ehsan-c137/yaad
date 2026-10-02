@@ -1,16 +1,37 @@
 "use client";
 
+import type { TransitionPreference } from "@/hooks/use-page-transition-preference";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
 import { ToggleThemeButton } from "@ui/toggle-theme-button";
-import { styles } from "@yaad/core/lib/design-token";
-import { Moon } from "lucide-react";
+import { Moon, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { usePageTransitionPreference } from "@/hooks/use-page-transition-preference";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { SettingsRow } from "../settings-row";
 
 export function AppearanceSection() {
   const { t } = useTranslation("settings");
+  const { isLowDevice, preference, setPreference } =
+    usePageTransitionPreference();
+
+  const transitionOptions: readonly {
+    label: string;
+    value: TransitionPreference;
+  }[] = [
+    { label: t("transitionAuto"), value: "auto" },
+    { label: t("transitionEnabled"), value: "enabled" },
+    { label: t("transitionDisabled"), value: "disabled" },
+  ];
 
   return (
     <>
@@ -23,6 +44,46 @@ export function AppearanceSection() {
         title={t("darkMode")}
         subtitle={t("darkModeSubtitle")}
         control={<ToggleThemeButton />}
+      />
+
+      <SettingsRow
+        icon={<Sparkles className="size-3.5" strokeWidth={1.5} />}
+        title={t("pageTransitions")}
+        subtitle={
+          isLowDevice && preference === "auto"
+            ? t("pageTransitionsLowDevice")
+            : t("pageTransitionsSubtitle")
+        }
+        control={
+          <Select
+            value={preference}
+            onValueChange={(val) => {
+              if (val) {
+                setPreference(val as TransitionPreference);
+              }
+            }}
+            items={transitionOptions}
+          >
+            <SelectTrigger
+              size="sm"
+              aria-label={t("pageTransitions")}
+              className="min-w-36 text-xs"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end" alignItemWithTrigger={false}>
+              {transitionOptions.map((opt) => (
+                <SelectItem
+                  key={opt.value}
+                  value={opt.value}
+                  className="text-xs"
+                >
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        }
       />
     </>
   );

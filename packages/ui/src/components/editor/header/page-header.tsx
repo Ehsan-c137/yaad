@@ -1,10 +1,12 @@
 import { ROUTES } from "@yaad/core/constants/routes";
+import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Network } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
 import { Link } from "@/components/ui/link";
+import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
@@ -32,15 +34,22 @@ export function PageHeader() {
 
 function PageHeaderTitle() {
   const { t } = useTranslation(["editor", "common"]);
-  const titleText = useDocumentStore(
-    (state) =>
-      state.currentDocument?.blocks.root.properties.title[0]?.text ?? "",
+  const { pageId: routePageId, workspaceId } = useParams<{
+    pageId: string;
+    workspaceId: string;
+  }>();
+  const contextPageId = useEditorPageIdContext();
+  const pageId = contextPageId || routePageId;
+
+  const sidebarTitle = useSidebarStore((state) =>
+    pageId ? state.pages[pageId]?.title : undefined,
+  );
+  const documentTitle = useDocumentStore(
+    (state) => state.currentDocument?.blocks.root.properties.title[0]?.text,
   );
   const updateTitle = useDocumentStore((state) => state.updateTitle);
-  const { workspaceId, pageId } = useParams<{
-    workspaceId: string;
-    pageId: string;
-  }>();
+
+  const titleText = documentTitle ?? sidebarTitle ?? "";
 
   const handleTitleChange = async (newTitle: string) => {
     await updateTitle(newTitle);
@@ -51,7 +60,7 @@ function PageHeaderTitle() {
       <EditableContent
         html={titleText}
         placeholder={t("common:untitled")}
-        className="text-sf-large-title leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem]"
+        className="leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem] animate-page-title"
         onChange={handleTitleChange}
       />
       <Link
@@ -62,6 +71,7 @@ function PageHeaderTitle() {
           "inline-flex size-8 items-center justify-center rounded-xl",
           "text-muted-foreground transition-[background-color,color,box-shadow,transform] duration-250 ease-(--spring)",
           "hover:bg-foreground/[0.06] hover:text-foreground active:scale-95",
+          "animate-page-graph",
         )}
       >
         <Network className="size-4" strokeWidth={1.5} />

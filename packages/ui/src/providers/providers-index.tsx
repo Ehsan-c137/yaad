@@ -1,11 +1,11 @@
 import "@/i18n";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import {
-  PlatformProvider,
-  type WindowControls,
-} from "@/context/platform-context";
+import type { WindowControls } from "@/context/platform-context";
+
+import { PlatformProvider } from "@/context/platform-context";
 
 import { ErrorBoundary } from "./error-boundary";
+import { MotionProvider } from "./motion-provider";
 import { ThemeProvider } from "./theme-provider";
 import { WorkspaceInitializer } from "./workspace-initializer";
 
@@ -21,6 +21,7 @@ export function Providers({ children, windowControls }: ProvidersProps) {
         value={{ isDesktop: Boolean(windowControls), windowControls }}
       >
         <ThemeProvider />
+        <MotionProvider />
         <WorkspaceInitializer>
           <TooltipProvider delay={200}>{children}</TooltipProvider>
         </WorkspaceInitializer>

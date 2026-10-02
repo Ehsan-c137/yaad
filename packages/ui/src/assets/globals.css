@@ -51,6 +51,21 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-page-cover: page-cover-reveal 200ms cubic-bezier(0.16, 1, 0.3, 1)
+    both;
+  --animate-page-cover-actions: page-element-fade-in 180ms
+    cubic-bezier(0.16, 1, 0.3, 1) 70ms both;
+  --animate-page-icon: page-icon-pop 200ms cubic-bezier(0.16, 1, 0.3, 1) 100ms
+    both;
+  --animate-page-bookmark: page-element-fade-in 180ms
+    cubic-bezier(0.16, 1, 0.3, 1) 130ms both;
+  --animate-page-title: page-element-fade-in 200ms cubic-bezier(0.16, 1, 0.3, 1)
+    160ms both;
+  --animate-page-graph: page-element-fade-in 180ms cubic-bezier(0.16, 1, 0.3, 1)
+    190ms both;
+  --animate-page-body: page-element-fade-in 220ms cubic-bezier(0.16, 1, 0.3, 1)
+    220ms both;
 }
 
 :root {
@@ -498,6 +513,71 @@
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+@keyframes page-element-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-cover-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-icon-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Low-end device & Reduced Motion Disablement */
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-page-"] {
+    animation: none !important;
+    animation-delay: 0ms !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+  [data-slot="cover-image"] {
+    transition: none !important;
+    filter: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+html[data-low-device="true"] [class*="animate-page-"],
+html[data-page-transitions="disabled"] [class*="animate-page-"] {
+  animation: none !important;
+  animation-delay: 0ms !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
+html[data-low-device="true"] [data-slot="cover-image"],
+html[data-page-transitions="disabled"] [data-slot="cover-image"] {
+  transition: none !important;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
 }
 
 :root {
