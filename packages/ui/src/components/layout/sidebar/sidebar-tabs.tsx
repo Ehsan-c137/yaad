@@ -4,7 +4,6 @@ import { Bookmark, House } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { usePageTransitionPreference } from "@/hooks/use-page-transition-preference";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
@@ -13,15 +12,13 @@ import { SidebarHome } from "./home/sidebar-home";
 
 type Tab = "bookmarked" | "home";
 
-export function SidebarTabs() {
+export const SidebarTabs = () => {
   const { t } = useTranslation("sidebar");
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const hasHydrated = useSidebarStore((state) => state._hasHydrated);
-  const { transitionsEnabled } = usePageTransitionPreference();
-
   const pillRef = useRef<HTMLSpanElement>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const isMounted = useRef(false);
+  const tabRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const isMountedRef = useRef(false);
 
   const tabs = [
     {
@@ -36,10 +33,10 @@ export function SidebarTabs() {
     },
   ];
 
-  const activeIndex = tabs.findIndex((tab) => tab.value === activeTab);
+  const activeIndex = tabs.findIndex((t) => t.value === activeTab);
 
   const moveTo = (idx: number, animate: boolean) => {
-    const tab = tabRefs.current[idx];
+    const tab = tabRef.current[idx];
     const pill = pillRef.current;
     if (!tab || !pill) return false;
 
@@ -68,19 +65,22 @@ export function SidebarTabs() {
   useEffect(() => {
     if (activeIndex === -1) return;
 
-    if (!isMounted.current) {
+    if (!isMountedRef.current) {
       const id = window.requestAnimationFrame(() => {
         const success = moveTo(activeIndex, false);
-        if (success) isMounted.current = true;
+        if (success) isMountedRef.current = true;
       });
       return () => window.cancelAnimationFrame(id);
     } else {
-      moveTo(activeIndex, transitionsEnabled);
+      moveTo(activeIndex, true);
     }
-  }, [activeIndex, hasHydrated, transitionsEnabled]);
+  }, [activeIndex, hasHydrated]);
 
   useEffect(() => {
-    const onResize = () => moveTo(activeIndex, false);
+    const onResize = () => {
+      moveTo(activeIndex, false);
+    };
+
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [activeIndex]);
@@ -99,7 +99,7 @@ export function SidebarTabs() {
             <TabsList variant="segmented" className="relative w-full">
               <span
                 ref={pillRef}
-                className="pointer-events-none absolute left-0 top-0 z-0 rounded-full bg-background shadow-xs transition-all duration-300 ease-out will-change-transform dark:bg-secondary/90 motion-reduce:transition-none"
+                className="pointer-events-none absolute left-0 top-0 z-0 rounded-full bg-background shadow-xs transition-all duration-300 ease-out will-change-transform dark:bg-secondary/90"
                 aria-hidden="true"
               />
               {tabs.map((tab, i) => (
@@ -107,9 +107,9 @@ export function SidebarTabs() {
                   key={tab.value}
                   value={tab.value}
                   ref={(el) => {
-                    tabRefs.current[i] = el;
+                    tabRef.current[i] = el;
                   }}
-                  className="relative z-10 gap-1.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:bg-transparent motion-reduce:transition-none"
+                  className="relative z-10 gap-1.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:bg-transparent"
                 >
                   {tab.icon}
                   <span>{tab.label}</span>
@@ -130,4 +130,4 @@ export function SidebarTabs() {
       </div>
     </div>
   );
-}
+};
