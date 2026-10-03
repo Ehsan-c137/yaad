@@ -67,7 +67,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-dashed border-neutral-300">
+    <header className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-xl border-b border-dashed border-neutral-300 dark:border-neutral-700">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link
@@ -91,7 +91,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
               key={link.href}
               href={link.href}
               onClick={(e) => handleScrollTo(e, link.href)}
-              className="px-3 py-1.5 text-[13px] font-medium text-neutral-500 transition-colors hover:text-foreground cursor-pointer"
+              className="px-3 py-1.5 text-[13px] font-medium text-neutral-500 dark:text-neutral-400 transition-colors hover:text-foreground dark:hover:text-foreground cursor-pointer"
             >
               {link.label}
             </a>
@@ -104,7 +104,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
             <Button
               onClick={onOpenApp}
               size="sm"
-              className="h-8 gap-1.5 rounded-full bg-foreground px-4 text-[13px] font-medium text-background hover:bg-foreground/85 cursor-pointer"
+              className="h-8 gap-1.5 rounded-full bg-foreground dark:bg-white px-4 text-[13px] font-medium text-background dark:text-black hover:bg-foreground/85 dark:hover:bg-white/85 cursor-pointer"
             >
               <span>Open Yaad</span>
               <ArrowRight className="size-3.5" />
@@ -113,7 +113,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
             <Link to={targetWorkspaceHref}>
               <Button
                 size="sm"
-                className="h-8 gap-1.5 rounded-full bg-foreground px-4 text-[13px] font-medium text-background hover:bg-foreground/85 cursor-pointer"
+                className="h-8 gap-1.5 rounded-full bg-foreground dark:bg-white px-4 text-[13px] font-medium text-background dark:text-black hover:bg-foreground/85 dark:hover:bg-white/85 cursor-pointer"
               >
                 <span>Open Yaad</span>
                 <ArrowRight className="size-3.5" />

@@ -18,7 +18,7 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
   return (
     <section className="relative pt-16 pb-16 sm:pt-28 sm:pb-24 overflow-hidden">
       {/* Background pattern */}
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7ef_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]" />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7ef_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]" />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         {/* Hero heading — large, bold, with inline emoji like time.fyi */}
@@ -27,7 +27,7 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
         </h1>
 
         {/* Subtitle */}
-        <p className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed text-neutral-500 sm:text-base">
+        <p className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed text-neutral-500 dark:text-neutral-400 sm:text-base">
           Yaad is a fast, private note editor. Capture thoughts, link ideas
           visually, and work completely offline — no account needed.
         </p>
@@ -47,7 +47,7 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
                 onClick={onOpenApp}
                 variant="outline"
                 size="lg"
-                className="h-11 gap-2 rounded-full border-neutral-200 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 active:scale-[0.97] transition-all cursor-pointer"
+                className="h-11 gap-2 rounded-full border-neutral-200 dark:border-neutral-700 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 active:scale-[0.97] transition-all cursor-pointer"
               >
                 Launch Web App
                 <ArrowRight className="size-4" />
@@ -67,7 +67,7 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-11 gap-2 rounded-full border-neutral-200 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 active:scale-[0.97] transition-all cursor-pointer"
+                  className="h-11 gap-2 rounded-full border-neutral-200 dark:border-neutral-700 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 active:scale-[0.97] transition-all cursor-pointer"
                 >
                   Launch Web App
                   <ArrowRight className="size-4" />

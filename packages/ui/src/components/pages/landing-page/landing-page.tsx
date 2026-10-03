@@ -26,8 +26,7 @@ export function LandingPage({ onOpenApp }: LandingPageProps) {
     <div className="relative min-h-screen w-full bg-background text-foreground selection:bg-foreground/10 selection:text-foreground scroll-smooth flex flex-col">
       {/* Background Grid Lines (matches max-w-6xl) */}
       <div className="pointer-events-none fixed inset-0 z-0 flex justify-center overflow-hidden">
-        <div className="w-full max-w-6xl border-x border-dashed border-neutral-300" />
-        asdf
+        <div className="w-full max-w-6xl border-x border-dashed border-neutral-300 dark:border-neutral-700" />
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
@@ -37,19 +36,19 @@ export function LandingPage({ onOpenApp }: LandingPageProps) {
           <LandingHero onOpenApp={onOpenApp} />
 
           {/* Subtle horizontal separator */}
-          <div className="w-full border-b border-dashed border-neutral-300" />
+          <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
           <LandingBento />
 
-          <div className="w-full border-b border-dashed border-neutral-300" />
+          <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
           <LandingWorkflow />
 
-          <div className="w-full border-b border-dashed border-neutral-300" />
+          <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
           <LandingDownloads />
 
-          <div className="w-full border-b border-dashed border-neutral-300" />
+          <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
           <LandingFaq />
         </main>

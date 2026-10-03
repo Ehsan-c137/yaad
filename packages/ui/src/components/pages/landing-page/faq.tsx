@@ -44,7 +44,7 @@ export function LandingFaq() {
   return (
     <section
       id="faq"
-      className="py-20 sm:py-28 border-t border-neutral-100 bg-neutral-50/40"
+      className="py-20 sm:py-28 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-900/40"
     >
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <div className="text-center">
@@ -54,7 +54,7 @@ export function LandingFaq() {
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
             Frequently Asked Questions
           </h2>
-          <p className="mt-3 text-[15px] text-neutral-500">
+          <p className="mt-3 text-[15px] text-neutral-500 dark:text-neutral-400">
             Everything you need to know about Yaad and how it keeps your notes
             private.
           </p>
@@ -66,7 +66,7 @@ export function LandingFaq() {
             return (
               <div
                 key={faq.question}
-                className="overflow-hidden rounded-xl border border-neutral-100 bg-white transition-all"
+                className="overflow-hidden rounded-xl border border-neutral-100 dark:border-neutral-800 bg-background transition-all"
               >
                 <button
                   type="button"
@@ -75,14 +75,14 @@ export function LandingFaq() {
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
-                    className={`size-4 shrink-0 text-neutral-400 transition-transform duration-200 ${
+                    className={`size-4 shrink-0 text-neutral-400 dark:text-neutral-500 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-neutral-100 px-5 pt-3 pb-5 text-sm leading-relaxed text-neutral-500 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="border-t border-neutral-100 dark:border-neutral-800 px-5 pt-3 pb-5 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400 animate-in fade-in slide-in-from-top-1 duration-200">
                     {faq.answer}
                   </div>
                 )}
