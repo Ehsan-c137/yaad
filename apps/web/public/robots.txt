@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /
 Allow: /$
+Allow: /assets/
 
 Sitemap: https://yaad-note.vercel.app/sitemap.xml
