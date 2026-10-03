@@ -28,7 +28,6 @@
   }
 
   .menu {
-    position: relative;
     background-color: var(--material-bg);
     backdrop-filter: blur(var(--material-blur))
       saturate(var(--material-saturate));

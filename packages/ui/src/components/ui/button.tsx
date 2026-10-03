@@ -65,13 +65,14 @@ function Button({
   disabled,
   children,
   title,
+
   tooltipSide = "right",
   ...props
 }: ButtonProps) {
   const ButtonToRender = (
     <ButtonPrimitive
       data-slot="button"
-      disabled={disabled || loading}
+      disabled={disabled ?? loading}
       aria-busy={loading || undefined}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
