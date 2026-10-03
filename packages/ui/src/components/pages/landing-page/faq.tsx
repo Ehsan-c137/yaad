@@ -1,4 +1,4 @@
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 interface FaqItem {
@@ -42,9 +42,11 @@ export function LandingFaq() {
   };
 
   return (
-    <section id="faq" className="py-20 sm:py-28 border-t border-neutral-100 bg-neutral-50/40">
+    <section
+      id="faq"
+      className="py-20 sm:py-28 border-t border-neutral-100 bg-neutral-50/40"
+    >
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        {/* Section Header */}
         <div className="text-center">
           <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
             FAQ
@@ -58,7 +60,6 @@ export function LandingFaq() {
           </p>
         </div>
 
-        {/* Accordion list */}
         <div className="mt-12 space-y-2">
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
