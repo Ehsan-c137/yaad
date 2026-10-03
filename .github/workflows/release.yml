@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-24.04, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -52,10 +52,45 @@ jobs:
             apps/desktop/src-tauri/target/release/bundle/msi/*.msi
             apps/desktop/src-tauri/target/release/bundle/deb/*.deb
             apps/desktop/src-tauri/target/release/bundle/appimage/*.AppImage
+            apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
+            apps/desktop/src-tauri/target/release/bundle/macos/*.app.tar.gz
+          if-no-files-found: error
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Add Android Rust targets
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+      - name: Setup NDK_HOME
+        run: echo "NDK_HOME=$ANDROID_NDK_HOME" >> $GITHUB_ENV
+      - run: pnpm install --frozen-lockfile
+      - name: Build Tauri Android app
+        run: |
+          if [ ! -d "apps/desktop/src-tauri/gen/android" ]; then pnpm --filter @yaad/desktop tauri android init; fi
+          pnpm --filter @yaad/desktop tauri android build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundle-android
+          path: |
+            apps/desktop/src-tauri/gen/android/app/build/outputs/**/*.apk
+            apps/desktop/src-tauri/gen/android/app/build/outputs/**/*.aab
           if-no-files-found: error
 
   release:
-    needs: build
+    needs: [build, build-android]
     runs-on: ubuntu-latest
 
     steps:
