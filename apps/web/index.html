@@ -4,16 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
+
+    <!-- Primary Meta Tags -->
+    <title>Yaad — Fast, Private Notes &amp; Connected Ideas</title>
+    <meta name="title" content="Yaad — Fast, Private Notes &amp; Connected Ideas" />
     <meta
       name="description"
-      content="Personal knowledge base and visual notes"
+      content="Yaad is a fast, local-first note editor. Capture thoughts, visually link ideas, and work completely offline with private, secure storage."
     />
+    <meta
+      name="keywords"
+      content="notes, local-first, markdown, visual notes, offline notes, privacy-first, personal knowledge base, mind mapping"
+    />
+    <meta name="author" content="Yaad" />
     <link rel="canonical" href="https://yaad-note.vercel.app/" />
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yaad-note.vercel.app/" />
+    <meta property="og:site_name" content="Yaad" />
+    <meta property="og:title" content="Yaad — Fast, Private Notes &amp; Connected Ideas" />
+    <meta
+      property="og:description"
+      content="Fast, private note-taking and visual ideas editor. Work completely offline with zero tracking."
+    />
+    <meta property="og:image" content="https://yaad-note.vercel.app/yaad-logo.png" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://yaad-note.vercel.app/" />
+    <meta name="twitter:title" content="Yaad — Fast, Private Notes &amp; Connected Ideas" />
+    <meta
+      name="twitter:description"
+      content="Fast, private note-taking and visual ideas editor. Work completely offline with zero tracking."
+    />
+    <meta name="twitter:image" content="https://yaad-note.vercel.app/yaad-logo.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Yaad",
+        "operatingSystem": "All",
+        "applicationCategory": "ProductivityApplication",
+        "description": "Fast, private note editor and visual knowledge base. Work offline with local-first storage.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "url": "https://yaad-note.vercel.app"
+      }
+    </script>
+
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>Yaad</title>
     <script>
       (function () {
         try {
@@ -27,7 +75,15 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <noscript>
+        <main style="max-width: 800px; margin: 40px auto; padding: 0 20px; font-family: system-ui, sans-serif;">
+          <h1>Yaad — Fast, Private Notes &amp; Connected Ideas</h1>
+          <p>Yaad is a fast, local-first, private note editor. Capture thoughts, link ideas visually, and work completely offline.</p>
+          <p><a href="/app">Open App</a></p>
+        </main>
+      </noscript>
+    </div>
     <script type="module" src="/src/landing.tsx"></script>
   </body>
 </html>
