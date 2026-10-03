@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 
 import App from "./App";
 import "@yaad/ui/assets/globals.css";
+import "@yaad/ui/assets/app.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

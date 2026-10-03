@@ -12,6 +12,8 @@ interface LandingPageProps {
   onOpenApp?: () => void;
 }
 
+import { Reveal } from "./reveal";
+
 export function LandingPage({ onOpenApp }: LandingPageProps) {
   useEffect(() => {
     const previousTitle = document.title;
@@ -23,7 +25,7 @@ export function LandingPage({ onOpenApp }: LandingPageProps) {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-background text-foreground selection:bg-foreground/10 selection:text-foreground scroll-smooth flex flex-col">
+    <div className="paper-texture relative min-h-screen w-full bg-background text-foreground selection:bg-foreground/10 selection:text-foreground scroll-smooth flex flex-col">
       {/* Background Grid Lines (matches max-w-6xl) */}
       <div className="pointer-events-none fixed inset-0 z-0 flex justify-center overflow-hidden">
         <div className="w-full max-w-6xl border-x border-dashed border-neutral-300 dark:border-neutral-700" />
@@ -33,7 +35,9 @@ export function LandingPage({ onOpenApp }: LandingPageProps) {
         <LandingHeader onOpenApp={onOpenApp} />
 
         <main id="main-content" className="flex flex-col">
-          <LandingHero onOpenApp={onOpenApp} />
+          <Reveal animation="t-stagger">
+            <LandingHero onOpenApp={onOpenApp} />
+          </Reveal>
 
           {/* Subtle horizontal separator */}
           <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
@@ -42,15 +46,21 @@ export function LandingPage({ onOpenApp }: LandingPageProps) {
 
           <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
-          <LandingWorkflow />
+          <Reveal animation="reveal-fade-up">
+            <LandingWorkflow />
+          </Reveal>
 
           <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
-          <LandingDownloads />
+          <Reveal animation="reveal-scale-up">
+            <LandingDownloads />
+          </Reveal>
 
           <div className="w-full border-b border-dashed border-neutral-300 dark:border-neutral-700" />
 
-          <LandingFaq />
+          <Reveal animation="reveal-fade-up">
+            <LandingFaq />
+          </Reveal>
         </main>
 
         <LandingFooter />

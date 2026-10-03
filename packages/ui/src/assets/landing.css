@@ -1,0 +1,110 @@
+@layer utilities {
+  .paper-texture {
+    position: relative;
+  }
+  .paper-texture::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.045;
+    mix-blend-mode: multiply;
+  }
+  .dark .paper-texture::after {
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+  }
+}
+
+/* Landing Page Scroll Reveals */
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s var(--spring), transform 0.7s var(--spring);
+  will-change: opacity, transform;
+}
+.reveal-fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-scale-up {
+  opacity: 0;
+  transform: scale(0.96) translateY(20px);
+  transition: opacity 0.7s var(--spring), transform 0.7s var(--spring);
+  will-change: opacity, transform;
+}
+.reveal-scale-up.is-visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.reveal-blur {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(20px);
+  transition: opacity 0.8s var(--spring), filter 0.8s var(--spring), transform 0.8s var(--spring);
+  will-change: opacity, filter, transform;
+}
+.reveal-blur.is-visible {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0);
+}
+
+/* Hero Text Reveal */
+:root {
+  --stagger-dur: 800ms;
+  --stagger-distance: 16px;
+  --stagger-stagger: 100ms;
+  --stagger-blur: 4px;
+  --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.t-stagger-line {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(var(--stagger-distance));
+  filter: blur(var(--stagger-blur));
+  transition:
+    opacity   var(--stagger-dur) var(--stagger-ease),
+    transform var(--stagger-dur) var(--stagger-ease),
+    filter    var(--stagger-dur) var(--stagger-ease);
+  will-change: transform, opacity, filter;
+}
+
+.t-stagger-line--1 { transition-delay: 0ms; }
+.t-stagger-line--2 { transition-delay: var(--stagger-stagger); }
+.t-stagger-line--3 { transition-delay: calc(var(--stagger-stagger) * 2); }
+.t-stagger-line--4 { transition-delay: calc(var(--stagger-stagger) * 3); }
+.t-stagger-line--5 { transition-delay: calc(var(--stagger-stagger) * 4); }
+
+.t-stagger.is-visible .t-stagger-line {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.t-slide-right {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.8s var(--stagger-ease), transform 0.8s var(--stagger-ease);
+  will-change: transform, opacity;
+}
+.t-stagger.is-visible .t-slide-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.t-scale-up-child {
+  opacity: 0;
+  transform: scale(0.96) translateY(12px);
+  transition: opacity 0.8s var(--stagger-ease), transform 0.8s var(--stagger-ease);
+  will-change: transform, opacity;
+}
+.t-stagger.is-visible .t-scale-up-child {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}

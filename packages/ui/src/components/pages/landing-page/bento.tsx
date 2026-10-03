@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { Reveal } from "./reveal";
+
 interface FeatureItem {
   id: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -74,23 +76,32 @@ export function LandingBento() {
   return (
     <section id="features" className="py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="text-center">
-          <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
-            Features
-          </span>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-[2.75rem] sm:leading-[1.15]">
+        <Reveal animation="t-stagger" className="text-center flex flex-col">
+          <div className="t-stagger-line t-stagger-line--1 block">
+            <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
+              Features
+            </span>
+          </div>
+          <h2 className="t-stagger-line t-stagger-line--2 mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-[2.75rem] sm:leading-[1.15]">
             Everything you need to think clearly.
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-[15px] text-neutral-500 dark:text-neutral-400">
+          <p className="t-stagger-line t-stagger-line--3 mx-auto mt-4 max-w-lg text-[15px] text-neutral-500 dark:text-neutral-400">
             Fast, simple, and completely private. No confusing menus, no
             subscription walls, no waiting on cloud sync.
           </p>
-        </div>
+        </Reveal>
 
         {/* Features layout: left list + right visual */}
-        <div className="mt-16 grid grid-cols-1 items-start gap-10 lg:grid-cols-[380px_1fr]">
+        <Reveal
+          animation="t-stagger"
+          className="mt-16 grid grid-cols-1 items-start gap-10 lg:grid-cols-[380px_1fr]"
+          threshold={0.1}
+        >
           {/* Left: feature list */}
-          <div className="space-y-1">
+          <div
+            className="space-y-1 t-slide-right"
+            style={{ transitionDelay: "100ms" }}
+          >
             {FEATURES.map((f) => {
               const Icon = f.icon;
               const isActive = activeFeature === f.id;
@@ -146,7 +157,10 @@ export function LandingBento() {
           </div>
 
           {/* Right: visual preview panel */}
-          <div className="relative rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 p-1 shadow-sm">
+          <div
+            className="relative rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 p-1 shadow-sm t-scale-up-child"
+            style={{ transitionDelay: "200ms" }}
+          >
             <div className="overflow-hidden rounded-xl border border-neutral-100 dark:border-neutral-800 bg-background">
               {/* Mini window chrome */}
               <div className="flex h-9 items-center gap-1.5 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/80 dark:bg-neutral-900/80 px-3">
@@ -168,7 +182,7 @@ export function LandingBento() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
