@@ -42,47 +42,46 @@ export function LandingFaq() {
   };
 
   return (
-    <section id="faq" className="py-20 sm:py-28 relative">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="py-20 sm:py-28 border-t border-neutral-100 bg-neutral-50/40">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6">
         {/* Section Header */}
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-medium text-muted-foreground">
-            <HelpCircle className="size-3.5 text-primary" />
-            <span>Got Questions?</span>
-          </div>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
+            FAQ
+          </span>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
             Frequently Asked Questions
           </h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+          <p className="mt-3 text-[15px] text-neutral-500">
             Everything you need to know about Yaad and how it keeps your notes
             private.
           </p>
         </div>
 
         {/* Accordion list */}
-        <div className="mt-12 space-y-3">
+        <div className="mt-12 space-y-2">
           {FAQS.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div
                 key={faq.question}
-                className="overflow-hidden rounded-xl border border-border/70 bg-card/60 backdrop-blur-xl transition-all"
+                className="overflow-hidden rounded-xl border border-neutral-100 bg-white transition-all"
               >
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
-                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-foreground transition-colors hover:text-primary cursor-pointer"
+                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-foreground transition-colors hover:text-foreground/80 cursor-pointer"
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
-                    className={`size-4 shrink-0 text-muted-foreground transition-transform duration-200 ${
-                      isOpen ? "rotate-180 text-primary" : ""
+                    className={`size-4 shrink-0 text-neutral-400 transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-border/40 px-5 pt-3 pb-5 text-xs sm:text-sm leading-relaxed text-muted-foreground animate-in fade-in">
+                  <div className="border-t border-neutral-100 px-5 pt-3 pb-5 text-sm leading-relaxed text-neutral-500 animate-in fade-in slide-in-from-top-1 duration-200">
                     {faq.answer}
                   </div>
                 )}

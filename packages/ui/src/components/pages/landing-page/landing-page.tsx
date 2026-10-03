@@ -23,23 +23,39 @@ export function LandingPage({ onOpenApp }: LandingPageProps) {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground selection:bg-primary/20 selection:text-primary scroll-smooth">
-      <LandingHeader onOpenApp={onOpenApp} />
+    <div className="relative min-h-screen w-full bg-background text-foreground selection:bg-foreground/10 selection:text-foreground scroll-smooth flex flex-col">
+      {/* Background Grid Lines (matches max-w-6xl) */}
+      <div className="pointer-events-none fixed inset-0 z-0 flex justify-center overflow-hidden">
+        <div className="w-full max-w-6xl border-x border-dashed border-neutral-300" />
+        asdf
+      </div>
 
-      <main id="main-content" className="flex flex-col">
-        <LandingHero onOpenApp={onOpenApp} />
+      <div className="relative z-10 flex flex-col flex-1">
+        <LandingHeader onOpenApp={onOpenApp} />
 
-        <LandingBento />
+        <main id="main-content" className="flex flex-col">
+          <LandingHero onOpenApp={onOpenApp} />
 
-        <LandingWorkflow />
+          {/* Subtle horizontal separator */}
+          <div className="w-full border-b border-dashed border-neutral-300" />
 
-        <LandingDownloads />
+          <LandingBento />
 
-        <LandingFaq />
-      </main>
+          <div className="w-full border-b border-dashed border-neutral-300" />
 
-      {/* Footer */}
-      <LandingFooter />
+          <LandingWorkflow />
+
+          <div className="w-full border-b border-dashed border-neutral-300" />
+
+          <LandingDownloads />
+
+          <div className="w-full border-b border-dashed border-neutral-300" />
+
+          <LandingFaq />
+        </main>
+
+        <LandingFooter />
+      </div>
     </div>
   );
 }

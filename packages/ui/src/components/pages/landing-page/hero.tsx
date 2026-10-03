@@ -1,20 +1,13 @@
 import { Button } from "@ui/button";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { ArrowRight, Globe, Sparkles } from "lucide-react";
-// import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
-
-// import type { PlatformType } from "./landing-platform-utils";
-
-// import { detectUserPlatform, PLATFORMS_DATA } from "./landing-platform-utils";
 
 interface LandingHeroProps {
   onOpenApp?: () => void;
 }
 
 export function LandingHero({ onOpenApp }: LandingHeroProps) {
-  // const [platform, setPlatform] = useState<PlatformType>("macos");
-
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
   );
@@ -22,128 +15,66 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
     ? `/workspace/${activeWorkspaceId}`
     : "/app";
 
-  // useEffect(() => {
-  //   setPlatform(detectUserPlatform());
-  // }, []);
-
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28">
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-gradient-to-tr from-primary/15 via-primary/5 to-transparent blur-3xl" />
-        <div className="absolute top-1/3 -left-40 h-[350px] w-[500px] rounded-full bg-accent/20 blur-3xl" />
-      </div>
+    <section className="relative pt-16 pb-16 sm:pt-28 sm:pb-24 overflow-hidden">
+      {/* Background pattern */}
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7ef_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]" />
 
-      <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary shadow-xs backdrop-blur-md transition-all hover:bg-primary/10">
-          <Sparkles className="size-3.5 animate-pulse text-primary" />
-          <span>Yaad • Fast, Private Notes & Connected Thoughts</span>
-        </div>
-
-        {/* Hero Title */}
-        <h1 className="mx-auto mt-6 max-w-4xl text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl sm:leading-[1.1]">
-          Where thoughts connect at the{" "}
-          <span className="bg-gradient-to-r from-primary via-primary/80 to-accent-blue bg-clip-text text-transparent">
-            speed of light.
-          </span>
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+        {/* Hero heading — large, bold, with inline emoji like time.fyi */}
+        <h1 className="mx-auto max-w-[780px] text-center text-[2.5rem] font-extrabold leading-[1.12] tracking-tight text-foreground sm:text-[3.5rem] lg:text-[4rem]">
+          Your 📝 notes, 🔗 connections and 🧠 ideas, all in one place.
         </h1>
 
-        {/* Hero Subtitle */}
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          A clean, distraction-free note editor with visual connections between
-          your ideas. Fast, private, and works completely offline with zero
-          subscriptions or cloud lock-in.
+        {/* Subtitle */}
+        <p className="mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed text-neutral-500 sm:text-base">
+          Yaad is a fast, private note editor. Capture thoughts, link ideas
+          visually, and work completely offline — no account needed.
         </p>
 
-        <div className="mx-auto mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-          {/* <div className="relative flex flex-col sm:flex-row items-center gap-2">
-            <a href="#downloads">
-              <Button
-                size="lg"
-                className="h-12 gap-2.5 px-6 font-semibold shadow-md shadow-primary/25 transition-transform active:scale-95 cursor-pointer"
-              >
-                <CurrentIcon className="size-5 shrink-0" />
-                <span>Download for {currentPlatform.name}</span>
-                <Download className="size-4 opacity-80" />
-              </Button>
-            </a>
-
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setDropdownOpen((prev) => !prev)}
-                aria-label="Select alternative platform"
-                className="flex h-12 items-center justify-center rounded-lg border border-border/70 bg-card/60 px-3 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
-              >
-                <ChevronDown
-                  className={`size-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {dropdownOpen && (
-                <div className="absolute top-14 right-0 z-30 w-56 rounded-xl border border-border/80 bg-popover p-1.5 shadow-xl backdrop-blur-xl animate-in fade-in zoom-in-95 text-left">
-                  <div className="px-2.5 py-1.5 text-[10px] font-semibold tracking-wider uppercase text-muted-foreground">
-                    Available Platforms
-                  </div>
-                  {Object.values(PLATFORMS_DATA).map((p) => {
-                    const Icon = p.icon;
-                    return (
-                      <a
-                        key={p.id}
-                        href="#downloads"
-                        onClick={() => {
-                          setPlatform(p.id);
-                          setDropdownOpen(false);
-                        }}
-                        className="flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium text-foreground hover:bg-accent/40"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Icon className="size-4" />
-                          <span>{p.name}</span>
-                        </div>
-                        <span className="text-[10px] text-muted-foreground">
-                          {p.badge}
-                        </span>
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div> */}
-
+        {/* CTA buttons */}
+        <div className="mt-8 flex items-center justify-center gap-3">
           {onOpenApp ? (
-            <Button
-              onClick={onOpenApp}
-              variant="outline"
-              size="lg"
-              className="h-12 gap-2 px-6 font-semibold backdrop-blur-md cursor-pointer"
-            >
-              <Globe className="size-4 text-muted-foreground" />
-              <span>Launch in Browser</span>
-              <ArrowRight className="size-4" />
-            </Button>
-          ) : (
-            <Link to={targetWorkspaceHref}>
+            <>
               <Button
+                onClick={onOpenApp}
+                size="lg"
+                className="h-11 gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background shadow-sm hover:bg-foreground/85 active:scale-[0.97] transition-all cursor-pointer"
+              >
+                Start Writing — It's Free
+              </Button>
+              <Button
+                onClick={onOpenApp}
                 variant="outline"
                 size="lg"
-                className="h-12 gap-2 px-6 font-semibold backdrop-blur-md cursor-pointer"
+                className="h-11 gap-2 rounded-full border-neutral-200 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 active:scale-[0.97] transition-all cursor-pointer"
               >
-                <Globe className="size-4 text-muted-foreground" />
-                <span>Launch in Browser</span>
+                Launch Web App
                 <ArrowRight className="size-4" />
               </Button>
-            </Link>
+            </>
+          ) : (
+            <>
+              <Link to={targetWorkspaceHref}>
+                <Button
+                  size="lg"
+                  className="h-11 gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background shadow-sm hover:bg-foreground/85 active:scale-[0.97] transition-all cursor-pointer"
+                >
+                  Start Writing — It's Free
+                </Button>
+              </Link>
+              <Link to={targetWorkspaceHref}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-11 gap-2 rounded-full border-neutral-200 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 active:scale-[0.97] transition-all cursor-pointer"
+                >
+                  Launch Web App
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+            </>
           )}
-        </div>
-
-        {/* Platform metadata caption */}
-        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-muted-foreground">
-          <span>100% Free & Open-source</span>
-          <span>•</span>
-          <span>Works Offline</span>
-          <span>•</span>
-          <span>No Account Required</span>
         </div>
       </div>
     </section>

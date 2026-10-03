@@ -67,28 +67,23 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl transition-colors">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-dashed border-neutral-300">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+        {/* Logo */}
         <Link
           to="/"
           onClick={handleScrollToTop}
-          className="group flex items-center gap-2.5 transition-transform duration-200 active:scale-95 cursor-pointer"
+          className="flex items-center gap-2 transition-opacity active:opacity-70 cursor-pointer"
         >
-          <div className="relative flex size-9 items-center justify-center rounded-xl text-primary-foreground transition-all duration-300 group-hover:scale-105  group-hover:shadow-primary/35">
-            <img alt="yaad logo" src="/yaad-logo.png" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold tracking-tight text-foreground">
-              Yaad
-            </span>
-            <span className="text-[10px] font-medium leading-none text-muted-foreground">
-              Notes & Connected Ideas
-            </span>
-          </div>
+          <img alt="yaad logo" src="/yaad-logo.png" className="size-7" />
+          <span className="text-[15px] font-semibold tracking-tight text-foreground">
+            Yaad
+          </span>
         </Link>
 
+        {/* Center nav */}
         <nav
-          className="hidden items-center gap-6 md:flex"
+          className="hidden items-center gap-1 md:flex"
           aria-label="Main Navigation"
         >
           {NAV_LINKS.map((link) => (
@@ -96,45 +91,32 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
               key={link.href}
               href={link.href}
               onClick={(e) => handleScrollTo(e, link.href)}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+              className="px-3 py-1.5 text-[13px] font-medium text-neutral-500 transition-colors hover:text-foreground cursor-pointer"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <a
-            href="#downloads"
-            onClick={(e) => handleScrollTo(e, "#downloads")}
-            className="hidden sm:inline-flex"
-          >
-            <Button
-              variant="ghost"
-              size="sm"
-              className="font-medium text-muted-foreground hover:text-foreground cursor-pointer"
-            >
-              Get App
-            </Button>
-          </a>
-
+        {/* Right CTA */}
+        <div className="flex items-center gap-2">
           {onOpenApp ? (
             <Button
               onClick={onOpenApp}
               size="sm"
-              className="gap-1.5 shadow-sm shadow-primary/20 cursor-pointer"
+              className="h-8 gap-1.5 rounded-full bg-foreground px-4 text-[13px] font-medium text-background hover:bg-foreground/85 cursor-pointer"
             >
               <span>Open Yaad</span>
-              <ArrowRight className="size-3.5 rtl:rotate-180" />
+              <ArrowRight className="size-3.5" />
             </Button>
           ) : (
             <Link to={targetWorkspaceHref}>
               <Button
                 size="sm"
-                className="gap-1.5 shadow-sm shadow-primary/20 cursor-pointer"
+                className="h-8 gap-1.5 rounded-full bg-foreground px-4 text-[13px] font-medium text-background hover:bg-foreground/85 cursor-pointer"
               >
                 <span>Open Yaad</span>
-                <ArrowRight className="size-3.5 rtl:rotate-180" />
+                <ArrowRight className="size-3.5" />
               </Button>
             </Link>
           )}
