@@ -3,49 +3,94 @@
 import type { ChangeEvent } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
-import { styles } from "@yaad/core/lib/design-token";
 import { Sparkles, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useDeferredValue, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 const COMMON_EMOJIS = [
-  "📄",
   "📝",
   "📁",
-  "📂",
   "🚀",
   "⚡",
   "💡",
   "🔥",
   "🎯",
-  "⭐",
   "✨",
   "💻",
   "🛠️",
-  "🎨",
   "📚",
   "📌",
-  "☕",
-  "🍕",
   "🏠",
   "🌍",
   "📊",
   "📈",
   "🔒",
-  "🔑",
   "🎉",
   "✅",
   "❤️",
   "🧠",
-  "🎧",
-  "🎸",
-  "🌱",
-  "🪐",
 ];
+
+const EmojiGrid = memo(
+  ({
+    search,
+    onSelectIcon,
+    closePopover,
+  }: {
+    search: string;
+    onSelectIcon: (icon: string) => void;
+    closePopover: () => void;
+  }) => {
+    const filteredEmojis = useMemo(() => {
+      return COMMON_EMOJIS.filter((emoji) => emoji.includes(search));
+    }, [search]);
+
+    return (
+      <div className="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto pe-1">
+        {filteredEmojis.length === 0 && !!search && (
+          <button
+            type="button"
+            onClick={() => {
+              onSelectIcon(search);
+              closePopover();
+            }}
+            className="flex size-8 items-center justify-center rounded-md text-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            style={{
+              fontFamily:
+                '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+            }}
+          >
+            {search}
+          </button>
+        )}
+        {filteredEmojis.map((emoji) => (
+          <button
+            key={emoji}
+            type="button"
+            onClick={() => {
+              onSelectIcon(emoji);
+              closePopover();
+            }}
+            className="flex size-8 items-center justify-center rounded-md text-lg hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            style={{
+              fontFamily:
+                '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+            }}
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+    );
+  },
+);
+
+EmojiGrid.displayName = "EmojiGrid";
 
 interface IconPickerPopoverProps {
   currentIcon: string | undefined;
@@ -66,11 +111,8 @@ export function IconPickerPopover({
 }: IconPickerPopoverProps) {
   const { t } = useTranslation("editor");
   const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
   const [open, setOpen] = useState(false);
-
-  const filteredEmojis = COMMON_EMOJIS.filter((emoji) =>
-    emoji.includes(search),
-  );
 
   const handleRandomIcon = () => {
     const randomEmoji =
@@ -84,6 +126,8 @@ export function IconPickerPopover({
   ) => {
     setSearch(e.target.value);
   };
+
+  const closePopover = () => setOpen(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -128,35 +172,11 @@ export function IconPickerPopover({
             )}
           </div>
 
-          <div className="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto pe-1">
-            {filteredEmojis.length === 0 && !!search && (
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => {
-                  onSelectIcon(search);
-                  setOpen(false);
-                }}
-                className="flex size-8 items-center justify-center rounded-md text-lg transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
-              >
-                {search}
-              </Button>
-            )}
-            {filteredEmojis.map((emoji) => (
-              <Button
-                variant="ghost"
-                key={emoji}
-                type="button"
-                onClick={() => {
-                  onSelectIcon(emoji);
-                  setOpen(false);
-                }}
-                className="flex size-8 items-center justify-center rounded-md text-lg transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
-              >
-                {emoji}
-              </Button>
-            ))}
-          </div>
+          <EmojiGrid
+            search={deferredSearch}
+            onSelectIcon={onSelectIcon}
+            closePopover={closePopover}
+          />
         </div>
       </PopoverContent>
     </Popover>
