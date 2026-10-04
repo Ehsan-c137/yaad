@@ -79,7 +79,10 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
 
   return (
     <>
-      <div ref={containerRef} className="group relative my-2 min-h-32">
+      <div
+        ref={containerRef}
+        className="group relative my-2 min-h-32 flex items-center justify-center"
+      >
         {url ? (
           <>
             <img
@@ -95,14 +98,14 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
                   setIsOpen(true);
                 }
               }}
-              className="max-w-full cursor-zoom-in rounded-lg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="max-w-full max-h-[400px] cursor-zoom-in rounded-lg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <Button
               onClick={(e) => {
                 e.stopPropagation();
                 void deleteBlock(block.id);
               }}
-              className="absolute top-2 end-2 rounded-full bg-black/50 p-1 text-white opacity-0 group-hover:opacity-100"
+              className="absolute top-2 end-2 w-8 h-8 rounded-full bg-black/50 p-1 text-white opacity-0 group-hover:opacity-100"
             >
               <X className="size-4" />
             </Button>
@@ -135,7 +138,7 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
               <img
                 src={url}
                 alt={fileName}
-                className="h-auto max-h-[85vh] w-full rounded-md object-contain"
+                className="h-auto max-h-[80vh] w-full rounded-md object-contain"
               />
             )}
           </div>
