@@ -102,7 +102,7 @@
   --text-caption1: 0.75rem;
   --text-caption2: 0.6875rem;
 
-  --background: oklch(0.985 0 0);
+  --background: oklch(97.98% 0.0045 78.3);
   --foreground: oklch(0.145 0 0);
 
   --card: oklch(1 0 0 / 0.75);
@@ -152,7 +152,7 @@
   --accent-blue-tint: oklch(0.65 0.22 264 / 0.15);
   --accent-blue-subtle: oklch(0.65 0.22 264 / 0.09);
 
-  --background: oklch(0.185 0 0);
+  --background: oklch(23.57% 0.0024 67.71);
   --foreground: oklch(0.985 0 0);
 
   --card: oklch(0.26 0 0 / 0.6);
@@ -298,5 +298,3 @@
     }
   }
 }
-
-
