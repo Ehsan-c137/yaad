@@ -54,7 +54,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
       >
         <DialogContent
           id="settings-modal"
-          className="max-w-sm gap-0 overflow-hidden p-0"
+          className="max-w-sm max-h-[90%] gap-0 overflow-y-auto p-0"
           aria-labelledby="settings-modal-title"
         >
           <DialogHeader className="flex items-center border-b border-border/50 px-5 pt-5 pb-4">
