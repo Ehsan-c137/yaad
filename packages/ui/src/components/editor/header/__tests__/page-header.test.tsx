@@ -122,4 +122,69 @@ describe("PageHeader", () => {
     // After cover loads, the buttons inside it appear
     expect(screen.getByText(/change cover|changecover/i)).toBeDefined();
   });
+
+  it("renders title with animate-page-title intro animation class", () => {
+    const { container } = render(
+      <EditorPageIdProvider pageId="page-1">
+        <PageHeader />
+      </EditorPageIdProvider>,
+    );
+
+    const titleElement = container.querySelector(".animate-page-title");
+    expect(titleElement).not.toBeNull();
+  });
+
+  it("renders exiting title with animate-page-title-outro when pageId changes", () => {
+    const store1 = getDocumentStore("page-1");
+    const doc1 = createNewBlankDocument("page-1");
+    doc1.blocks.root.properties.title = [{ text: "First Page Title" }];
+    store1.setState({ currentDocument: doc1, _hasHydrated: true });
+
+    const store2 = getDocumentStore("page-2");
+    const doc2 = createNewBlankDocument("page-2");
+    doc2.blocks.root.properties.title = [{ text: "Second Page Title" }];
+    store2.setState({ currentDocument: doc2, _hasHydrated: true });
+
+    useSidebarStore.setState({
+      pages: {
+        "page-1": {
+          childrenIds: [],
+          icon: "📄",
+          id: "page-1",
+          parentId: null,
+          title: "First Page Title",
+        },
+        "page-2": {
+          childrenIds: [],
+          icon: "📄",
+          id: "page-2",
+          parentId: null,
+          title: "Second Page Title",
+        },
+      },
+    });
+
+    const { container, rerender } = render(
+      <EditorPageIdProvider pageId="page-1">
+        <PageHeader />
+      </EditorPageIdProvider>,
+    );
+
+    expect(screen.getByText("First Page Title")).toBeDefined();
+
+    rerender(
+      <EditorPageIdProvider pageId="page-2">
+        <PageHeader />
+      </EditorPageIdProvider>,
+    );
+
+    const outroElement = container.querySelector(".animate-page-title-outro");
+    expect(outroElement).not.toBeNull();
+    expect(outroElement?.textContent).toBe("First Page Title");
+
+    fireEvent.animationEnd(outroElement!);
+    expect(container.querySelector(".animate-page-title-outro")).toBeNull();
+
+    removeDocumentStore("page-2");
+  });
 });

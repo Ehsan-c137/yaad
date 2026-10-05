@@ -1,6 +1,7 @@
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Network } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -51,13 +52,48 @@ function PageHeaderTitle() {
 
   const titleText = documentTitle ?? sidebarTitle ?? "";
 
+  const [prevPageId, setPrevPageId] = useState(pageId);
+  const [prevTitle, setPrevTitle] = useState(titleText);
+  const [exitingTitle, setExitingTitle] = useState<{
+    id: string;
+    text: string;
+  } | null>(null);
+
+  if (pageId !== prevPageId) {
+    setPrevPageId(pageId);
+    setExitingTitle({ id: prevPageId ?? "", text: prevTitle });
+  }
+
+  useEffect(() => {
+    setPrevTitle(titleText);
+  }, [titleText]);
+
+  useEffect(() => {
+    if (!exitingTitle) return;
+    const timer = setTimeout(() => {
+      setExitingTitle(null);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [exitingTitle]);
+
   const handleTitleChange = async (newTitle: string) => {
     await updateTitle(newTitle);
   };
 
   return (
-    <div className="py-3 flex w-full items-center">
+    <div className="py-3 relative flex w-full items-center">
+      {exitingTitle && (
+        <div
+          key={`exiting-${exitingTitle.id}`}
+          className="pointer-events-none absolute start-0 top-3 leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem] animate-page-title-outro select-none"
+          aria-hidden="true"
+          onAnimationEnd={() => setExitingTitle(null)}
+        >
+          {exitingTitle.text || t("common:untitled")}
+        </div>
+      )}
       <EditableContent
+        key={pageId}
         html={titleText}
         placeholder={t("common:untitled")}
         className="leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem] animate-page-title"

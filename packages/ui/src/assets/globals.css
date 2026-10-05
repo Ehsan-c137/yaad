@@ -60,8 +60,10 @@
     both;
   --animate-page-bookmark: page-element-fade-in 180ms
     cubic-bezier(0.16, 1, 0.3, 1) 130ms both;
-  --animate-page-title: page-element-fade-in 200ms cubic-bezier(0.16, 1, 0.3, 1)
+  --animate-page-title: page-title-intro 200ms cubic-bezier(0.16, 1, 0.3, 1)
     160ms both;
+  --animate-page-title-outro: page-title-outro 180ms
+    cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-page-graph: page-element-fade-in 180ms cubic-bezier(0.16, 1, 0.3, 1)
     190ms both;
   --animate-page-body: page-element-fade-in 220ms cubic-bezier(0.16, 1, 0.3, 1)
