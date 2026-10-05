@@ -23,7 +23,7 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^6.0.2",
     "@yaad/config": "workspace:*",
-    "typescript": "~6.0.3",
+    "typescript": "~7.0.2",
     "vite": "^8.0.16",
     "vite-bundle-analyzer": "^1.3.9",
     "vite-plugin-compression": "^0.5.1",
