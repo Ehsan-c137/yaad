@@ -154,7 +154,7 @@ function LeadingIcon({
 
   if (isTag && item.tag) {
     return (
-      <div className="flex size-8 shrink-0 items-center justify-center">
+      <div className="flex size-8 shrink-0 items-center justify-center w-fit">
         <TagBadge tag={item.tag} size="sm" />
       </div>
     );

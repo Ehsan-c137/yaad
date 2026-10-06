@@ -2,11 +2,12 @@ import type { Tag } from "@yaad/core/types/document";
 import type { SearchItem } from "@yaad/core/types/search";
 
 import { ROUTES } from "@yaad/core/constants/routes";
+import { searchProvider } from "@yaad/core/services/search/search-factory";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
-import { useCallback, useState } from "react";
+import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
-import { usePageSearch } from "@/hooks/search/use-page-search";
 import { useRecentPages } from "@/hooks/search/use-recent-pages";
 import { useTagSearch } from "@/hooks/search/use-tag-search";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -21,6 +22,7 @@ export interface UseSearchCommandReturn {
   recentPages: SearchItem[];
   tagResults: SearchItem[];
   searchResults: SearchItem[];
+  isLoading: boolean;
   hasActiveSearch: boolean;
   isDebouncing: boolean;
   handleOpenChange: (isOpen: boolean) => void;
@@ -32,20 +34,63 @@ export function useSearchCommand(): UseSearchCommandReturn {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTagFilter, setSelectedTagFilter] = useState<Tag | null>(null);
+  const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const openTab = useTabStore((s) => s.openTab);
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
 
   const debouncedQuery = useDebounce(searchQuery, 150);
   const isDebouncing = searchQuery !== debouncedQuery;
 
   const recentPages = useRecentPages(5);
   const tagResults = useTagSearch(debouncedQuery);
-  const searchResults = usePageSearch(
+
+  const hasActiveSearch =
+    debouncedQuery.trim().length > 0 || !!selectedTagFilter;
+
+  useEffect(() => {
+    if (!open || !hasActiveSearch) {
+      setSearchResults([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setIsLoading(true);
+
+    searchProvider
+      .search({
+        query: debouncedQuery,
+        tagId: selectedTagFilter?.id ?? null,
+        workspaceId: activeWorkspaceId ?? "",
+        signal: controller.signal,
+      })
+      .then((res) => {
+        setSearchResults(res.pages);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        console.error("Search error:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [
+    open,
     debouncedQuery,
     selectedTagFilter?.id,
-    open,
-  );
+    activeWorkspaceId,
+    hasActiveSearch,
+  ]);
 
   const handleOpenChange = useCallback((isOpen: boolean) => {
     setOpen(isOpen);
@@ -116,9 +161,6 @@ export function useSearchCommand(): UseSearchCommandReturn {
     [openTab, navigate],
   );
 
-  const hasActiveSearch =
-    debouncedQuery.trim().length > 0 || !!selectedTagFilter;
-
   return {
     open,
     setOpen,
@@ -129,6 +171,7 @@ export function useSearchCommand(): UseSearchCommandReturn {
     recentPages,
     tagResults,
     searchResults,
+    isLoading,
     hasActiveSearch,
     isDebouncing,
     handleOpenChange,
