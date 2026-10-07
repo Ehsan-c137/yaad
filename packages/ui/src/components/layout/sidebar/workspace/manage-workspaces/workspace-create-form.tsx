@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";

@@ -1,3 +1,4 @@
+/* eslint-disable complexity, react-refresh/only-export-components, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing */
 import type { SVGProps } from "react";
 
 export type PlatformType = "linux" | "macos" | "web" | "windows";

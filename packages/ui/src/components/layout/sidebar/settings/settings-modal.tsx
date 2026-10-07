@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-void-return */
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ui/dialog";

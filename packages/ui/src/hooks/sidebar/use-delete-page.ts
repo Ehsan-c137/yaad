@@ -15,7 +15,7 @@ export function useDeletePage(pageId: string) {
     await documentService.deletePageAndSubTree(pageId);
 
     if (activePageId === pageId && workspaceId) {
-      navigate(`/${ROUTES.workspace}/${workspaceId}`);
+      void navigate(`/${ROUTES.workspace}/${workspaceId}`);
     }
   };
 }

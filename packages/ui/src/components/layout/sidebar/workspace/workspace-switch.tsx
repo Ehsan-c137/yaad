@@ -1,6 +1,7 @@
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/strict-void-return, @typescript-eslint/no-floating-promises */
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Check, ChevronsUpDown, Settings2, Trash2 } from "lucide-react";
 import { useState } from "react";

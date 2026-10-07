@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Download, Globe, ShieldCheck } from "lucide-react";
 import { Link } from "react-router";

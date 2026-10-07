@@ -83,7 +83,7 @@ export function WorkspaceInitializer({ children }: WorkspaceInitializerProps) {
         unsubscribeSidebar();
       }
     };
-  }, [loadInitialWorkspaces]);
+  }, [loadInitialWorkspaces, isLanding]);
 
   // Prevent UI flashing or hydration mismatch while reading from IndexedDB
   if (!isHydrated && !isLanding) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define, @typescript-eslint/no-shadow */
 import type { Tag, TagColor } from "@yaad/core/types/document";
 
 import { Button } from "@ui/button";

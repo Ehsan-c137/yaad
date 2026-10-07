@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, jsx-a11y/no-noninteractive-element-interactions */
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Maximize2, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";

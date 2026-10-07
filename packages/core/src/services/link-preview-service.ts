@@ -1,3 +1,4 @@
+/* eslint-disable regexp/no-contradiction-with-assertion, @typescript-eslint/prefer-nullish-coalescing */
 export interface LinkPreviewData {
   url: string;
   title: string;

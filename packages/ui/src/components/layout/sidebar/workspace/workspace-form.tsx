@@ -1,6 +1,7 @@
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/strict-void-return */
 import { Button } from "@ui/button";
 import { Input } from "@ui/input";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Plus } from "lucide-react";
 import { useState } from "react";

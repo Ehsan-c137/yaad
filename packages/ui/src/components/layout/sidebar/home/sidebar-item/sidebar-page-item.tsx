@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-void-return */
 "use client";
 
 import type { SidebarPageItem as SidebarPageItemType } from "@yaad/core/store/use-sidebar-store";
@@ -177,7 +178,7 @@ function SidebarPageHeader({
       <Button
         type="button"
         variant="ghost"
-        onClick={onNavigate}
+        onClick={() => onNavigate()}
         className={cn(
           "h-auto flex-1 justify-start truncate rounded-sm py-1.5 text-start text-sm font-normal",
           isMobile ? "flex min-h-11 items-center" : "min-h-7",

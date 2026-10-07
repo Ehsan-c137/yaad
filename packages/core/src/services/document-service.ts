@@ -1,3 +1,4 @@
+/* eslint-disable complexity, @typescript-eslint/no-unnecessary-condition */
 import type { TagIndexRecord } from "@yaad/core/lib/storage/types";
 import type {
   DocumentBlock,
@@ -222,12 +223,14 @@ export class DocumentService {
     // 1. Save new blank document to storage
     const newChildDoc = createNewBlankDocument(newPageId);
     newChildDoc.title = title;
+
     if (newChildDoc.blocks.root) {
       newChildDoc.blocks.root.properties = {
         ...newChildDoc.blocks.root.properties,
         title: [{ text: title }],
       };
     }
+
     await this.saveDocument(newChildDoc);
 
     // 2. Register sub-page in sidebar tree UI

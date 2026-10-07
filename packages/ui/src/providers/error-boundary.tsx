@@ -34,7 +34,7 @@ export class ErrorBoundary extends React.Component<
             <div>
               <h2 className="font-medium">Something went wrong</h2>
               <p className="text-sm text-muted-foreground">
-                {this.state.error?.message || "An unexpected error occurred."}
+                {this.state.error?.message ?? "An unexpected error occurred."}
               </p>
             </div>
 

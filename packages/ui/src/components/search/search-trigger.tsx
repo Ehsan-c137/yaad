@@ -20,7 +20,7 @@ export function SearchTrigger({ onOpen }: SearchTriggerProps) {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [onOpen]);
 
   return (
     <Button

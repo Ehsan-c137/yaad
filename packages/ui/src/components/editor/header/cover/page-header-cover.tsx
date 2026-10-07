@@ -89,7 +89,7 @@ export function PageHeaderCover() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={retry}
+                onClick={() => retry()}
                 className="h-7 text-xs"
               >
                 <RefreshCw className="size-3 me-1" />

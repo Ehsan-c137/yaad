@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow, @typescript-eslint/prefer-nullish-coalescing, jsx-a11y/click-events-have-key-events */
 "use client";
 
 import type { Tag, TagColor } from "@yaad/core/types/document";

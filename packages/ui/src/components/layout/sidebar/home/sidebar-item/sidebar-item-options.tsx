@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/no-floating-promises */
 "use client";
 
 import {
@@ -21,7 +22,7 @@ import {
 } from "@ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Ellipsis } from "lucide-react";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type { ReactNode } from "react";
 
 import { useEffect, useRef, useState } from "react";

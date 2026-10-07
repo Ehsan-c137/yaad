@@ -138,12 +138,18 @@ describe("PageHeader", () => {
   it("renders exiting title with animate-page-title-outro when pageId changes", () => {
     const store1 = getDocumentStore("page-1");
     const doc1 = createNewBlankDocument("page-1");
-    doc1.blocks.root.properties.title = [{ text: "First Page Title" }];
+    doc1.blocks.root.properties = {
+      ...doc1.blocks.root.properties,
+      title: [{ text: "First Page Title" }],
+    };
     store1.setState({ currentDocument: doc1, _hasHydrated: true });
 
     const store2 = getDocumentStore("page-2");
     const doc2 = createNewBlankDocument("page-2");
-    doc2.blocks.root.properties.title = [{ text: "Second Page Title" }];
+    doc2.blocks.root.properties = {
+      ...doc2.blocks.root.properties,
+      title: [{ text: "Second Page Title" }],
+    };
     store2.setState({ currentDocument: doc2, _hasHydrated: true });
 
     useSidebarStore.setState({

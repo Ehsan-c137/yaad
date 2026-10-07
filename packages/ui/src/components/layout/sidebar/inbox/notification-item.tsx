@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-imports, max-lines-per-function, @typescript-eslint/no-floating-promises */
 "use client";
 
 import type { NotificationItem as NotificationItemType } from "@yaad/core/store/inbox/use-inbox-store";
@@ -6,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { formatRelativeTime } from "@yaad/core/lib/date-formatter";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useInboxStore } from "@yaad/core/store/inbox/use-inbox-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";

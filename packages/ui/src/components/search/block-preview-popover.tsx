@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { Tag } from "@yaad/core/types/document";
 import type { SearchItem } from "@yaad/core/types/search";
 
@@ -39,7 +40,7 @@ export function BlockPreviewPopover({
   const [showInline, setShowInline] = useState(false);
 
   const triggerFetch = useCallback(() => {
-    fetchBlock(item.pageId, item.blockId);
+    void fetchBlock(item.pageId, item.blockId);
   }, [fetchBlock, item.pageId, item.blockId]);
 
   // Calculate popover position based on the row's bounding rect

@@ -17,9 +17,9 @@ describe("useCoverResolution", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(URL, "createObjectURL").mockImplementation(
-      (blob: Blob) => `blob:mock-url-${blob.size}`,
+      (blob: Blob | MediaSource) => `blob:mock-url-${(blob as Blob).size}`,
     );
-    vi.spyOn(URL, "revokeObjectURL").mockImplementation();
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -76,7 +76,7 @@ describe("useCoverResolution", () => {
   });
 
   it("handles missing or rejected blob by setting error status", async () => {
-    vi.mocked(documentService.getBlob).mockResolvedValue(null);
+    vi.mocked(documentService.getBlob).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useCoverResolution("blob_missing"));
 

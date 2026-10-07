@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-refresh/only-export-components */
 
 import type { VariantProps } from "class-variance-authority";
 

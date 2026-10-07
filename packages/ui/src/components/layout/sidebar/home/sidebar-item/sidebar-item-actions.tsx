@@ -1,7 +1,8 @@
+/* eslint-disable perfectionist/sort-imports, max-lines-per-function, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return */
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
 
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import {

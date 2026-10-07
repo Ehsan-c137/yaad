@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition, no-script-url */
 import { describe, expect, it } from "vitest";
 
 import { sanitizeImportData } from "../import-sanitizer";

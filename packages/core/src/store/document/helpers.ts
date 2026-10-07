@@ -89,6 +89,10 @@ export const applyBlockProperties = (
   blockId: string,
   properties: Record<string, any>,
 ): DocumentJSON => {
+  if (!(blockId in doc.blocks)) {
+    return doc;
+  }
+
   const block = doc.blocks[blockId];
 
   return {
@@ -117,6 +121,10 @@ export const applyBlockTags = (
   blockId: string,
   tags: Tag[],
 ): DocumentJSON => {
+  if (!(blockId in doc.blocks)) {
+    return doc;
+  }
+
   const block = doc.blocks[blockId];
 
   return {

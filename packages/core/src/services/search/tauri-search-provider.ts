@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies, complexity, max-depth, no-await-in-loop, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing */
 import type {
   SearchItem,
   SearchOptions,

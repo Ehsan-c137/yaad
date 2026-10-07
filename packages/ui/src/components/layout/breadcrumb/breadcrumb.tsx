@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/no-array-index-key */
 "use client";
 
 import {

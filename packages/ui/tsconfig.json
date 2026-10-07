@@ -8,5 +8,5 @@
       "@yaad/core": ["../core/src"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "vitest.config.ts"]
 }

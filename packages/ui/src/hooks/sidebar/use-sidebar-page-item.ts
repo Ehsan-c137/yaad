@@ -35,12 +35,12 @@ export function useSidebarPageItem(pageId: string): SidebarPageItemViewModel {
   const href = `/${ROUTES.workspace}/${workspaceId}/${pageId}`;
   const isActive = pathname === href;
   const hasChildren = Boolean(
-    page?.childrenIds?.some((childId) => !pages[childId]?.isDeleted),
+    page?.childrenIds.some((childId) => !pages[childId]?.isDeleted),
   );
 
   const handleNavigate = useCallback(() => {
     if (isMobile) toggleSidebar();
-    navigate(href);
+    void navigate(href);
   }, [isMobile, toggleSidebar, navigate, href]);
 
   const handleToggleExpand = useCallback(

@@ -26,7 +26,7 @@ export function ToggleThemeButton() {
      */
     if (
       !ref.current ||
-      !document.startViewTransition ||
+      !("startViewTransition" in document) ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
       setIsDarkMode(isDark);
@@ -69,5 +69,12 @@ export function ToggleThemeButton() {
     setIsDarkMode(theme === "dark");
   }, [theme]);
 
-  return <Switch checked={isDarkMode} onCheckedChange={toggleDarkMode} />;
+  return (
+    <Switch
+      checked={isDarkMode}
+      onCheckedChange={(checked) => {
+        void toggleDarkMode(checked);
+      }}
+    />
+  );
 }

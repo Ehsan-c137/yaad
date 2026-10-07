@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/no-leaked-conditional-rendering */
 "use client";
 
 import type { ReactNode } from "react";

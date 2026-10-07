@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
 import type { SearchItem } from "@yaad/core/types/search";
 
@@ -35,11 +36,11 @@ export function useRecentPages(limit = 5, workspaceId?: string): SearchItem[] {
 
       return {
         category: "recent",
-        icon: (pageMeta?.icon ?? tab.icon) || "📄",
+        icon: pageMeta?.icon ?? tab.icon ?? "📄",
         id: `recent_${tab.pageId}`,
         lastAccessedAt: tab.lastAccessedAt,
         pageId: tab.pageId,
-        title: pageMeta?.title || tab.title || "Untitled",
+        title: pageMeta?.title ?? tab.title ?? "Untitled",
         workspaceId: targetWorkspaceId,
       };
     });

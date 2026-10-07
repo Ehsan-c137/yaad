@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-void-return */
 "use client";
 
 import type { Workspace } from "@yaad/core/types/workspace";

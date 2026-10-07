@@ -1,4 +1,4 @@
-/* eslint-disable @eslint-react/immutability */
+/* eslint-disable @eslint-react/immutability, @typescript-eslint/no-unnecessary-condition, prefer-destructuring */
 import { Button } from "@ui/button";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";

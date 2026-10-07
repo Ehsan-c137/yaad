@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/naming-convention-ref-name */
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -12,7 +13,7 @@ export function useSlidingPill<
 
   const pillRef = useRef<TPill>(null);
   const itemRefs = useRef<(TItem | null)[]>([]);
-  const isMountedPillRef = useRef(false);
+  const isMountedRef = useRef(false);
 
   const moveTo = (idx: number, animate: boolean) => {
     const item = itemRefs.current[idx];
@@ -43,15 +44,16 @@ export function useSlidingPill<
   useEffect(() => {
     if (activeIndex === -1) return;
 
-    if (!isMountedPillRef.current) {
+    if (!isMountedRef.current) {
       const id = window.requestAnimationFrame(() => {
         const success = moveTo(activeIndex, false);
-        if (success) isMountedPillRef.current = true;
+        if (success) isMountedRef.current = true;
       });
       return () => window.cancelAnimationFrame(id);
     } else {
       moveTo(activeIndex, transitionsEnabled);
     }
+    // eslint-disable-next-line @eslint-react/exhaustive-deps
   }, [activeIndex, transitionsEnabled, ...extraDeps]);
 
   useEffect(() => {

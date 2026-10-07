@@ -1,9 +1,10 @@
+/* eslint-disable perfectionist/sort-imports */
 "use client";
 
 import type { ChangeEvent, RefObject } from "react";
 
 import { Button } from "@ui/button";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { Download, Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

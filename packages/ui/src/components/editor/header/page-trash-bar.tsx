@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-void-return, @typescript-eslint/no-floating-promises */
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";

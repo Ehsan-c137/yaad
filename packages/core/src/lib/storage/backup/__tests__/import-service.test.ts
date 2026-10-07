@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import type { NotificationItem } from "@yaad/core/store/inbox/use-inbox-store";
 import type { TabItem } from "@yaad/core/store/use-tab-store";
 import type { DocumentJSON } from "@yaad/core/types/document";

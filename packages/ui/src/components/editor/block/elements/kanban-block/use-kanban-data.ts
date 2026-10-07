@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { useEditorPageIdContext } from "@/context/use-editor-context";

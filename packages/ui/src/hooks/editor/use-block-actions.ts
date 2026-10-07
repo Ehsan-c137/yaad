@@ -23,7 +23,7 @@ export function useBlockActions(
   explicitPageId?: string,
 ): EditableBlockActions {
   const contextPageId = useEditorPageIdContext();
-  const pageId = explicitPageId || contextPageId;
+  const pageId = explicitPageId ?? contextPageId;
 
   const duplicateBlock = useDocumentStore(
     (state) => state.duplicateBlock,

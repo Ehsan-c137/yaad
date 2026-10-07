@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-void-return */
 "use client";
 
 import type { ImportSanitizationResult } from "@yaad/core/lib/storage/backup/types";

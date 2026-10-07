@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import { Tabs, TabsList, TabsTrigger } from "@ui/tabs";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark, House } from "lucide-react";

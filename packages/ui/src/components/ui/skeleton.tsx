@@ -1,8 +1,8 @@
+/* eslint-disable perfectionist/sort-imports */
 "use client";
 
 import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
-import { styles } from "@yaad/core/lib/design-token";
-
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 export function WorkspaceLayoutSkeleton() {

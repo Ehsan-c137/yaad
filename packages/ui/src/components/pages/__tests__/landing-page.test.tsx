@@ -42,8 +42,10 @@ describe("LandingPage", () => {
     );
 
     // Headline check
-    expect(screen.getByText(/where thoughts connect at the/i)).toBeDefined();
-    expect(screen.getByText(/speed of light/i)).toBeDefined();
+    expect(screen.getAllByText(/notes/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(/ideas, all in one place/i).length,
+    ).toBeGreaterThan(0);
 
     // Check platform mentions
     expect(screen.getAllByText(/macos/i).length).toBeGreaterThan(0);
@@ -59,12 +61,10 @@ describe("LandingPage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText(/structure freely, visualize as a graph/i),
-    ).toBeDefined();
-    expect(screen.getByText(/flexible block canvas/i)).toBeDefined();
-    expect(screen.getByText(/instant search/i)).toBeDefined();
-    expect(screen.getByText(/your data stays on your device/i)).toBeDefined();
+    expect(screen.getByText(/visual knowledge graph/i)).toBeDefined();
+    expect(screen.getByText(/block editor with slash commands/i)).toBeDefined();
+    expect(screen.getByText(/instant search across all notes/i)).toBeDefined();
+    expect(screen.getByText(/100% local & private/i)).toBeDefined();
   });
 
   it("allows selecting workflow steps in How It Works section", () => {

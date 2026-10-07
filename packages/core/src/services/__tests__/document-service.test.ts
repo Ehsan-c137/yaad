@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/require-await, @typescript-eslint/no-non-null-asserted-optional-chain */
 import type { DocumentJSON } from "@yaad/core/types/document";
 
 import { storage } from "@yaad/core/lib/storage/storage-provider";
@@ -170,7 +171,7 @@ describe("DocumentService (Integration Test)", () => {
   it("deletePageAndSubTree removes the subtree, its documents, blobs, tabs, and sidebar entries", async () => {
     const parentDoc = docWithBlock("p1");
 
-    parentDoc.blocks.b1!.properties!.blobId = "blob_1";
+    parentDoc.blocks.b1.properties!.blobId = "blob_1";
 
     const childDoc = createNewBlankDocument("c1");
 
@@ -278,10 +279,11 @@ describe("DocumentService (Integration Test)", () => {
 
     expect(parentDoc.blocks.root.childrenIds).toHaveLength(1);
 
-    const pageBlock = parentDoc.blocks[parentDoc.blocks.root.childrenIds[0]];
+    const childId = parentDoc.blocks.root.childrenIds[0];
+    const pageBlock = parentDoc.blocks[childId];
 
-    expect(pageBlock.properties.targetPageId).toBe(newPageId);
-    expect(pageBlock.type).toBe("page");
+    expect(pageBlock?.properties?.targetPageId).toBe(newPageId);
+    expect(pageBlock?.type).toBe("page");
   });
 
   it("createSubPage patches the persisted parent when it is not loaded", async () => {
@@ -310,10 +312,12 @@ describe("DocumentService (Integration Test)", () => {
 
     expect(savedParent.id).toBe("p2");
     expect(savedParent.blocks.root.childrenIds).toHaveLength(1);
-    expect(
-      savedParent.blocks[savedParent.blocks.root.childrenIds[0]]?.properties
-        .targetPageId,
-    ).toBe(newPageId);
+
+    const savedChildId = savedParent.blocks.root.childrenIds[0];
+
+    expect(savedParent.blocks[savedChildId]?.properties?.targetPageId).toBe(
+      newPageId,
+    );
     expect(useSidebarStore.getState().pages[newPageId]).toMatchObject({
       parentId: "p2",
     });

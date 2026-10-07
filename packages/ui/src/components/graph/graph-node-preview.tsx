@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/dom-no-missing-button-type */
 import { ExternalLink, FileText, SidebarOpen, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";

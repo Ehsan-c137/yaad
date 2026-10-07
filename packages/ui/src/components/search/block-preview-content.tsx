@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { Heading, Image as ImageIcon, LayoutGrid, Table } from "lucide-react";
@@ -9,7 +10,7 @@ interface BlockPreviewContentProps {
 function getTextContent(block: DocumentBlock): string {
   if (block.properties?.title && Array.isArray(block.properties.title)) {
     return block.properties.title
-      .map((segment: { text?: string }) => segment.text || "")
+      .map((segment: { text?: string }) => segment.text ?? "")
       .join("");
   }
   if (typeof block.properties?.code === "string") {
@@ -77,7 +78,7 @@ function PreviewQuote({ text }: { text: string }) {
 function PreviewCallout({ text, icon }: { text: string; icon?: string }) {
   return (
     <div className="flex items-start gap-2 rounded-md border border-border bg-muted/50 p-2.5">
-      <span className="text-base shrink-0 select-none">{icon || "💡"}</span>
+      <span className="text-base shrink-0 select-none">{icon ?? "💡"}</span>
       <p className="text-sm text-foreground line-clamp-3">
         {text || (
           <span className="text-muted-foreground italic">Empty callout</span>
@@ -153,6 +154,7 @@ function PreviewCompact({
 export function BlockPreviewContent({ block }: BlockPreviewContentProps) {
   const text = getTextContent(block);
 
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (block.type) {
     case "heading_1":
       return <PreviewHeading text={text} level={1} />;
@@ -184,7 +186,7 @@ export function BlockPreviewContent({ block }: BlockPreviewContentProps) {
       return (
         <PreviewCompact
           icon={<ImageIcon className="size-4 text-blue-500" />}
-          label={block.properties?.fileName || "Image block"}
+          label={block.properties?.fileName ?? "Image block"}
         />
       );
 

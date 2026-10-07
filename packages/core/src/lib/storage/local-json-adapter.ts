@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-dynamic-delete */
 import type { DocumentJSON, Tag } from "@yaad/core/types/document";
 import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 

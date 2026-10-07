@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url */
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { documentService } from "@yaad/core/services/document-service";
 import { beforeEach, describe, expect, it, vi } from "vitest";

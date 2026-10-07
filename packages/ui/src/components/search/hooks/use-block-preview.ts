@@ -26,12 +26,12 @@ function getPreviewBlock(
   const contentBlock = values.find(
     (b) =>
       b.type !== "page" &&
-      Boolean(b.properties.title ?? b.properties.code ?? b.properties.caption),
+      Boolean(
+        b.properties?.title ?? b.properties?.code ?? b.properties?.caption,
+      ),
   );
   const preview =
-    (contentBlock || values.find((b) => b.type !== "page")) ??
-    values[0] ??
-    null;
+    contentBlock ?? values.find((b) => b.type !== "page") ?? values[0];
 
   return preview;
 }

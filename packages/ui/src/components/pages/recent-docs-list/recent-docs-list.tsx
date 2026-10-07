@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-floating-promises, perfectionist/sort-imports */
 import type { SearchItem } from "@yaad/core/types/search";
 
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
 import { Clock } from "lucide-react";

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, use } from "react";
 
 export interface WindowControls {
   minimize: () => Promise<void> | void;
@@ -18,5 +19,5 @@ export const PlatformContext = createContext<PlatformContextType>({
 });
 PlatformContext.displayName = "PlatformContext";
 
-export const usePlatform = () => useContext(PlatformContext);
+export const usePlatform = () => use(PlatformContext);
 export const PlatformProvider = PlatformContext.Provider;

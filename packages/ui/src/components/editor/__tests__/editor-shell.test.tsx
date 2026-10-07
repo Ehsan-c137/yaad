@@ -64,7 +64,10 @@ describe("EditorShell", () => {
   it("renders block canvas once hydrated without unmounting page header", () => {
     const store = getDocumentStore("page-test-1");
     const doc = createNewBlankDocument("page-test-1");
-    doc.blocks.root.properties.title = [{ text: "Instant Loaded Title" }];
+    doc.blocks.root.properties = {
+      ...doc.blocks.root.properties,
+      title: [{ text: "Instant Loaded Title" }],
+    };
     doc.icon = "⚡";
 
     store.setState({

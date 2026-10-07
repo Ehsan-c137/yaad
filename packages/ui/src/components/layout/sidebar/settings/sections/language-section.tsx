@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-imports */
 "use client";
 
 import {
@@ -7,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

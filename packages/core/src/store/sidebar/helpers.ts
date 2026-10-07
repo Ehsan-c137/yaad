@@ -23,27 +23,29 @@ export function persistWorkspaceTree(
     clearTimeout(saveTreeTimer);
   }
 
-  saveTreeTimer = setTimeout(async () => {
-    try {
-      const treeNodes: WorkspacePageMeta[] = Object.values(pages)
-        .filter((p): p is SidebarPageItem => Boolean(p))
-        .map((p) => ({
-          id: p.id,
-          workspaceId: wsId,
-          title: p.title || "Untitled",
-          icon: p.icon,
-          parentId: p.parentId,
-          childrenIds: [...p.childrenIds],
-          isDeleted: p.isDeleted,
-          deletedAt: p.deletedAt,
-          updatedAt: p.updatedAt ?? Date.now(),
-          isBookmarked: p.isBookmarked,
-        }));
+  saveTreeTimer = setTimeout(() => {
+    void (async () => {
+      try {
+        const treeNodes: WorkspacePageMeta[] = Object.values(pages)
+          .filter((p): p is SidebarPageItem => Boolean(p))
+          .map((p) => ({
+            id: p.id,
+            workspaceId: wsId,
+            title: p.title || "Untitled",
+            icon: p.icon,
+            parentId: p.parentId,
+            childrenIds: [...p.childrenIds],
+            isDeleted: p.isDeleted,
+            deletedAt: p.deletedAt,
+            updatedAt: p.updatedAt ?? Date.now(),
+            isBookmarked: p.isBookmarked,
+          }));
 
-      await workspaceService.saveWorkspaceTree(wsId, treeNodes);
-    } catch (e) {
-      console.error("Error saving workspace tree to storage:", e);
-    }
+        await workspaceService.saveWorkspaceTree(wsId, treeNodes);
+      } catch (e) {
+        console.error("Error saving workspace tree to storage:", e);
+      }
+    })();
   }, 100);
 }
 

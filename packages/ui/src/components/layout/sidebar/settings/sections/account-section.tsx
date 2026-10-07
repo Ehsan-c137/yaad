@@ -1,7 +1,8 @@
+/* eslint-disable perfectionist/sort-imports */
 "use client";
 
 import { Button } from "@ui/button";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import { UserRound } from "lucide-react";
 import { useState } from "react";

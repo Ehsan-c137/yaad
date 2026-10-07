@@ -10,8 +10,8 @@ const breakpoints = {
 
 type Breakpoint = keyof typeof breakpoints;
 
-export function useMediaQuery(query: string | Breakpoint): boolean {
-  const mediaQuery = breakpoints[query as Breakpoint] || query;
+export function useMediaQuery(query: (string & {}) | Breakpoint): boolean {
+  const mediaQuery = (breakpoints as Record<string, string>)[query] ?? query;
 
   const [matches, setMatches] = useState<boolean>(() => {
     if (typeof window !== "undefined") {

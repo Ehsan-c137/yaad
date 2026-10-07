@@ -13,7 +13,7 @@ interface Props
 }
 
 export function Link({ children, href, to, ...props }: Props) {
-  const target = to || href || "#";
+  const target = to ?? href ?? "#";
   return (
     <RouterLink to={target} {...props}>
       {children}

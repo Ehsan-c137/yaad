@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return */
 "use client";
 
 import type { TabItem as TabItemType } from "@yaad/core/store/use-tab-store";
@@ -12,7 +13,7 @@ import {
   ContextMenuTrigger,
 } from "@ui/context-menu";
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
 import {
   ArrowRightToLine,

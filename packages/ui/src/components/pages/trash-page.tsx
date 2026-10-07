@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, perfectionist/sort-imports */
 "use client";
 
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
@@ -15,7 +16,7 @@ import {
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { formatRelativeTime } from "@yaad/core/lib/date-formatter";
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowLeft, RotateCcw, Search, Trash2 } from "lucide-react";

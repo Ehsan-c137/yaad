@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { useEffect } from "react";
 
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";

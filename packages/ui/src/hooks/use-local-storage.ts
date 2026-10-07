@@ -37,7 +37,7 @@ function getSnapshot<T>(key: string, initialValue: T): T {
     const raw = window.localStorage.getItem(key);
     const cached = snapshotCache.get(key);
 
-    if (cached && cached.raw === raw) {
+    if (cached?.raw === raw) {
       return cached.parsed as T;
     }
 

@@ -61,7 +61,7 @@ export function BlockActionMenu({ block }: BlockActionMenuProps) {
       openPageInNewTab({
         pageId: getBlockPageId(block) || block.id,
         title: getBlockTitle(block),
-        icon: block.properties.icon,
+        icon: block.properties?.icon,
       }),
     openInSidePeek: () => openSidePeek(getBlockSidePeekDocId(block)),
   };

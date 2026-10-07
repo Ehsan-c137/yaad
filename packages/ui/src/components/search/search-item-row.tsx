@@ -122,7 +122,7 @@ function getBlockMeta(type?: DocumentBlockType): BlockTypeMeta | null {
 function parseSnippet(raw?: string): string {
   if (!raw) return "";
   return raw.replace(
-    /^(code|image|todo|heading_\d|bulleted_list|callout|kanban|paragraph|quote|table):\s*/i,
+    /^(?:code|image|todo|heading_\d|bulleted_list|callout|kanban|paragraph|quote|table):\s*/i,
     "",
   );
 }
@@ -136,8 +136,8 @@ function resolveSnippet(item: SearchItem): string {
     rawSubtitle === "Filter pages by tag";
 
   const raw =
-    tagMeta?.snippet ||
-    tagMeta?.locations?.[0]?.snippet ||
+    tagMeta?.snippet ??
+    tagMeta?.locations?.[0]?.snippet ??
     (!isGeneric ? rawSubtitle : "");
 
   return parseSnippet(raw);
@@ -199,7 +199,7 @@ function RightLabel({
   const isTag = item.category === "tag";
 
   const pageTitle =
-    item.tag?.metadata?.pageTitle ||
+    item.tag?.metadata?.pageTitle ??
     item.tag?.metadata?.locations?.[0]?.pageTitle;
 
   if (isTag && pageTitle) {
@@ -228,8 +228,8 @@ export function SearchItemRow({ item, onSelect }: SearchItemRowProps) {
   const isBlock = item.category === "block" || !!item.blockType;
 
   const attachedType =
-    item.blockType ||
-    item.tag?.metadata?.blockType ||
+    item.blockType ??
+    item.tag?.metadata?.blockType ??
     item.tag?.metadata?.locations?.[0]?.blockType;
 
   const blockMeta = getBlockMeta(isBlock ? item.blockType : attachedType);

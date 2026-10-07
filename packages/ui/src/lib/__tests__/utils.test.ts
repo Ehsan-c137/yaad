@@ -4,7 +4,9 @@ import { cn } from "../utils";
 
 describe("cn (Unit Test)", () => {
   it("joins truthy class names", () => {
-    expect(cn("a", "b", false && "c", undefined, "d")).toBe("a b d");
+    const isFalse = false as boolean;
+
+    expect(cn("a", "b", isFalse && "c", undefined, "d")).toBe("a b d");
   });
 
   it("merges conflicting tailwind classes keeping the last one", () => {

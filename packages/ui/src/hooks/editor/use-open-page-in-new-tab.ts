@@ -20,7 +20,7 @@ export function useOpenPageInNewTab() {
       if (!workspaceId) return;
 
       openTab({ pageId, workspaceId, title, icon });
-      navigate(`/${ROUTES.workspace}/${workspaceId}/${pageId}`);
+      void navigate(`/${ROUTES.workspace}/${workspaceId}/${pageId}`);
     },
     [openTab, navigate, workspaceId],
   );

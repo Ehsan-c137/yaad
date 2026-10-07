@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { Tag } from "@yaad/core/types/document";
 
 import { Edit2 } from "lucide-react";

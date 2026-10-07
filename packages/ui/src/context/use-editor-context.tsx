@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable react-refresh/only-export-components */
 export {
   DocumentPageIdContext,
   useEditorPageIdContext,

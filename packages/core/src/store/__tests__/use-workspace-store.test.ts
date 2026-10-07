@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type { Workspace } from "@yaad/core/types/workspace";
 
 import { workspaceService } from "@yaad/core/services/workspace-service";

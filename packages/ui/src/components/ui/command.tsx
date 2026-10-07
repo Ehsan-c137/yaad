@@ -40,7 +40,7 @@ function CommandDialogBody({
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [height, setHeight] = React.useState<number | undefined>(undefined);
   const [isTransitionActive, setIsTransitionActive] = React.useState(false);
-  const isInitialMount = React.useRef(true);
+  const isInitialMountRef = React.useRef(true);
 
   React.useLayoutEffect(() => {
     const contentEl = contentRef.current;
@@ -56,16 +56,15 @@ function CommandDialogBody({
 
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
-      if (!entry) return;
 
       const newHeight = Math.round(
-        entry.borderBoxSize?.[0]?.blockSize ?? contentEl.offsetHeight,
+        entry.borderBoxSize[0]?.blockSize ?? contentEl.offsetHeight,
       );
 
       if (newHeight <= 0) return;
 
-      if (isInitialMount.current) {
-        isInitialMount.current = false;
+      if (isInitialMountRef.current) {
+        isInitialMountRef.current = false;
         setHeight(newHeight);
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
@@ -79,8 +78,8 @@ function CommandDialogBody({
 
     observer.observe(contentEl);
 
-    if (initialHeight > 0 && isInitialMount.current) {
-      isInitialMount.current = false;
+    if (initialHeight > 0 && isInitialMountRef.current) {
+      isInitialMountRef.current = false;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsTransitionActive(true);

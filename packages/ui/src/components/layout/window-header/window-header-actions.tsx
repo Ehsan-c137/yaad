@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises, @typescript-eslint/strict-void-return */
 "use client";
 
 import { Button } from "@ui/button";

@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/dom-no-missing-button-type */
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";

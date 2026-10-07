@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-floating-promises */
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";

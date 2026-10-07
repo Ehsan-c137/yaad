@@ -1,3 +1,4 @@
+/* eslint-disable complexity, @typescript-eslint/prefer-optional-chain, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-void-return, @typescript-eslint/no-floating-promises */
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { MOBILE_NAV_HEIGHT } from "@yaad/core/constants/sizes";

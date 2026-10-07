@@ -12,13 +12,13 @@ export function useSidePeek() {
   const openSidePeek = (docId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(SIDE_PEEK_KEY, docId);
-    navigate(`${pathname}?${params.toString()}`);
+    void navigate(`${pathname}?${params.toString()}`);
   };
 
   const closeSidePeek = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete(SIDE_PEEK_KEY);
-    navigate(`${pathname}?${params.toString()}`);
+    void navigate(`${pathname}?${params.toString()}`);
   };
 
   return {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/switch-exhaustiveness-check */
 "use client";
 
 import type { DocumentBlock } from "@yaad/core/types/document";

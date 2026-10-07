@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-void-return */
 import type { SearchItem } from "@yaad/core/types/search";
 
 import { fireEvent, render, screen } from "@testing-library/react";
@@ -7,9 +8,14 @@ import { SearchItemRow } from "../search-item-row";
 
 vi.mock("@/components/ui/command", () => ({
   CommandItem: ({ children, onSelect, value }: any) => (
-    <div data-testid="command-item" onClick={onSelect} data-value={value}>
+    <button
+      type="button"
+      data-testid="command-item"
+      onClick={onSelect}
+      data-value={value}
+    >
       {children}
-    </div>
+    </button>
   ),
 }));
 
@@ -28,7 +34,7 @@ describe("SearchItemRow", () => {
       icon: "📄",
     };
 
-    render(<SearchItemRow item={item} onSelect={vi.fn()} />);
+    render(<SearchItemRow item={item} onSelect={() => {}} />);
 
     expect(screen.getAllByText("My test page").length).toBeGreaterThan(0);
     expect(screen.getAllByText("📄").length).toBeGreaterThan(0);
@@ -45,7 +51,7 @@ describe("SearchItemRow", () => {
       blockType: "paragraph",
     };
 
-    render(<SearchItemRow item={item} onSelect={vi.fn()} />);
+    render(<SearchItemRow item={item} onSelect={() => {}} />);
 
     expect(screen.getAllByText("Block content here").length).toBeGreaterThan(0);
     // snippet parses out the type prefix
@@ -72,14 +78,14 @@ describe("SearchItemRow", () => {
       } as any,
     };
 
-    render(<SearchItemRow item={item} onSelect={vi.fn()} />);
+    render(<SearchItemRow item={item} onSelect={() => {}} />);
 
     expect(screen.getByTestId("tag-badge")).toBeTruthy();
     expect(screen.getAllByText("Tag Page").length).toBeGreaterThan(0);
   });
 
   it("calls onSelect when clicked", () => {
-    const onSelect = vi.fn();
+    const onSelect = vi.fn().mockImplementation(() => {});
     const item: SearchItem = {
       id: "page-1",
       title: "Click me",

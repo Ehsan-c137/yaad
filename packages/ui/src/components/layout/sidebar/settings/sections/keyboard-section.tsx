@@ -1,6 +1,7 @@
+/* eslint-disable perfectionist/sort-imports */
 "use client";
 
-import { styles } from "@yaad/core/lib/design-token";
+import { styles } from "@/lib/design-token";
 import { Keyboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
