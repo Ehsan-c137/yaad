@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 "use client";
 
 import type { DocumentBlock } from "@yaad/core/types/document";
@@ -53,7 +54,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
         url: data.url,
       });
     } catch (err: any) {
-      setErrorMessage(err.message || t("failedLinkPreview"));
+      setErrorMessage(err.message ?? t("failedLinkPreview"));
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +64,12 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
   if (!linkData) {
     return (
       <div className="my-2 w-full rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-900">
-        <form onSubmit={handleFetchPreview} className="flex items-center gap-2">
+        <form
+          onSubmit={(e) => {
+            void handleFetchPreview(e);
+          }}
+          className="flex items-center gap-2"
+        >
           <Globe className="size-4 shrink-0 text-neutral-400" />
           <input
             type="text"

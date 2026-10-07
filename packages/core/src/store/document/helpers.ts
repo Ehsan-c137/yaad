@@ -16,6 +16,7 @@ export const createBlockDefaults = (
   type: DocumentBlockType,
   options?: { targetPageId?: string },
 ): Record<string, any> => {
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (type) {
     case "page":
       return {
@@ -89,7 +90,6 @@ export const applyBlockProperties = (
   properties: Record<string, any>,
 ): DocumentJSON => {
   const block = doc.blocks[blockId];
-  if (!block) return doc;
 
   return {
     ...doc,
@@ -118,7 +118,6 @@ export const applyBlockTags = (
   tags: Tag[],
 ): DocumentJSON => {
   const block = doc.blocks[blockId];
-  if (!block) return doc;
 
   return {
     ...doc,
@@ -148,17 +147,20 @@ export const collectSubTreeForDeletion = (
   while (queue.length > 0) {
     const blockId = queue.shift();
 
-    if (!blockId || !allBlocks[blockId] || blocksToDelete.has(blockId)) {
+    if (!blockId || !(blockId in allBlocks) || blocksToDelete.has(blockId)) {
       continue;
     }
 
+    const currentBlock = allBlocks[blockId];
     blocksToDelete.add(blockId);
 
-    if (allBlocks[blockId].properties.blobId) {
-      blobsToDelete.add(allBlocks[blockId].properties.blobId);
+    const blobId = currentBlock.properties?.blobId;
+
+    if (blobId) {
+      blobsToDelete.add(blobId);
     }
 
-    queue.push(...allBlocks[blockId].childrenIds);
+    queue.push(...currentBlock.childrenIds);
   }
 
   return { blocksToDelete, blobsToDelete };

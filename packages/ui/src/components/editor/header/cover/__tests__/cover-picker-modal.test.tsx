@@ -26,8 +26,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -53,8 +57,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -93,8 +101,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -121,8 +133,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -148,8 +164,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -176,8 +196,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -186,7 +210,7 @@ describe("CoverPickerModal", () => {
 
     const input = screen.getByPlaceholderText(/paste an image|pasteimagelink/i);
     fireEvent.change(input, {
-      target: { value: "javascript:alert('xss')" },
+      target: { value: `javascript:alert('xss')` },
     });
 
     const submitBtn = screen.getByRole("button", { name: /submit/i });
@@ -200,8 +224,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 
@@ -221,8 +249,12 @@ describe("CoverPickerModal", () => {
     render(
       <CoverPickerModal
         isOpen={true}
-        onClose={onClose}
-        onSelectCover={onSelectCover}
+        onClose={() => {
+          void onClose();
+        }}
+        onSelectCover={(url: string) => {
+          onSelectCover(url);
+        }}
       />,
     );
 

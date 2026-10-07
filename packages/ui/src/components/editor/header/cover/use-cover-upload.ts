@@ -16,59 +16,48 @@ const ALLOWED_MIME_TYPES = new Set([
   "image/webp",
 ]);
 
+function matchesBytes(
+  bytes: Uint8Array,
+  offset: number,
+  pattern: readonly number[],
+): boolean {
+  if (bytes.length < offset + pattern.length) {
+    return false;
+  }
+
+  return pattern.every((byte, index) => bytes[offset + index] === byte);
+}
+
+function isPng(bytes: Uint8Array): boolean {
+  return matchesBytes(bytes, 0, [0x89, 0x50, 0x4e, 0x47]);
+}
+
+function isJpeg(bytes: Uint8Array): boolean {
+  return matchesBytes(bytes, 0, [0xff, 0xd8, 0xff]);
+}
+
+function isGif(bytes: Uint8Array): boolean {
+  return matchesBytes(bytes, 0, [0x47, 0x49, 0x46]);
+}
+
+function isWebP(bytes: Uint8Array): boolean {
+  return (
+    matchesBytes(bytes, 0, [0x52, 0x49, 0x46, 0x46]) &&
+    matchesBytes(bytes, 8, [0x57, 0x45, 0x42, 0x50])
+  );
+}
+
+function isAvif(bytes: Uint8Array): boolean {
+  return matchesBytes(bytes, 4, [0x66, 0x74, 0x79, 0x70]);
+}
+
+const IMAGE_VALIDATORS = [isPng, isJpeg, isGif, isWebP, isAvif] as const;
+
 async function validateImageMagicBytes(file: File): Promise<boolean> {
   try {
     const slice = await file.slice(0, 12).arrayBuffer();
     const bytes = new Uint8Array(slice);
-    if (bytes.length < 4) return false;
-
-    // PNG: 89 50 4E 47
-    if (
-      bytes[0] === 0x89 &&
-      bytes[1] === 0x50 &&
-      bytes[2] === 0x4e &&
-      bytes[3] === 0x47
-    ) {
-      return true;
-    }
-
-    // JPEG: FF D8 FF
-    if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
-      return true;
-    }
-
-    // GIF: 47 49 46 ('GIF')
-    if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) {
-      return true;
-    }
-
-    // WEBP: RIFF....WEBP
-    if (
-      bytes[0] === 0x52 &&
-      bytes[1] === 0x49 &&
-      bytes[2] === 0x46 &&
-      bytes[3] === 0x46 &&
-      bytes.length >= 12 &&
-      bytes[8] === 0x57 &&
-      bytes[9] === 0x45 &&
-      bytes[10] === 0x42 &&
-      bytes[11] === 0x50
-    ) {
-      return true;
-    }
-
-    // AVIF / HEIF: ....ftyp (bytes 4-7: 66 74 79 70)
-    if (
-      bytes.length >= 8 &&
-      bytes[4] === 0x66 &&
-      bytes[5] === 0x74 &&
-      bytes[6] === 0x79 &&
-      bytes[7] === 0x70
-    ) {
-      return true;
-    }
-
-    return false;
+    return IMAGE_VALIDATORS.some((validator) => validator(bytes));
   } catch {
     return false;
   }
@@ -172,9 +161,8 @@ export function useCoverUpload({ onSuccess, onClose }: UseCoverUploadOptions) {
       if (file) {
         void processFile(file);
       }
-      if (e.target) {
-        e.target.value = "";
-      }
+
+      e.target.value = "";
     },
     [processFile],
   );
@@ -197,11 +185,8 @@ export function useCoverUpload({ onSuccess, onClose }: UseCoverUploadOptions) {
       e.stopPropagation();
       setIsDragging(false);
 
-      const file = e.dataTransfer.files?.[0];
-
-      if (file) {
-        void processFile(file);
-      }
+      const file = e.dataTransfer.files[0];
+      void processFile(file);
     },
     [processFile],
   );

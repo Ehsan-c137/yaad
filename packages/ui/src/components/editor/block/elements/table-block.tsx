@@ -23,7 +23,7 @@ export function TableBlock({ block }: TableBlockProps) {
   );
   const pageId = useEditorPageIdContext();
 
-  const rows: string[][] = block.properties?.cells || [
+  const rows: string[][] = block.properties?.cells ?? [
     ["Header 1", "Header 2"],
     ["Cell 1", "Cell 2"],
   ];
@@ -75,6 +75,7 @@ export function TableBlock({ block }: TableBlockProps) {
           <tr className="bg-muted/30">
             {Array.from({ length: colCount }).map((_, colIndex) => (
               <th
+                // eslint-disable-next-line @eslint-react/no-array-index-key
                 key={`th_${block.id}_${colIndex}`}
                 className="border border-border p-1 text-center"
               >
@@ -99,11 +100,13 @@ export function TableBlock({ block }: TableBlockProps) {
         <tbody>
           {rows.map((row: string[], rowIndex: number) => (
             <tr
+              // eslint-disable-next-line @eslint-react/no-array-index-key
               key={`row_${block.id}_${rowIndex}`}
               className="group/row border-b border-border"
             >
               {row.map((cellText: string, colIndex: number) => (
                 <td
+                  // eslint-disable-next-line @eslint-react/no-array-index-key
                   key={`cell_${block.id}_${rowIndex}_${colIndex}`}
                   className="min-w-[120px] border-e border-border bg-background p-2 focus-within:ring-1 focus-within:ring-ring"
                 >

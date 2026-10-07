@@ -88,7 +88,7 @@ export interface DocumentBlock<
   type: DocumentBlockType;
   parentId: string | null;
   childrenIds: string[];
-  properties: TProperties;
+  properties?: TProperties;
   format?: Record<string, any>;
   tags?: Tag[];
   createdAt: number;

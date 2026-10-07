@@ -222,7 +222,12 @@ export class DocumentService {
     // 1. Save new blank document to storage
     const newChildDoc = createNewBlankDocument(newPageId);
     newChildDoc.title = title;
-    newChildDoc.blocks.root.properties.title = [{ text: title }];
+    if (newChildDoc.blocks.root) {
+      newChildDoc.blocks.root.properties = {
+        ...newChildDoc.blocks.root.properties,
+        title: [{ text: title }],
+      };
+    }
     await this.saveDocument(newChildDoc);
 
     // 2. Register sub-page in sidebar tree UI

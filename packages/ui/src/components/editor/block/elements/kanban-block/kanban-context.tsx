@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 
 export interface KanbanActionsContextType {
   // Column actions
@@ -21,27 +21,13 @@ export interface KanbanActionsContextType {
   handleDrop: (e: React.DragEvent, targetColumnId: string) => void;
 }
 
-const KanbanActionsContext = createContext<KanbanActionsContextType | null>(
-  null,
-);
+export const KanbanActionsContext =
+  createContext<KanbanActionsContextType | null>(null);
+
 KanbanActionsContext.displayName = "KanbanActionsContext";
 
-export function KanbanActionsProvider({
-  children,
-  value,
-}: {
-  children: React.ReactNode;
-  value: KanbanActionsContextType;
-}) {
-  return (
-    <KanbanActionsContext.Provider value={value}>
-      {children}
-    </KanbanActionsContext.Provider>
-  );
-}
-
 export function useKanbanActions(): KanbanActionsContextType {
-  const context = useContext(KanbanActionsContext);
+  const context = use(KanbanActionsContext);
 
   if (!context) {
     throw new Error(

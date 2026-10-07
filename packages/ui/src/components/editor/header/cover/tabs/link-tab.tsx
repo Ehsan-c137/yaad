@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -11,7 +12,7 @@ export function CoverLinkTab({ onSelectCover, onClose }: CoverTabProps) {
   const { t } = useTranslation("editor");
   const [customUrl, setCustomUrl] = useState("");
 
-  const handleApplyCustomLink = (e: React.FormEvent) => {
+  const handleApplyCustomLink = (e: React.ChangeEvent) => {
     e.preventDefault();
 
     const trimmed = customUrl.trim();

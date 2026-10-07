@@ -124,12 +124,12 @@ describe("DocumentService (Integration Test)", () => {
 
     const doc = store.getState().currentDocument!;
 
-    expect(doc.blocks.b1?.properties.checked).toBe(true);
+    expect(doc.blocks.b1?.properties?.checked).toBe(true);
 
     const saved = mockedStorage.saveDocument.mock.calls[0]?.[0];
 
     expect(saved.id).toBe("p1");
-    expect(saved.blocks.b1?.properties.checked).toBe(true);
+    expect(saved.blocks.b1?.properties?.checked).toBe(true);
   });
 
   it("updateBlockProperties falls back to the persisted copy when the page is not loaded", async () => {
@@ -141,7 +141,7 @@ describe("DocumentService (Integration Test)", () => {
     const saved = mockedStorage.saveDocument.mock.calls[0]?.[0];
 
     expect(saved.id).toBe("p2");
-    expect(saved.blocks.b1?.properties.checked).toBe(true);
+    expect(saved.blocks.b1?.properties?.checked).toBe(true);
   });
 
   it("updateBlockProperties no-ops without ids, missing blocks, or missing docs", async () => {
@@ -163,14 +163,14 @@ describe("DocumentService (Integration Test)", () => {
 
     expect(mockedStorage.saveDocument).not.toHaveBeenCalled();
     expect(
-      store.getState().currentDocument?.blocks.b1?.properties.checked,
+      store.getState().currentDocument?.blocks.b1?.properties?.checked,
     ).toBeUndefined();
   });
 
   it("deletePageAndSubTree removes the subtree, its documents, blobs, tabs, and sidebar entries", async () => {
     const parentDoc = docWithBlock("p1");
 
-    parentDoc.blocks.b1.properties.blobId = "blob_1";
+    parentDoc.blocks.b1!.properties!.blobId = "blob_1";
 
     const childDoc = createNewBlankDocument("c1");
 

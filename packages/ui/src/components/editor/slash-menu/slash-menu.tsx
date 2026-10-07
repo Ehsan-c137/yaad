@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/immutability */
 import { Button } from "@ui/button";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -46,6 +47,7 @@ interface SlashMenuItemProps {
   itemRef: (el: HTMLButtonElement | null) => void;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function SlashMenu({
   position,
   query,
@@ -66,10 +68,10 @@ export function SlashMenu({
   const translatedOptions = useMemo(() => {
     return SLASH_OPTIONS.map((opt) => ({
       ...opt,
-      title: t(SLASH_OPTION_KEYS[opt.id]?.titleKey ?? opt.id, {
+      title: t(SLASH_OPTION_KEYS[opt.id]?.titleKey || opt.id, {
         defaultValue: opt.title,
       }),
-      description: t(SLASH_OPTION_KEYS[opt.id]?.descKey ?? opt.id, {
+      description: t(SLASH_OPTION_KEYS[opt.id]?.descKey || opt.id, {
         defaultValue: opt.description,
       }),
     }));
@@ -111,7 +113,13 @@ export function SlashMenu({
     updateLayout();
     window.addEventListener("resize", updateLayout);
     return () => window.removeEventListener("resize", updateLayout);
-  }, [position.top, position.left, position.anchorTop, filteredOptions.length]);
+  }, [
+    position.top,
+    position.left,
+    position.anchorTop,
+    filteredOptions.length,
+    position,
+  ]);
 
   // Dismiss on click/touch outside or scroll outside
   useEffect(() => {
@@ -305,7 +313,8 @@ function calculateMenuLayout(
   }
 
   // Clamp horizontally within viewport
-  let left = position.left;
+  let { left } = position;
+
   if (left + MENU_WIDTH > viewportW - VIEWPORT_GAP) {
     left = Math.max(VIEWPORT_GAP, viewportW - MENU_WIDTH - VIEWPORT_GAP);
   }

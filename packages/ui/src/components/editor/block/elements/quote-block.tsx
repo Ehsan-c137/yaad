@@ -24,7 +24,7 @@ export function QuoteBlock({ block }: QuoteBlockProps) {
   } = useEditableBlock(block);
 
   const colorClass = block.properties?.color
-    ? `text-${block.properties.color}-500`
+    ? `text-${block.properties.color as string}-500`
     : "";
 
   // Pressing Enter creates a regular paragraph block below the quote

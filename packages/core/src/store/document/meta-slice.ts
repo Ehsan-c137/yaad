@@ -55,7 +55,7 @@ export const createMetaSlice: StateCreator<
         root: {
           ...rootBlock,
           properties: {
-            ...rootBlock?.properties,
+            ...rootBlock.properties,
             coverImage: coverUrl,
           },
           updatedAt: Date.now(),
@@ -79,7 +79,7 @@ export const createMetaSlice: StateCreator<
     }
 
     const rootBlock = currentDoc.blocks["root"];
-    const updatedProperties = { ...rootBlock?.properties };
+    const updatedProperties = { ...rootBlock.properties };
     delete updatedProperties.coverImage;
 
     const updatedDoc: DocumentJSON = {
@@ -114,7 +114,7 @@ export const createMetaSlice: StateCreator<
         root: {
           ...rootBlock,
           properties: {
-            ...rootBlock?.properties,
+            ...rootBlock.properties,
             icon,
           },
           updatedAt: Date.now(),
@@ -127,7 +127,7 @@ export const createMetaSlice: StateCreator<
 
     useSidebarStore
       .getState()
-      .updatePageTitleInTree?.(currentDoc.id, undefined, icon);
+      .updatePageTitleInTree(currentDoc.id, undefined, icon);
 
     await saveNow(get, set, updatedDoc);
   },
@@ -137,7 +137,7 @@ export const createMetaSlice: StateCreator<
     if (!currentDoc) return;
 
     const rootBlock = currentDoc.blocks["root"];
-    const updatedProperties = { ...rootBlock?.properties };
+    const updatedProperties = { ...rootBlock.properties };
     delete updatedProperties.icon;
 
     const updatedDoc: DocumentJSON = {
@@ -158,7 +158,7 @@ export const createMetaSlice: StateCreator<
 
     useSidebarStore
       .getState()
-      .updatePageTitleInTree?.(currentDoc.id, undefined, "📄");
+      .updatePageTitleInTree(currentDoc.id, undefined, "📄");
 
     await saveNow(get, set, updatedDoc);
   },

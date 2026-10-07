@@ -9,8 +9,8 @@ interface Platform {
 
 function stubNavigator(platform: Platform) {
   vi.stubGlobal("navigator", {
-    ...(typeof navigator === "object" ? navigator : {}),
-    ...platform,
+    platform: platform.platform,
+    userAgentData: platform.userAgentData,
   });
 }
 

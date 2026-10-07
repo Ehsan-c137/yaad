@@ -27,5 +27,5 @@ export interface EditorAdapter {
     parentId: string,
     afterBlockId: string,
     type: DocumentBlockType,
-  ) => Promise<string | void> | void;
+  ) => Promise<string>;
 }

@@ -4,7 +4,7 @@ import type { ChangeEvent } from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { Sparkles, Trash2 } from "lucide-react";
-import { useState, useDeferredValue, memo, useMemo } from "react";
+import { memo, useDeferredValue, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";

@@ -8,6 +8,7 @@ import {
   createNewBlankDocument,
 } from "../helpers";
 
+// eslint-disable-next-line max-params
 function makeBlock(
   id: string,
   type: DocumentBlock["type"],
@@ -43,7 +44,7 @@ describe("createNewBlankDocument (Unit Test)", () => {
       parentId: null,
       childrenIds: [],
     });
-    expect(doc.blocks.root.properties.title).toEqual([{ text: "Untitled" }]);
+    expect(doc.blocks.root.properties?.title).toEqual([{ text: "Untitled" }]);
     expect(typeof doc.createdAt).toBe("number");
     expect(typeof doc.updatedAt).toBe("number");
   });
@@ -75,13 +76,15 @@ describe("applyBlockProperties (Unit Test)", () => {
     const updated = applyBlockProperties(baseDoc, "target", { checked: true });
 
     expect(updated).not.toBe(baseDoc);
-    expect(updated.blocks.target?.properties).toEqual({
+    expect(updated.blocks.target.properties).toEqual({
       title: [{ text: "Task" }],
       checked: true,
     });
-    expect(updated.blocks.target?.updatedAt).toBeGreaterThanOrEqual(
-      baseDoc.blocks.target?.updatedAt ?? 0,
+
+    expect(updated.blocks.target.updatedAt).toBeGreaterThanOrEqual(
+      baseDoc.blocks.target.updatedAt || 0,
     );
+
     expect(updated.updatedAt).toBeGreaterThanOrEqual(baseDoc.updatedAt);
   });
 
@@ -89,8 +92,8 @@ describe("applyBlockProperties (Unit Test)", () => {
     const updated = applyBlockProperties(baseDoc, "target", { checked: true });
 
     expect(updated.blocks.root).toBe(baseDoc.blocks.root);
-    expect(updated.blocks.target?.properties.title).toBe(
-      baseDoc.blocks.target?.properties.title,
+    expect(updated.blocks.target.properties?.title).toBe(
+      baseDoc.blocks.target.properties?.title,
     );
   });
 

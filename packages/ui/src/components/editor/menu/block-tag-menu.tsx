@@ -18,7 +18,7 @@ export function BlockTagMenu({
 }: BlockTagMenuProps) {
   return (
     <TagPickerPopover
-      selectedTags={blockTags ?? []}
+      selectedTags={[...blockTags]}
       onAddTag={onAddTag}
       onRemoveTag={onRemoveTag}
       trigger={
@@ -28,9 +28,9 @@ export function BlockTagMenu({
         >
           <TagIcon className="size-3 text-muted-foreground" />
           <span className="font-normal">Tags</span>
-          {(blockTags?.length ?? 0) > 0 && (
+          {blockTags.length > 0 && (
             <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-              {blockTags?.length}
+              {blockTags.length}
             </span>
           )}
         </Button>

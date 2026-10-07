@@ -30,7 +30,7 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) {
+        if (entry.isIntersecting) {
           setIsInView(true);
           observer.disconnect();
         }
@@ -85,12 +85,7 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
       >
         {url ? (
           <>
-            <img
-              src={url}
-              alt={fileName}
-              loading="lazy"
-              tabIndex={0}
-              role="button"
+            <div
               onClick={() => setIsOpen(true)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -98,8 +93,13 @@ export function ImageBlock({ block }: { block: DocumentBlock }) {
                   setIsOpen(true);
                 }
               }}
+              role="button"
+              tabIndex={0}
               className="max-w-full max-h-[400px] cursor-zoom-in rounded-lg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
+            >
+              <img src={url} alt={fileName} loading="lazy" />
+            </div>
+
             <Button
               onClick={(e) => {
                 e.stopPropagation();

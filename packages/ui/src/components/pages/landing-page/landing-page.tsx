@@ -6,13 +6,12 @@ import { LandingFaq } from "./faq";
 import { LandingFooter } from "./footer";
 import { LandingHeader } from "./header";
 import { LandingHero } from "./hero";
+import { Reveal } from "./reveal";
 import { LandingWorkflow } from "./workflow";
 
 interface LandingPageProps {
   onOpenApp?: () => void;
 }
-
-import { Reveal } from "./reveal";
 
 export function LandingPage({ onOpenApp }: LandingPageProps) {
   useEffect(() => {

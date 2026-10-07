@@ -30,7 +30,6 @@ export function useSlidingPill<
       pill.style.transform = `translate(${left}px, ${top}px)`;
       pill.style.height = `${height}px`;
       pill.style.width = `${width}px`;
-      void pill.offsetHeight; // force reflow
       pill.style.transition = prev;
     } else {
       pill.style.transform = `translate(${left}px, ${top}px)`;

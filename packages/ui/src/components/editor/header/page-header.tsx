@@ -46,7 +46,7 @@ function PageHeaderTitle() {
     pageId ? state.pages[pageId]?.title : undefined,
   );
   const documentTitle = useDocumentStore(
-    (state) => state.currentDocument?.blocks.root.properties.title[0]?.text,
+    (state) => state.currentDocument?.blocks.root.properties!.title[0]?.text,
   );
   const updateTitle = useDocumentStore((state) => state.updateTitle);
 
@@ -97,7 +97,9 @@ function PageHeaderTitle() {
         html={titleText}
         placeholder={t("common:untitled")}
         className="leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem] animate-page-title"
-        onChange={handleTitleChange}
+        onChange={(newTitle: string) => {
+          void handleTitleChange(newTitle);
+        }}
       />
       <Link
         href={`/${ROUTES.workspace}/${encodeURI(workspaceId ?? "")}/${encodeURI(pageId ?? "")}/graph`}

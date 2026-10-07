@@ -14,7 +14,7 @@ export function BlockMenuFooter({ author, updatedAt }: BlockMenuFooterProps) {
   const formattedDate = useMemo(
     () =>
       formatDate(updatedAt || Date.now(), {
-        locale: i18n.language?.startsWith("fa") ? "fa-IR" : "en-US",
+        locale: i18n.language.startsWith("fa") ? "fa-IR" : "en-US",
         month: "short",
         day: "numeric",
         year: "numeric",

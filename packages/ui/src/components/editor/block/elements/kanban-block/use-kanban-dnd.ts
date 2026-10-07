@@ -16,7 +16,7 @@ export function useKanbanDragAndDrop(
 
   const handleDrop = (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
-    const cardId = draggedCardId || e.dataTransfer.getData("text/plain");
+    const cardId = draggedCardId ?? e.dataTransfer.getData("text/plain");
 
     if (cardId) {
       onDropCardToColumn(cardId, targetColumnId);

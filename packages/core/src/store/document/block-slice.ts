@@ -37,7 +37,7 @@ export const createBlockSlice: StateCreator<
 
     // The target page isn't loaded in this store (or is a different page) —
     // delegate to the service, which patches the persisted document directly.
-    if (!currentDoc || currentDoc.id !== pageId) {
+    if (currentDoc?.id !== pageId) {
       await documentService.updateBlockProperties(pageId, blockId, properties);
       return;
     }
@@ -50,7 +50,7 @@ export const createBlockSlice: StateCreator<
   updateBlockTags: async (blockId, pageId, tags) => {
     const currentDoc = get().currentDocument;
 
-    if (!currentDoc || currentDoc.id !== pageId) {
+    if (currentDoc?.id !== pageId) {
       await documentService.updateBlockTags(pageId, blockId, tags);
       return;
     }
@@ -117,9 +117,9 @@ export const createBlockSlice: StateCreator<
       };
 
       const updatedBlocks = { ...doc.blocks, [newId]: newBlock };
-      const parentBlock = updatedBlocks[parentId];
 
-      if (parentBlock) {
+      if (parentId in updatedBlocks) {
+        const parentBlock = updatedBlocks[parentId];
         const index = parentBlock.childrenIds.indexOf(afterBlockId);
         const newChildren = [...parentBlock.childrenIds];
         newChildren.splice(
@@ -143,10 +143,10 @@ export const createBlockSlice: StateCreator<
 
   deleteBlock: async (blockId: string) => {
     const currentDoc = get().currentDocument;
-    if (!currentDoc || blockId === "root") return;
+    if (!currentDoc || blockId === "root" || !(blockId in currentDoc.blocks))
+      return;
 
     const blockToDelete = currentDoc.blocks[blockId];
-    if (!blockToDelete) return;
 
     const { blocksToDelete, blobsToDelete } = collectSubTreeForDeletion(
       blockId,
@@ -157,10 +157,12 @@ export const createBlockSlice: StateCreator<
     const pageTargetIdsToDelete: string[] = [];
 
     for (const id of blocksToDelete) {
-      const blk = currentDoc.blocks[id];
+      if (id in currentDoc.blocks) {
+        const blk = currentDoc.blocks[id];
 
-      if (blk && blk.type === "page" && blk.properties?.targetPageId) {
-        pageTargetIdsToDelete.push(blk.properties.targetPageId);
+        if (blk.type === "page" && blk.properties?.targetPageId) {
+          pageTargetIdsToDelete.push(blk.properties.targetPageId);
+        }
       }
     }
 
@@ -178,7 +180,7 @@ export const createBlockSlice: StateCreator<
     );
 
     // Unlink from parent
-    if (blockToDelete.parentId && updatedBlocks[blockToDelete.parentId]) {
+    if (blockToDelete.parentId && blockToDelete.parentId in updatedBlocks) {
       const parent = updatedBlocks[blockToDelete.parentId];
       updatedBlocks[blockToDelete.parentId] = {
         ...parent,
@@ -208,10 +210,10 @@ export const createBlockSlice: StateCreator<
 
   changeBlockType: async (blockId: string, newType: DocumentBlockType) => {
     const currentDoc = get().currentDocument;
-    if (!currentDoc) return;
+    if (!currentDoc || !(blockId in currentDoc.blocks)) return;
 
     const block = currentDoc.blocks[blockId];
-    if (!block || block.type === newType) return;
+    if (block.type === newType) return;
 
     let updatedProperties = { ...block.properties };
 
@@ -250,8 +252,9 @@ export const createBlockSlice: StateCreator<
 
   duplicateBlock: async (blockId: string) => {
     await updateAndDebounceSave(get, set, (doc) => {
+      if (blockId === "root" || !(blockId in doc.blocks)) return doc;
+
       const originalBlock = doc.blocks[blockId];
-      if (!originalBlock || blockId === "root") return doc;
 
       const newBlockId = generateBlockId();
       const duplicatedBlock: DocumentBlock = {
@@ -262,10 +265,10 @@ export const createBlockSlice: StateCreator<
       };
 
       const updatedBlocks = { ...doc.blocks, [newBlockId]: duplicatedBlock };
-      const parentId = originalBlock.parentId || "root";
-      const parentBlock = updatedBlocks[parentId];
+      const parentId = originalBlock.parentId ?? "root";
 
-      if (parentBlock) {
+      if (parentId in updatedBlocks) {
+        const parentBlock = updatedBlocks[parentId];
         const index = parentBlock.childrenIds.indexOf(blockId);
         const newChildren = [...parentBlock.childrenIds];
         newChildren.splice(index + 1, 0, newBlockId);
@@ -283,14 +286,18 @@ export const createBlockSlice: StateCreator<
 async function handleTransitionToPage(
   block: DocumentBlock,
   currentDocId: string,
-  updatedProperties: DocumentBlock["properties"],
+  updatedProperties: Record<string, any>,
 ) {
   const existingTitle = getBlockTitleText(block);
-  const newPageId = block.properties.targetPageId ?? generatePageId();
+  const newPageId = block.properties?.targetPageId ?? generatePageId();
 
   const newChildDoc = createNewBlankDocument(newPageId);
   newChildDoc.title = existingTitle;
-  newChildDoc.blocks.root.properties.title = [{ text: existingTitle }];
+  newChildDoc.blocks.root.properties = {
+    ...newChildDoc.blocks.root.properties,
+    title: [{ text: existingTitle }],
+  };
+
   await documentService.saveDocument(newChildDoc);
 
   if (currentDocId) {
@@ -305,14 +312,14 @@ async function handleTransitionToPage(
 }
 
 function getBlockTitleText(block: DocumentBlock): string {
-  return block.properties.title?.[0]?.text?.trim() ?? "Untitled";
+  return block.properties?.title?.[0]?.text?.trim() ?? "Untitled";
 }
 
 async function handleTransitionFromPage(
   block: DocumentBlock,
-  updatedProperties: DocumentBlock["properties"],
-): Promise<DocumentBlock["properties"]> {
-  if (block.properties.targetPageId) {
+  updatedProperties: Record<string, any>,
+): Promise<Record<string, any>> {
+  if (block.properties?.targetPageId) {
     const targetId = block.properties.targetPageId;
     await documentService.deletePageAndSubTree(targetId);
   }

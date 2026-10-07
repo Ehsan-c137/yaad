@@ -10,32 +10,52 @@ import { useTranslation } from "react-i18next";
 
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
-export function FileBlock({ block }: { block: DocumentBlock }) {
+export function FileBlock({ block }: { block?: DocumentBlock }) {
   const { t } = useTranslation("editor");
   const deleteBlock = useDocumentStore((state) => state.deleteBlock);
   const [url, setUrl] = useState<string | null>(null);
 
+  const blobId = block?.properties?.blobId;
+  const fileName = block?.properties?.fileName;
+  const blockId = block?.id;
+
   useEffect(() => {
-    if (block.properties?.blobId) {
-      void documentService.getBlob(block.properties.blobId).then((blob) => {
-        if (blob) setUrl(URL.createObjectURL(blob));
+    let isCancelled = false;
+
+    if (blobId) {
+      void documentService.getBlob(blobId).then((blob) => {
+        if (!isCancelled && blob) {
+          setUrl(URL.createObjectURL(blob));
+        }
       });
     }
-  }, [block.properties?.blobId]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [blobId]);
+
+  if (!block) {
+    return null;
+  }
 
   return (
     <div className="my-2 flex items-center gap-3 rounded-md border border-border p-3 hover:bg-accent">
       <FileText className="size-5 text-blue-500" />
       <a
-        href={url || "#"}
+        href={url ?? "#"}
         target="_blank"
-        download={block.properties?.fileName}
+        download={fileName}
         className="flex-1 text-sm font-medium hover:underline"
       >
-        {block.properties?.fileName || t("unknownFile")}
+        {fileName ?? t("unknownFile")}
       </a>
       <Button
-        onClick={() => deleteBlock(block.id)}
+        onClick={() => {
+          if (blockId) {
+            void deleteBlock(blockId);
+          }
+        }}
         className="text-muted-foreground hover:text-red-500"
       >
         <X className="size-4" />

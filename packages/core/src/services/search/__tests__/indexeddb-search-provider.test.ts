@@ -15,13 +15,12 @@ import type {
 
 import {
   createIndexedDbSearchProvider,
-  extractBlockSnippet,
-  getRecentPages,
   IndexedDbSearchProvider,
-  searchPages,
-  searchPagesByTitle,
-  searchTags,
 } from "../indexeddb-search-provider";
+import { searchPages, searchPagesByTitle } from "../page-searcher";
+import { getRecentPages } from "../recent-pages";
+import { extractBlockSnippet } from "../snippet-extractor";
+import { searchTags } from "../tag-searcher";
 
 function createMockBlock(
   overrides: Partial<DocumentBlock> & {

@@ -38,15 +38,15 @@ export function KanbanColumnItem({
     }
   };
 
-  const handleCancelTitle = () => {
+  function handleCancelTitle() {
     setEditingTitle(column.title);
     setIsEditingTitle(false);
-  };
+  }
 
-  const handleStartEditingTitle = () => {
+  function handleStartEditingTitle() {
     setEditingTitle(column.title);
     setIsEditingTitle(true);
-  };
+  }
 
   return (
     <div
@@ -94,7 +94,15 @@ export function KanbanColumnItem({
         ) : (
           <div className="flex items-center gap-2">
             <span className={cn("size-2 rounded-full", colStyles.dot)} />
-            <h3
+            <div
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleStartEditingTitle();
+                }
+              }}
               onClick={handleStartEditingTitle}
               className={cn(
                 "cursor-pointer text-xs hover:opacity-80 transition-opacity",
@@ -103,7 +111,7 @@ export function KanbanColumnItem({
               title={t("kanbanRenameColumn")}
             >
               {column.title}
-            </h3>
+            </div>
             <span
               className={cn(
                 "rounded-full px-2 py-0.5 text-[10px] font-semibold",
@@ -114,7 +122,6 @@ export function KanbanColumnItem({
             </span>
           </div>
         )}
-
         <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
@@ -139,8 +146,6 @@ export function KanbanColumnItem({
           )}
         </div>
       </div>
-
-      {/* Cards List */}
       <div className="flex min-h-[60px] flex-col gap-2">
         {colCards.map((card) => (
           <KanbanCardItem
@@ -151,7 +156,6 @@ export function KanbanColumnItem({
           />
         ))}
       </div>
-
       <AddCardForm columnId={column.id} colStyles={colStyles} />
     </div>
   );

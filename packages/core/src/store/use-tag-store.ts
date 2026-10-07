@@ -25,7 +25,7 @@ const adapterStorage: StateStorage = {
       if (isPersistenceAvailable() && storage.getTags) {
         const tags = await storage.getTags();
 
-        if (tags && tags.length > 0) {
+        if (tags.length > 0) {
           return JSON.stringify({ state: { tags }, version: 0 });
         }
       }
@@ -88,42 +88,53 @@ export const useTagStore = create<TagState>()(
       tags: [],
       _hasHydrated: false,
 
-      setHasHydrated: (state) => set({ _hasHydrated: state }),
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state });
+      },
 
-      addTag: (tag) =>
+      addTag: (tag) => {
         set((state) =>
           state.tags.some((existingTag) => existingTag.id === tag.id)
             ? state
             : { tags: [...state.tags, tag] },
-        ),
+        );
+      },
 
-      addTags: (tags) =>
+      addTags: (tags) => {
         set((state) => {
           const knownIds = new Set(state.tags.map((tag) => tag.id));
           const newTags = tags.filter((tag) => !knownIds.has(tag.id));
+
           return newTags.length > 0
             ? { tags: [...state.tags, ...newTags] }
             : state;
-        }),
+        });
+      },
 
-      updateTag: (tagId, updates) =>
+      updateTag: (tagId, updates) => {
         set((state) => ({
           tags: state.tags.map((tag) =>
             tag.id === tagId ? { ...tag, ...updates } : tag,
           ),
-        })),
+        }));
+      },
 
       /** @deprecated Use deleteTag instead */
       removeTag: (tagId) => get().deleteTag(tagId),
 
-      deleteTag: (tagId) =>
+      deleteTag: (tagId) => {
         set((state) => ({
           tags: state.tags.filter((tag) => tag.id !== tagId),
-        })),
+        }));
+      },
 
-      setTags: (tags) => set({ tags }),
+      setTags: (tags) => {
+        set({ tags });
+      },
 
-      clearTags: () => set({ tags: [] }),
+      clearTags: () => {
+        set({ tags: [] });
+      },
 
       getTag: (tagId) => get().tags.find((tag) => tag.id === tagId),
 

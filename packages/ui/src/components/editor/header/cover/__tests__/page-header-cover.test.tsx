@@ -29,6 +29,7 @@ vi.mock("../cover-picker-modal", () => ({
     isOpen ? (
       <div data-testid="cover-picker-modal">
         <button
+          type="button"
           onClick={() => onSelectCover("https://img.example/selected.png")}
         >
           Select Cover

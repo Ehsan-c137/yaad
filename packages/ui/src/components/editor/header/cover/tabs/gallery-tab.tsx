@@ -94,7 +94,7 @@ export function CoverGalleryTab({
                 preset={{
                   ...preset,
                   previewUrl:
-                    preset.previewUrl || getCoverPreviewUrl(preset.url),
+                    preset.previewUrl ?? getCoverPreviewUrl(preset.url),
                 }}
                 key={preset.id}
               />

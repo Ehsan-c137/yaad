@@ -12,19 +12,18 @@ export function useKanbanBlock(block: DocumentBlock) {
     (state) => state.updateBlockProperties,
   );
   const pageId = useEditorPageIdContext();
-
-  const columns: KanbanColumn[] = block.properties?.columns || [
+  const columns: KanbanColumn[] = block.properties?.columns ?? [
     { id: "todo", title: "To Do" },
     { id: "in_progress", title: "In Progress" },
     { id: "done", title: "Done" },
   ];
 
-  const cards: KanbanCard[] = block.properties?.cards || [];
+  const cards: KanbanCard[] = block.properties?.cards ?? [];
 
   const [editingColId, setEditingColId] = useState<string | null>(null);
   const [editingColTitle, setEditingColTitle] = useState("");
-
   const [addingCardColId, setAddingCardColId] = useState<string | null>(null);
+
   const [newCardTitle, setNewCardTitle] = useState("");
 
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
@@ -161,7 +160,7 @@ export function useKanbanBlock(block: DocumentBlock) {
 
   const handleDrop = (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
-    const cardId = draggedCardId || e.dataTransfer.getData("text/plain");
+    const cardId = draggedCardId ?? e.dataTransfer.getData("text/plain");
     if (!cardId) return;
 
     const updatedCards = cards.map((c) =>

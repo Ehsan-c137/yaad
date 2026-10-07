@@ -8,9 +8,9 @@ vi.mock("@yaad/core/lib/storage/storage-provider", () => {
   let storedTags: any[] = [];
   return {
     storage: {
-      getTags: vi.fn(async () => storedTags),
+      getTags: vi.fn(async () => Promise.resolve(storedTags)),
       saveTags: vi.fn(async (tags) => {
-        storedTags = tags;
+        await Promise.resolve((storedTags = tags));
       }),
     },
   };

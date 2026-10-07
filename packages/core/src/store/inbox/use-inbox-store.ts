@@ -99,38 +99,46 @@ export const useInboxStore = create<InboxState>()(
       filter: "all",
       _hasHydrated: false,
 
-      setFilter: (filter) => set({ filter }),
+      setFilter: (filter) => {
+        set({ filter });
+      },
 
-      markAsRead: (id) =>
+      markAsRead: (id) => {
         set((state) => ({
           notifications: state.notifications.map((n) =>
             n.id === id ? { ...n, read: true } : n,
           ),
-        })),
+        }));
+      },
 
-      toggleRead: (id) =>
+      toggleRead: (id) => {
         set((state) => ({
           notifications: state.notifications.map((n) =>
             n.id === id ? { ...n, read: !n.read } : n,
           ),
-        })),
+        }));
+      },
 
-      markAllAsRead: () =>
+      markAllAsRead: () => {
         set((state) => ({
           notifications: state.notifications.map((n) => ({
             ...n,
             read: true,
           })),
-        })),
+        }));
+      },
 
-      deleteNotification: (id) =>
+      deleteNotification: (id) => {
         set((state) => ({
           notifications: state.notifications.filter((n) => n.id !== id),
-        })),
+        }));
+      },
 
-      clearAll: () => set({ notifications: [] }),
+      clearAll: () => {
+        set({ notifications: [] });
+      },
 
-      addNotification: (notificationData) =>
+      addNotification: (notificationData) => {
         set((state) => ({
           notifications: [
             {
@@ -141,9 +149,12 @@ export const useInboxStore = create<InboxState>()(
             },
             ...state.notifications,
           ],
-        })),
+        }));
+      },
 
-      setHasHydrated: (state) => set({ _hasHydrated: state }),
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state });
+      },
     }),
     {
       name: "yaad-inbox-storage",

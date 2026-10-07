@@ -20,16 +20,16 @@ export function PageBlock({ block }: PageBlockProps) {
   const deleteBlock = useDocumentStore((state) => state.deleteBlock);
   const deleteDocument = useDocumentStore((state) => state.deleteDocument);
 
-  const subPageId = block.properties?.targetPageId;
+  const subPageId = block.properties?.targetPageId as string;
   const subPageItem = useSidebarStore((s) =>
     subPageId ? s.pages[subPageId] : undefined,
   );
 
   const title =
-    subPageItem?.title ||
-    block.properties?.title?.[0]?.text ||
+    subPageItem?.title ??
+    block.properties?.title?.[0]?.text ??
     t("common:untitled");
-  const icon = subPageItem?.icon || block.properties?.icon;
+  const icon = subPageItem?.icon ?? block.properties?.icon;
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -73,13 +73,11 @@ export function PageBlock({ block }: PageBlockProps) {
           <span
             role="button"
             tabIndex={0}
-            onClick={handleDelete}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                e.stopPropagation();
-                void handleDelete(e as any);
-              }
+            onKeyDown={() => {
+              // do nothing just for satisfing requirement of onKeyDown
+            }}
+            onClick={(e) => {
+              void handleDelete(e);
             }}
             title={t("sidebar:deletePage")}
             className="flex cursor-pointer items-center justify-center rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-red-500"

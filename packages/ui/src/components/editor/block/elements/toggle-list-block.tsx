@@ -32,7 +32,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
   } = useEditableBlock(block);
 
   const isOpen = Boolean(block.properties?.isOpen);
-  const childrenIds: string[] = block.childrenIds ?? [];
+  const childrenIds: string[] = block.childrenIds || [];
 
   const handleToggle = useCallback(() => {
     void updateBlockProperties(block.id, pageId, {

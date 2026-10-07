@@ -61,11 +61,7 @@ function removeManifestFromLanding(): Plugin {
     generateBundle(_, bundle) {
       const htmlFile = bundle["index.html"];
 
-      if (
-        htmlFile &&
-        "source" in htmlFile &&
-        typeof htmlFile.source === "string"
-      ) {
+      if ("source" in htmlFile && typeof htmlFile.source === "string") {
         htmlFile.source = htmlFile.source.replace(
           /<link rel="manifest"[^>]*>/g,
           "",
@@ -80,7 +76,7 @@ function mpaDevPlugin(): Plugin {
     name: "mpa-dev-plugin",
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
-        const url = req.url?.split("?")[0] || "";
+        const url = req.url?.split("?")[0] ?? "";
 
         if (
           url === "/app" ||

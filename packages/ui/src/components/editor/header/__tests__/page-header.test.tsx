@@ -131,6 +131,7 @@ describe("PageHeader", () => {
     );
 
     const titleElement = container.querySelector(".animate-page-title");
+
     expect(titleElement).not.toBeNull();
   });
 
@@ -179,10 +180,12 @@ describe("PageHeader", () => {
     );
 
     const outroElement = container.querySelector(".animate-page-title-outro");
+
     expect(outroElement).not.toBeNull();
     expect(outroElement?.textContent).toBe("First Page Title");
 
     fireEvent.animationEnd(outroElement!);
+
     expect(container.querySelector(".animate-page-title-outro")).toBeNull();
 
     removeDocumentStore("page-2");

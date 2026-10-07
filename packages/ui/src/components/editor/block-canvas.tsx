@@ -18,7 +18,7 @@ export function BlockCanvas() {
     };
 
     // When a document is loaded and it has no blocks, add an initial paragraph block.
-    if (childBlockIds && childBlockIds?.length === 0) {
+    if (childBlockIds?.length === 0) {
       void handleAddBlock();
     }
   }, [childBlockIds, addBlock]);
@@ -42,7 +42,7 @@ export function BlockCanvas() {
           <BlockRow key={blockId} blockId={blockId} />
         ))
       )}
-      {import.meta.env?.DEV && <TestEditorStateInspector />}
+      {import.meta.env.DEV && <TestEditorStateInspector />}
     </div>
   );
 }

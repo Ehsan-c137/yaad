@@ -42,15 +42,15 @@ export function CalloutBlock({ block }: CalloutBlockProps) {
           autoFocus={isFocused}
           onFocusHandled={() => setFocusedBlockId(null)}
           blockId={block.id}
-          onChange={(newText) =>
-            updateBlockProperties(block.id, pageId, {
+          onChange={(newText) => {
+            void updateBlockProperties(block.id, pageId, {
               title: [{ text: newText }],
-            })
-          }
+            });
+          }}
           onEnter={() =>
-            addBlock(block.parentId || "root", block.id, "paragraph")
+            void addBlock(block.parentId ?? "root", block.id, "paragraph")
           }
-          onBackspaceEmpty={() => deleteBlock(block.id)}
+          onBackspaceEmpty={() => void deleteBlock(block.id)}
         />
       </div>
     </div>

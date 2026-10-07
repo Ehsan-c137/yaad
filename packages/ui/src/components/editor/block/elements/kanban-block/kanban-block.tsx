@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import type { KanbanBlockProps, KanbanCard, KanbanColumn } from "./types";
 
 import { KanbanColumnItem } from "./kanban-column";
-import { KanbanActionsProvider } from "./kanban-context";
+import { KanbanActionsProvider } from "./kanban-provider";
 import { useKanbanData } from "./use-kanban-data";
 import { useKanbanDragAndDrop } from "./use-kanban-dnd";
 

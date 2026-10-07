@@ -39,8 +39,8 @@ export function PageIcon() {
   return (
     <IconPickerPopover
       currentIcon={icon}
-      onSelectIcon={handleIcon}
-      onRemoveIcon={handleRemoveIcon}
+      onSelectIcon={(url) => void handleIcon(url)}
+      onRemoveIcon={() => void handleRemoveIcon()}
     >
       <span
         id="page_icon"

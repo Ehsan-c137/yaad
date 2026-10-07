@@ -27,8 +27,12 @@ export function BlockTags({ tags, blockId }: BlockTagsProps) {
             tags={tags}
             size="sm"
             // showAddButton={true}
-            onAddTag={(tag) => addTagToBlock(blockId, pageId, tag)}
-            onRemoveTag={(tagId) => removeTagFromBlock(blockId, pageId, tagId)}
+            onAddTag={(tag) => {
+              void addTagToBlock(blockId, pageId, tag);
+            }}
+            onRemoveTag={(tagId) =>
+              void removeTagFromBlock(blockId, pageId, tagId)
+            }
           />
         </div>
       )}

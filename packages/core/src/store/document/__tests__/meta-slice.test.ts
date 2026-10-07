@@ -61,7 +61,7 @@ describe("document meta-slice (Unit Test)", () => {
     const doc = store.getState().currentDocument;
 
     expect(doc?.title).toBe("New Title");
-    expect(doc?.blocks.root.properties.title).toEqual([{ text: "New Title" }]);
+    expect(doc?.blocks.root.properties?.title).toEqual([{ text: "New Title" }]);
     expect(useSidebarStore.getState().pages[pageId]?.title).toBe("New Title");
     expect(store.getState().isSaving).toBe(true);
 
@@ -97,7 +97,7 @@ describe("document meta-slice (Unit Test)", () => {
     const doc = store.getState().currentDocument;
 
     expect(doc?.coverImage).toBe("https://img.example/cover.png");
-    expect(doc?.blocks.root.properties.coverImage).toBe(
+    expect(doc?.blocks.root.properties?.coverImage).toBe(
       "https://img.example/cover.png",
     );
     expect(mockedSaveDocument).toHaveBeenCalledWith(
@@ -114,7 +114,7 @@ describe("document meta-slice (Unit Test)", () => {
     const withCover = createNewBlankDocument(pageId);
 
     withCover.coverImage = "https://img.example/cover.png";
-    withCover.blocks.root.properties.coverImage =
+    withCover.blocks.root.properties!.coverImage =
       "https://img.example/cover.png";
     store.setState({ currentDocument: withCover });
 
@@ -123,7 +123,7 @@ describe("document meta-slice (Unit Test)", () => {
     const doc = store.getState().currentDocument!;
 
     expect(doc.coverImage).toBeUndefined();
-    expect(doc.blocks.root.properties.coverImage).toBeUndefined();
+    expect(doc.blocks.root.properties?.coverImage).toBeUndefined();
     expect(mockedSaveDocument).toHaveBeenCalledWith(
       expect.objectContaining({ id: pageId, coverImage: undefined }),
     );
@@ -165,7 +165,7 @@ describe("document meta-slice (Unit Test)", () => {
     const doc = store.getState().currentDocument;
 
     expect(doc?.icon).toBe("🚀");
-    expect(doc?.blocks.root.properties.icon).toBe("🚀");
+    expect(doc?.blocks.root.properties?.icon).toBe("🚀");
     expect(useSidebarStore.getState().pages[pageId]?.icon).toBe("🚀");
     expect(mockedSaveDocument).toHaveBeenCalledWith(
       expect.objectContaining({ id: pageId, icon: "🚀" }),
@@ -177,7 +177,7 @@ describe("document meta-slice (Unit Test)", () => {
     const withIcon = createNewBlankDocument(pageId);
 
     withIcon.icon = "🚀";
-    withIcon.blocks.root.properties.icon = "🚀";
+    withIcon.blocks.root.properties!.icon = "🚀";
     store.setState({ currentDocument: withIcon });
     useSidebarStore.setState({
       pages: {
@@ -196,7 +196,7 @@ describe("document meta-slice (Unit Test)", () => {
     const doc = store.getState().currentDocument!;
 
     expect(doc.icon).toBeUndefined();
-    expect(doc.blocks.root.properties.icon).toBeUndefined();
+    expect(doc.blocks.root.properties?.icon).toBeUndefined();
     expect(useSidebarStore.getState().pages[pageId]?.icon).toBe("📄");
     expect(mockedSaveDocument).toHaveBeenCalledWith(
       expect.objectContaining({ id: pageId, icon: undefined }),

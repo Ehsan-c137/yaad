@@ -120,8 +120,8 @@ describe("document block-slice (Unit Test)", () => {
     const newBlock = doc.blocks[doc.blocks.root.childrenIds[1]];
 
     expect(newBlock.type).toBe("page");
-    expect(newBlock.properties.targetPageId).toMatch(/^page_/);
-    expect(newBlock.properties.icon).toBe("📄");
+    expect(newBlock.properties?.targetPageId).toMatch(/^page_/);
+    expect(newBlock.properties?.icon).toBe("📄");
   });
 
   it("deleteBlock removes the block, unlinks it, and saves immediately", async () => {
@@ -179,7 +179,7 @@ describe("document block-slice (Unit Test)", () => {
     const store = getDocumentStore(pageId);
     const doc = makeDoc();
 
-    doc.blocks.b1.properties.blobId = "blob_1";
+    doc.blocks.b1.properties!.blobId = "blob_1";
     store.setState({ currentDocument: doc });
 
     await store.getState().deleteBlock("b1");
@@ -215,7 +215,7 @@ describe("document block-slice (Unit Test)", () => {
     const duplicate = doc.blocks[childrenIds[1]];
 
     expect(duplicate.id).not.toBe("b1");
-    expect(duplicate.properties.title).toEqual([{ text: "First" }]);
+    expect(duplicate.properties?.title).toEqual([{ text: "First" }]);
     expect(mockedDocumentService.saveDocument).toHaveBeenCalledWith(
       expect.objectContaining({ id: pageId }),
     );
@@ -243,8 +243,8 @@ describe("document block-slice (Unit Test)", () => {
     const block = store.getState().currentDocument!.blocks.b1;
 
     expect(block.type).toBe("page");
-    expect(block.properties.targetPageId).toMatch(/^page_/);
-    expect(block.properties.icon).toBe("📄");
+    expect(block.properties?.targetPageId).toMatch(/^page_/);
+    expect(block.properties?.icon).toBe("📄");
     expect(mockedDocumentService.saveDocument).toHaveBeenCalledTimes(2);
   });
 
@@ -268,8 +268,8 @@ describe("document block-slice (Unit Test)", () => {
     const block = store.getState().currentDocument!.blocks.b1;
 
     expect(block.type).toBe("paragraph");
-    expect(block.properties.targetPageId).toBeUndefined();
-    expect(block.properties.icon).toBeUndefined();
+    expect(block.properties?.targetPageId).toBeUndefined();
+    expect(block.properties?.icon).toBeUndefined();
     expect(mockedDocumentService.deletePageAndSubTree).toHaveBeenCalledWith(
       "page_target",
     );

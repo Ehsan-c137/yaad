@@ -4,6 +4,8 @@ import { persist } from "zustand/middleware";
 
 import { removeDocumentStore } from "./document/use-document-store";
 
+export const DEFAULT_TAB_TITLE = "Untitled";
+
 export interface TabItem {
   id: string; // usually `tab_${pageId}`
   pageId: string;
@@ -14,22 +16,41 @@ export interface TabItem {
   lastAccessedAt: number;
 }
 
-interface RouterLike {
+export interface RouterLike {
   push: (href: string) => void;
 }
 
-interface TabStoreState {
+export interface OpenTabInput {
+  pageId: string;
+  workspaceId: string;
+  title?: string;
+  icon?: string;
+}
+
+export interface UpdateTabInfoInput {
+  title?: string;
+  icon?: string;
+}
+
+interface NavigationTarget {
+  workspaceId: string;
+  pageId?: string;
+}
+
+interface TabMutationResult {
+  tabs: TabItem[];
+  activeTabId: string | null;
+  evictedTabs: TabItem[];
+  navigationTarget?: NavigationTarget;
+}
+
+export interface TabStoreState {
   tabs: TabItem[];
   activeTabId: string | null;
   hasHydrated: boolean;
 
   setHasHydrated: (state: boolean) => void;
-  openTab: (tab: {
-    pageId: string;
-    workspaceId: string;
-    title?: string;
-    icon?: string;
-  }) => void;
+  openTab: (tab: OpenTabInput) => void;
   closeTab: (tabId: string, router?: RouterLike) => void;
   closeOtherTabs: (tabId: string, router?: RouterLike) => void;
   closeTabsToRight: (tabId: string, router?: RouterLike) => void;
@@ -37,10 +58,7 @@ interface TabStoreState {
   setActiveTabId: (tabId: string) => void;
   togglePinTab: (tabId: string) => void;
   reorderTabs: (sourceIndex: number, destinationIndex: number) => void;
-  updateTabInfo: (
-    pageId: string,
-    partial: { title?: string; icon?: string },
-  ) => void;
+  updateTabInfo: (pageId: string, partial: UpdateTabInfoInput) => void;
   removeTabByPageId: (pageId: string, router?: RouterLike) => void;
   cleanupWorkspaceTabs: (workspaceId: string) => void;
 }
@@ -52,188 +70,50 @@ export const useTabStore = create<TabStoreState>()(
       activeTabId: null,
       hasHydrated: false,
 
-      setHasHydrated: (state) => set({ hasHydrated: state }),
+      setHasHydrated: (state) => {
+        set({ hasHydrated: state });
+      },
 
-      openTab: ({ pageId, workspaceId, title = "Untitled", icon }) => {
-        const state = get();
-        const tabId = `tab_${pageId}`;
-        const existingTab = state.tabs.find(
-          (t) => t.pageId === pageId && t.workspaceId === workspaceId,
-        );
-
-        if (existingTab) {
-          // Tab already exists, update and activate
-          const updatedTabs = state.tabs.map((t) =>
-            t.id === existingTab.id
-              ? {
-                  ...t,
-                  title: title || t.title,
-                  icon: icon !== undefined ? icon : t.icon,
-                  lastAccessedAt: Date.now(),
-                }
-              : t,
-          );
-          set({
-            tabs: updatedTabs,
-            activeTabId: existingTab.id,
-          });
-          return;
-        }
-
-        // Create new tab
-        const newTab: TabItem = {
-          id: tabId,
-          pageId,
-          workspaceId,
-          title: title || "Untitled",
-          icon,
-          isPinned: false,
-          lastAccessedAt: Date.now(),
-        };
-
-        set({
-          tabs: [...state.tabs, newTab],
-          activeTabId: tabId,
-        });
+      openTab: (tabInput) => {
+        const { tabs, activeTabId } = resolveOpenTab(get().tabs, tabInput);
+        set({ tabs, activeTabId });
       },
 
       closeTab: (tabId, router) => {
-        const state = get();
-        const targetIndex = state.tabs.findIndex((t) => t.id === tabId);
-        if (targetIndex === -1) return;
+        const { tabs, activeTabId } = get();
+        const result = resolveCloseTab(tabs, activeTabId, tabId);
+        if (!result) return;
 
-        const targetTab = state.tabs[targetIndex];
-        removeDocumentStore(targetTab.pageId);
-        const remainingTabs = state.tabs.filter((t) => t.id !== tabId);
-
-        // If closing the currently active tab
-        if (state.activeTabId === tabId) {
-          if (remainingTabs.length > 0) {
-            // Pick next adjacent tab or previous if at end
-            const nextIndex = Math.min(targetIndex, remainingTabs.length - 1);
-            const nextActiveTab = remainingTabs[nextIndex];
-            set({
-              tabs: remainingTabs,
-              activeTabId: nextActiveTab.id,
-            });
-
-            if (router) {
-              router.push(
-                `/${ROUTES.workspace}/${nextActiveTab.workspaceId}/${nextActiveTab.pageId}`,
-              );
-            }
-          } else {
-            // No tabs left, clear active and navigate to workspace home
-            set({
-              tabs: [],
-              activeTabId: null,
-            });
-
-            if (router && targetTab) {
-              router.push(`/${ROUTES.workspace}/${targetTab.workspaceId}`);
-            }
-          }
-        } else {
-          // Closing a non-active tab
-          set({ tabs: remainingTabs });
-        }
+        evictTabs(result.evictedTabs);
+        set({ tabs: result.tabs, activeTabId: result.activeTabId });
+        navigate(router, result.navigationTarget);
       },
 
       closeOtherTabs: (tabId, router) => {
-        const state = get();
-        const targetTab = state.tabs.find((t) => t.id === tabId);
-        if (!targetTab) return;
+        const result = resolveCloseOtherTabs(get().tabs, tabId);
+        if (!result) return;
 
-        // Keep pinned tabs and the target tab
-        state.tabs.forEach((t) => {
-          if (t.id !== tabId && !t.isPinned) {
-            removeDocumentStore(t.pageId);
-          }
-        });
-        const preservedTabs = state.tabs.filter(
-          (t) => t.id === tabId || t.isPinned,
-        );
-        set({
-          tabs: preservedTabs,
-          activeTabId: targetTab.id,
-        });
-
-        if (router) {
-          router.push(
-            `/${ROUTES.workspace}/${targetTab.workspaceId}/${targetTab.pageId}`,
-          );
-        }
+        evictTabs(result.evictedTabs);
+        set({ tabs: result.tabs, activeTabId: result.activeTabId });
+        navigate(router, result.navigationTarget);
       },
 
       closeTabsToRight: (tabId, router) => {
-        const state = get();
-        const targetIndex = state.tabs.findIndex((t) => t.id === tabId);
-        if (targetIndex === -1) return;
+        const { tabs, activeTabId } = get();
+        const result = resolveCloseTabsToRight(tabs, activeTabId, tabId);
+        if (!result) return;
 
-        state.tabs.forEach((t, i) => {
-          if (i > targetIndex && !t.isPinned) {
-            removeDocumentStore(t.pageId);
-          }
-        });
-        const preservedTabs = state.tabs.filter(
-          (t, i) => i <= targetIndex || t.isPinned,
-        );
-        const isActiveStillOpen = preservedTabs.some(
-          (t) => t.id === state.activeTabId,
-        );
-
-        if (!isActiveStillOpen) {
-          const targetTab = state.tabs[targetIndex];
-          set({
-            tabs: preservedTabs,
-            activeTabId: targetTab.id,
-          });
-
-          if (router) {
-            router.push(
-              `/${ROUTES.workspace}/${targetTab.workspaceId}/${targetTab.pageId}`,
-            );
-          }
-        } else {
-          set({ tabs: preservedTabs });
-        }
+        evictTabs(result.evictedTabs);
+        set({ tabs: result.tabs, activeTabId: result.activeTabId });
+        navigate(router, result.navigationTarget);
       },
 
       closeAllTabs: (workspaceId, router) => {
-        const state = get();
-        state.tabs.forEach((t) => {
-          if (!t.isPinned && (!workspaceId || t.workspaceId === workspaceId)) {
-            removeDocumentStore(t.pageId);
-          }
-        });
-        const pinnedTabs = state.tabs.filter(
-          (t) => t.isPinned && (!workspaceId || t.workspaceId === workspaceId),
-        );
+        const result = resolveCloseAllTabs(get().tabs, workspaceId);
 
-        if (pinnedTabs.length > 0) {
-          const firstPinned = pinnedTabs[0];
-          set({
-            tabs: pinnedTabs,
-            activeTabId: firstPinned.id,
-          });
-
-          if (router) {
-            router.push(
-              `/${ROUTES.workspace}/${firstPinned.workspaceId}/${firstPinned.pageId}`,
-            );
-          }
-        } else {
-          set({
-            tabs: workspaceId
-              ? state.tabs.filter((t) => t.workspaceId !== workspaceId)
-              : [],
-            activeTabId: null,
-          });
-
-          if (router && workspaceId) {
-            router.push(`/${ROUTES.workspace}/${workspaceId}`);
-          }
-        }
+        evictTabs(result.evictedTabs);
+        set({ tabs: result.tabs, activeTabId: result.activeTabId });
+        navigate(router, result.navigationTarget);
       },
 
       setActiveTabId: (tabId) => {
@@ -249,54 +129,45 @@ export const useTabStore = create<TabStoreState>()(
       },
 
       reorderTabs: (sourceIndex, destinationIndex) => {
-        set((state) => {
-          const newTabs = [...state.tabs];
-          const [movedItem] = newTabs.splice(sourceIndex, 1);
-          newTabs.splice(destinationIndex, 0, movedItem);
-          return { tabs: newTabs };
-        });
+        set((state) => ({
+          tabs: reorderTabList(state.tabs, sourceIndex, destinationIndex),
+        }));
       },
 
       updateTabInfo: (pageId, partial) => {
         set((state) => ({
-          tabs: state.tabs.map((t) =>
-            t.pageId === pageId
-              ? {
-                  ...t,
-                  ...(partial.title !== undefined && {
-                    title: partial.title || "Untitled",
-                  }),
-                  ...(partial.icon !== undefined && { icon: partial.icon }),
-                }
-              : t,
-          ),
+          tabs: state.tabs.map((t) => {
+            if (t.pageId !== pageId) return t;
+
+            return {
+              ...t,
+              ...(partial.title !== undefined && {
+                title: partial.title || DEFAULT_TAB_TITLE,
+              }),
+              ...(partial.icon !== undefined && { icon: partial.icon }),
+            };
+          }),
         }));
       },
 
       removeTabByPageId: (pageId, router) => {
-        const state = get();
-        const targetTab = state.tabs.find((t) => t.pageId === pageId);
+        const targetTab = get().tabs.find((t) => t.pageId === pageId);
 
         if (targetTab) {
-          state.closeTab(targetTab.id, router);
+          get().closeTab(targetTab.id, router);
         }
       },
 
       cleanupWorkspaceTabs: (workspaceId) => {
-        get().tabs.forEach((t) => {
-          if (t.workspaceId === workspaceId) {
-            removeDocumentStore(t.pageId);
-          }
-        });
-        set((state) => ({
-          tabs: state.tabs.filter((t) => t.workspaceId !== workspaceId),
-          activeTabId:
-            state.activeTabId &&
-            state.tabs.find((t) => t.id === state.activeTabId)?.workspaceId ===
-              workspaceId
-              ? null
-              : state.activeTabId,
-        }));
+        const { tabs, activeTabId } = get();
+        const result = resolveCleanupWorkspaceTabs(
+          tabs,
+          activeTabId,
+          workspaceId,
+        );
+
+        evictTabs(result.evictedTabs);
+        set({ tabs: result.tabs, activeTabId: result.activeTabId });
       },
     }),
     {
@@ -307,3 +178,219 @@ export const useTabStore = create<TabStoreState>()(
     },
   ),
 );
+
+export function createTabId(pageId: string): string {
+  return `tab_${pageId}`;
+}
+
+function navigate(router?: RouterLike, target?: NavigationTarget) {
+  if (!router || !target) return;
+
+  const path = target.pageId
+    ? `/${ROUTES.workspace}/${target.workspaceId}/${target.pageId}`
+    : `/${ROUTES.workspace}/${target.workspaceId}`;
+
+  router.push(path);
+}
+
+function evictTabs(tabs: readonly TabItem[]) {
+  for (const tab of tabs) {
+    removeDocumentStore(tab.pageId);
+  }
+}
+
+function resolveOpenTab(
+  tabs: TabItem[],
+  input: OpenTabInput,
+  now = Date.now(),
+): { tabs: TabItem[]; activeTabId: string } {
+  const { pageId, workspaceId, title = DEFAULT_TAB_TITLE, icon } = input;
+  const existingTab = tabs.find(
+    (t) => t.pageId === pageId && t.workspaceId === workspaceId,
+  );
+
+  if (existingTab) {
+    return {
+      tabs: tabs.map((t) =>
+        t.id === existingTab.id
+          ? {
+              ...t,
+              title: title || t.title,
+              icon: icon ?? t.icon,
+              lastAccessedAt: now,
+            }
+          : t,
+      ),
+      activeTabId: existingTab.id,
+    };
+  }
+
+  const newTab: TabItem = {
+    id: createTabId(pageId),
+    pageId,
+    workspaceId,
+    title: title || DEFAULT_TAB_TITLE,
+    icon,
+    isPinned: false,
+    lastAccessedAt: now,
+  };
+
+  return {
+    tabs: [...tabs, newTab],
+    activeTabId: newTab.id,
+  };
+}
+
+function resolveCloseTab(
+  tabs: TabItem[],
+  activeTabId: string | null,
+  tabId: string,
+): TabMutationResult | null {
+  const targetIndex = tabs.findIndex((t) => t.id === tabId);
+  if (targetIndex === -1) return null;
+
+  const targetTab = tabs[targetIndex];
+  const remainingTabs = tabs.filter((t) => t.id !== tabId);
+
+  if (activeTabId !== tabId) {
+    return {
+      tabs: remainingTabs,
+      activeTabId,
+      evictedTabs: [targetTab],
+    };
+  }
+
+  if (remainingTabs.length > 0) {
+    const nextIndex = Math.min(targetIndex, remainingTabs.length - 1);
+    const nextActiveTab = remainingTabs[nextIndex];
+    return {
+      tabs: remainingTabs,
+      activeTabId: nextActiveTab.id,
+      evictedTabs: [targetTab],
+      navigationTarget: {
+        workspaceId: nextActiveTab.workspaceId,
+        pageId: nextActiveTab.pageId,
+      },
+    };
+  }
+
+  return {
+    tabs: [],
+    activeTabId: null,
+    evictedTabs: [targetTab],
+    navigationTarget: {
+      workspaceId: targetTab.workspaceId,
+    },
+  };
+}
+
+function resolveCloseOtherTabs(
+  tabs: TabItem[],
+  tabId: string,
+): TabMutationResult | null {
+  const targetTab = tabs.find((t) => t.id === tabId);
+  if (!targetTab) return null;
+
+  return {
+    tabs: tabs.filter((t) => t.id === tabId || t.isPinned),
+    activeTabId: targetTab.id,
+    evictedTabs: tabs.filter((t) => t.id !== tabId && !t.isPinned),
+    navigationTarget: {
+      workspaceId: targetTab.workspaceId,
+      pageId: targetTab.pageId,
+    },
+  };
+}
+
+function resolveCloseTabsToRight(
+  tabs: TabItem[],
+  activeTabId: string | null,
+  tabId: string,
+): TabMutationResult | null {
+  const targetIndex = tabs.findIndex((t) => t.id === tabId);
+  if (targetIndex === -1) return null;
+
+  const targetTab = tabs[targetIndex];
+  const preservedTabs = tabs.filter((t, i) => i <= targetIndex || t.isPinned);
+  const isActiveStillOpen = preservedTabs.some((t) => t.id === activeTabId);
+
+  return {
+    tabs: preservedTabs,
+    activeTabId: isActiveStillOpen ? activeTabId : targetTab.id,
+    evictedTabs: tabs.filter((t, i) => i > targetIndex && !t.isPinned),
+    navigationTarget: isActiveStillOpen
+      ? undefined
+      : {
+          workspaceId: targetTab.workspaceId,
+          pageId: targetTab.pageId,
+        },
+  };
+}
+
+function resolveCloseAllTabs(
+  tabs: TabItem[],
+  workspaceId?: string,
+): TabMutationResult {
+  const matchesWorkspace = (t: TabItem) =>
+    !workspaceId || t.workspaceId === workspaceId;
+
+  const pinnedTabs = tabs.filter((t) => t.isPinned && matchesWorkspace(t));
+
+  if (pinnedTabs.length > 0) {
+    const firstPinned = pinnedTabs[0];
+    return {
+      tabs: pinnedTabs,
+      activeTabId: firstPinned.id,
+      evictedTabs: tabs.filter((t) => !t.isPinned && matchesWorkspace(t)),
+      navigationTarget: {
+        workspaceId: firstPinned.workspaceId,
+        pageId: firstPinned.pageId,
+      },
+    };
+  }
+
+  return {
+    tabs: workspaceId ? tabs.filter((t) => t.workspaceId !== workspaceId) : [],
+    activeTabId: null,
+    evictedTabs: tabs.filter((t) => !t.isPinned && matchesWorkspace(t)),
+    navigationTarget: workspaceId ? { workspaceId } : undefined,
+  };
+}
+
+function resolveCleanupWorkspaceTabs(
+  tabs: TabItem[],
+  activeTabId: string | null,
+  workspaceId: string,
+): { tabs: TabItem[]; activeTabId: string | null; evictedTabs: TabItem[] } {
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const shouldResetActive = activeTab?.workspaceId === workspaceId;
+
+  return {
+    tabs: tabs.filter((t) => t.workspaceId !== workspaceId),
+    activeTabId: shouldResetActive ? null : activeTabId,
+    evictedTabs: tabs.filter((t) => t.workspaceId === workspaceId),
+  };
+}
+
+function reorderTabList(
+  tabs: TabItem[],
+  sourceIndex: number,
+  destinationIndex: number,
+): TabItem[] {
+  if (
+    sourceIndex < 0 ||
+    sourceIndex >= tabs.length ||
+    destinationIndex < 0 ||
+    destinationIndex >= tabs.length ||
+    sourceIndex === destinationIndex
+  ) {
+    return tabs;
+  }
+
+  const nextTabs = [...tabs];
+  const [movedItem] = nextTabs.splice(sourceIndex, 1);
+
+  nextTabs.splice(destinationIndex, 0, movedItem);
+
+  return nextTabs;
+}

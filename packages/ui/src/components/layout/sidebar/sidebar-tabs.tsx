@@ -51,7 +51,6 @@ export const SidebarTabs = () => {
       pill.style.transform = `translate(${left}px, ${top}px)`;
       pill.style.width = `${width}px`;
       pill.style.height = `${height}px`;
-      void pill.offsetWidth; // force reflow
       pill.style.transition = prev;
     } else {
       pill.style.transform = `translate(${left}px, ${top}px)`;

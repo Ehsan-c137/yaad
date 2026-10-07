@@ -41,7 +41,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       activeWorkspaceId: null,
       hasHydrated: false,
 
-      setHasHydrated: (state) => set({ hasHydrated: state }),
+      setHasHydrated: (state) => {
+        set({ hasHydrated: state });
+      },
 
       loadInitialWorkspaces: async () => {
         const list = await workspaceService.getWorkspaces();
@@ -66,7 +68,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
         const currentActive = get().activeWorkspaceId;
         const validActive =
-          currentActive && map[currentActive] ? currentActive : list[0].id;
+          currentActive && currentActive in map ? currentActive : list[0].id;
 
         set({ workspaces: map, activeWorkspaceId: validActive });
 
@@ -75,7 +77,10 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       },
 
       setActiveWorkspace: async (id: string) => {
-        if (!get().workspaces[id]) return;
+        const state = get();
+
+        if (!(id in state.workspaces)) return;
+
         set({ activeWorkspaceId: id });
 
         // Reload sidebar page tree for new workspace
@@ -105,14 +110,16 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       },
 
       updateWorkspace: async (id: string, updates: WorkspaceUpdates) => {
-        const current = get().workspaces[id];
-        if (!current) return { success: false, error: "Workspace not found" };
+        if (!(id in get().workspaces))
+          return { success: false, error: "Workspace not found" };
 
         const name = updates.name?.trim();
 
         if (updates.name !== undefined && !name) {
           return { success: false, error: "Workspace name cannot be empty." };
         }
+
+        const current = get().workspaces[id];
 
         const updatedWs: Workspace = {
           ...current,

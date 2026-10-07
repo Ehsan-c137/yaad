@@ -131,7 +131,7 @@ export function CodeBlock({ block }: CodeBlockProps) {
         <select
           value={language}
           onChange={(e) =>
-            updateBlockProperties(block.id, pageId, {
+            void updateBlockProperties(block.id, pageId, {
               language: e.target.value,
             })
           }
@@ -163,14 +163,16 @@ export function CodeBlock({ block }: CodeBlockProps) {
           placeholder={t("codePlaceholder")}
           className="relative z-10 min-h-[24px] w-full bg-transparent font-mono text-sm/relaxed text-transparent caret-background selection:bg-white/15"
           onChange={(newText: string) =>
-            updateBlockProperties(block.id, pageId, {
+            void updateBlockProperties(block.id, pageId, {
               title: [{ text: newText }],
             })
           }
           onEnter={() => {
             // Shift+Enter handles multiline inside code
           }}
-          onBackspaceEmpty={() => deleteBlock(block.id)}
+          onBackspaceEmpty={() => {
+            void deleteBlock(block.id);
+          }}
         />
       </div>
     </div>

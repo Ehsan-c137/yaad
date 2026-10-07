@@ -19,10 +19,12 @@ export function PageHeaderTags() {
   return (
     <div className="mb-4 flex items-center">
       <TagList
-        tags={rootBlock.tags || []}
-        onAddTag={(tag) => addTagToBlock(rootBlock.id, currentDocId, tag)}
+        tags={rootBlock.tags ?? []}
+        onAddTag={(tag) => {
+          void addTagToBlock(rootBlock.id, currentDocId, tag);
+        }}
         onRemoveTag={(tagId) =>
-          removeTagFromBlock(rootBlock.id, currentDocId, tagId)
+          void removeTagFromBlock(rootBlock.id, currentDocId, tagId)
         }
       />
     </div>

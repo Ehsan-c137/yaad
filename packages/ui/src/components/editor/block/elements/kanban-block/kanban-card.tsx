@@ -30,15 +30,15 @@ export function KanbanCardItem({
     }
   };
 
-  const handleCancel = () => {
+  function handleCancel() {
     setEditingTitle(card.title);
     setIsEditing(false);
-  };
+  }
 
-  const handleStartEditing = () => {
+  function handleStartEditing() {
     setEditingTitle(card.title);
     setIsEditing(true);
-  };
+  }
 
   return (
     <div
@@ -78,12 +78,20 @@ export function KanbanCardItem({
         </div>
       ) : (
         <>
-          <p
+          <div
+            role="button"
+            tabIndex={0}
             onClick={handleStartEditing}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleStartEditing();
+              }
+            }}
             className="cursor-pointer text-xs text-foreground leading-relaxed hover:text-primary transition-colors"
           >
             {card.title}
-          </p>
+          </div>
 
           <div className="mt-2 flex items-center justify-between opacity-0 transition-opacity group-hover/card:opacity-100">
             <div className="flex items-center gap-1">

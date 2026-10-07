@@ -22,7 +22,7 @@ export function CoverGalleryItem({
   onClose,
   onSelectCover,
 }: CoverGalleryItemProps) {
-  const previewUrl = preset.previewUrl || getCoverPreviewUrl(preset.url);
+  const previewUrl = preset.previewUrl ?? getCoverPreviewUrl(preset.url);
   const fullCoverUrl = getCoverFullUrl(preset.url);
 
   return (

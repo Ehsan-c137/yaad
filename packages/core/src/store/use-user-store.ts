@@ -18,11 +18,17 @@ export const useUserStore = create<UserState>()(
       hasOnboarded: false,
       _hasHydrated: false,
 
-      setUserName: (name) => set({ userName: name }),
+      setUserName: (name) => {
+        set({ userName: name });
+      },
 
-      completeOnboarding: () => set({ hasOnboarded: true }),
+      completeOnboarding: () => {
+        set({ hasOnboarded: true });
+      },
 
-      setHasHydrated: (state) => set({ _hasHydrated: state }),
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state });
+      },
     }),
     {
       name: "yaad-user-storage",
