@@ -1,7 +1,7 @@
-import { styles } from "@yaad/core/lib/design-token";
 import { Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 export function AddtoFavoriteMenu({ onClose }: { onClose: () => void }) {
