@@ -15,20 +15,20 @@ export function SidebarToggleButton() {
   return (
     <Button
       variant="ghost"
-      size="icon-lg"
+      size="icon-sm"
       onClick={toggleSidebar}
       aria-label={label}
       title={label}
-      className="shrink-0 text-muted-foreground hover:text-foreground"
+      className="size-7 shrink-0 rounded-lg text-muted-foreground hover:bg-foreground/6 hover:text-foreground dark:hover:bg-white/6"
     >
       {isSidebarOpen ? (
         <PanelLeftClose
-          className="size-[18px] rtl:scale-x-[-1]"
+          className="size-4 rtl:scale-x-[-1]"
           strokeWidth={1.5}
         />
       ) : (
         <PanelLeftOpen
-          className="size-[18px] rtl:scale-x-[-1]"
+          className="size-4 rtl:scale-x-[-1]"
           strokeWidth={1.5}
         />
       )}

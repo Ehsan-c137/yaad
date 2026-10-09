@@ -25,7 +25,7 @@ export function GraphPage({ workspaceId, pageId }: GraphPageProps) {
     Boolean(pageId) && Object.keys(pages).length > 0 && !page;
 
   return (
-    <div className="flex h-[calc(100vh-3rem)] w-full flex-col">
+    <div className="flex size-full flex-col">
       <GraphPageHeader workspaceId={workspaceId} pageId={pageId} page={page} />
 
       <div className="min-h-0 flex-1">

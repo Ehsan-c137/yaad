@@ -87,12 +87,12 @@ export function TabItem({ tab, isActive }: TabItemProps) {
             }}
             data-tauri-no-drag-region="true"
             className={cn(
-              "group relative flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium select-none [app-region:no-drag]",
+              "group relative flex h-8 cursor-pointer items-center gap-1.5 rounded-xl px-2.5 text-xs font-medium select-none [app-region:no-drag]",
               "transition-all duration-(--press-duration) ease-(--spring)",
               "border border-transparent",
-              tab.isPinned ? "max-w-30 min-w-fit" : "mmax-w-47.5 min-w-27.5",
+              tab.isPinned ? "max-w-32 min-w-fit" : "max-w-48 min-w-28",
               isActive
-                ? "border-border/60 bg-background text-foreground shadow-xs dark:border-white/10 dark:bg-card/70"
+                ? "border-border/70 bg-card/90 text-foreground shadow-xs dark:border-white/10 dark:bg-card/85"
                 : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground dark:hover:bg-white/6",
             )}
             title={tab.title}
@@ -143,7 +143,7 @@ export function TabItem({ tab, isActive }: TabItemProps) {
         )}
 
         {isActive && (
-          <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-(--accent-blue)" />
+          <span className="absolute inset-x-2.5 -bottom-px h-0.5 rounded-full bg-(--accent-blue)" />
         )}
       </ContextMenuTrigger>
       <MenuContent tab={tab} handleClose={handleClose} />

@@ -27,7 +27,7 @@ export function SidebarToggleButton() {
         disabled={isSidebarOpen}
         aria-label={t("openSidebar")}
         data-tauri-no-drag-region="true"
-        className="[app-region:no-drag]"
+        className="size-7 rounded-lg text-muted-foreground hover:bg-foreground/6 hover:text-foreground dark:hover:bg-white/6 [app-region:no-drag]"
       >
         <PanelLeftOpen strokeWidth={1.75} className="size-4 rtl:scale-x-[-1]" />
       </Button>

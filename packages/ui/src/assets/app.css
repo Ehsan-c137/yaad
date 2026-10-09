@@ -48,7 +48,7 @@
     background-color: var(--sidebar);
     backdrop-filter: blur(var(--material-blur))
       saturate(var(--material-saturate));
-    border-inline-end: 1px solid var(--sidebar-border);
+    border: 1px solid var(--sidebar-border);
   }
 
   .menu-dark {
@@ -93,7 +93,7 @@
   }
 
   .editor-surface {
-    @apply min-h-screen w-full bg-background text-foreground;
+    @apply min-h-full w-full bg-background text-foreground;
   }
 
   .skeleton {
