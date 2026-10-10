@@ -292,9 +292,17 @@ function resolveCloseOtherTabs(
   if (!targetTab) return null;
 
   return {
-    tabs: tabs.filter((t) => t.id === tabId || t.isPinned),
+    tabs: tabs.filter(
+      (t) =>
+        t.workspaceId !== targetTab.workspaceId || t.id === tabId || t.isPinned,
+    ),
     activeTabId: targetTab.id,
-    evictedTabs: tabs.filter((t) => t.id !== tabId && !t.isPinned),
+    evictedTabs: tabs.filter(
+      (t) =>
+        t.workspaceId === targetTab.workspaceId &&
+        t.id !== tabId &&
+        !t.isPinned,
+    ),
     navigationTarget: {
       workspaceId: targetTab.workspaceId,
       pageId: targetTab.pageId,
@@ -311,13 +319,23 @@ function resolveCloseTabsToRight(
   if (targetIndex === -1) return null;
 
   const targetTab = tabs[targetIndex];
-  const preservedTabs = tabs.filter((t, i) => i <= targetIndex || t.isPinned);
+  const workspaceTabs = tabs.filter(
+    (t) => t.workspaceId === targetTab.workspaceId,
+  );
+  const targetWorkspaceIndex = workspaceTabs.findIndex((t) => t.id === tabId);
+
+  const evictedTabs = workspaceTabs.filter(
+    (t, i) => i > targetWorkspaceIndex && !t.isPinned,
+  );
+  const evictedIds = new Set(evictedTabs.map((t) => t.id));
+
+  const preservedTabs = tabs.filter((t) => !evictedIds.has(t.id));
   const isActiveStillOpen = preservedTabs.some((t) => t.id === activeTabId);
 
   return {
     tabs: preservedTabs,
     activeTabId: isActiveStillOpen ? activeTabId : targetTab.id,
-    evictedTabs: tabs.filter((t, i) => i > targetIndex && !t.isPinned),
+    evictedTabs,
     navigationTarget: isActiveStillOpen
       ? undefined
       : {
@@ -339,7 +357,7 @@ function resolveCloseAllTabs(
   if (pinnedTabs.length > 0) {
     const firstPinned = pinnedTabs[0];
     return {
-      tabs: pinnedTabs,
+      tabs: tabs.filter((t) => !matchesWorkspace(t) || t.isPinned),
       activeTabId: firstPinned.id,
       evictedTabs: tabs.filter((t) => !t.isPinned && matchesWorkspace(t)),
       navigationTarget: {

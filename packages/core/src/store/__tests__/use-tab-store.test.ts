@@ -249,7 +249,7 @@ describe("useTabStore (Unit Test)", () => {
 
       const { tabs, activeTabId } = useTabStore.getState();
 
-      expect(tabs.map((t) => t.pageId)).toEqual(["p2"]);
+      expect(tabs.map((t) => t.pageId)).toEqual(["p2", "p3"]);
       expect(activeTabId).toBe("tab_p2");
       expect(router.push).toHaveBeenCalledWith("/workspace/ws_1/p2");
     });

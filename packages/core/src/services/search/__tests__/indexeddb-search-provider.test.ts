@@ -126,6 +126,17 @@ describe("getRecentPages (pure synchronous function)", () => {
     expect(recent[1]?.id).toBe("p3");
     expect(recent[1]?.title).toBe("Page 3");
   });
+
+  it("ignores soft-deleted pages", () => {
+    const mockPages: Record<string, SearchPageMeta> = {
+      p1: { id: "p1", title: "Page 1", updatedAt: 100 },
+      p2: { id: "p2", title: "Deleted Page", updatedAt: 300, isDeleted: true },
+    };
+
+    const recent = getRecentPages(mockPages, 5);
+    expect(recent).toHaveLength(1);
+    expect(recent[0]?.id).toBe("p1");
+  });
 });
 
 describe("searchPages & searchPagesByTitle (pure functions)", () => {
@@ -142,6 +153,15 @@ describe("searchPages & searchPagesByTitle (pure functions)", () => {
     expect(results.map((r) => r.id)).toEqual(["p2", "p3"]);
     expect(results[0]?.category).toBe("page");
     expect(results[0]?.workspaceId).toBe("ws_1");
+  });
+
+  it("filters out soft-deleted pages", () => {
+    const pagesWithDeleted: Record<string, SearchPageMeta> = {
+      ...mockPages,
+      p4: { id: "p4", title: "Deleted Notes", isDeleted: true },
+    };
+    const results = searchPagesByTitle(pagesWithDeleted, "notes", "ws_1");
+    expect(results.map((r) => r.id)).toEqual(["p2", "p3"]);
   });
 
   it("returns all pages when query is empty", () => {

@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-ssr
+target
+src-tauri/target
+pnpm-lock.yaml
+Cargo.lock
+.vercel
+skills-lock.json

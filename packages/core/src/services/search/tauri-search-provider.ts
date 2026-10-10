@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies, complexity, max-depth, no-await-in-loop, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing */
+/* eslint-disable complexity, max-depth, no-await-in-loop, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing */
 import type {
   SearchItem,
   SearchOptions,
@@ -124,7 +124,7 @@ export class TauriSearchProvider implements SearchProvider {
         }
       } else {
         for (const page of Object.values(sidebarPages)) {
-          if (!page) continue;
+          if (!page || page.isDeleted) continue;
           if (!q || (page.title || "").toLowerCase().includes(q)) {
             if (!seenItemKeys.has(page.id)) {
               seenItemKeys.add(page.id);
@@ -154,7 +154,7 @@ export class TauriSearchProvider implements SearchProvider {
     } catch {
       const sidebarPages = useSidebarStore.getState().pages;
       return Object.values(sidebarPages)
-        .filter((p): p is NonNullable<typeof p> => Boolean(p))
+        .filter((p): p is NonNullable<typeof p> => Boolean(p && !p.isDeleted))
         .slice(0, limit)
         .map((page) => ({
           id: page.id,
