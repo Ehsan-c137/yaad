@@ -8,10 +8,6 @@ export interface LinkPreviewData {
   domain: string;
 }
 
-function buildFaviconUrl(hostname: string): string {
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=32`;
-}
-
 function toDisplayDomain(hostname: string): string {
   return hostname.replace(/^www\./, "");
 }
@@ -24,7 +20,6 @@ export async function fetchLinkPreview(
     : `https://${rawUrl}`;
   const parsedUrl = new URL(targetUrlString);
   const domain = toDisplayDomain(parsedUrl.hostname);
-  const favicon = buildFaviconUrl(parsedUrl.hostname);
 
   try {
     const response = await fetch(targetUrlString, {
@@ -38,6 +33,20 @@ export async function fetchLinkPreview(
     const html = await response.text();
     const titleMatch = /<title[^>]*>([^<]+)<\/title>/i.exec(html);
     const title = titleMatch ? titleMatch[1].trim() : domain;
+
+    const iconMatch =
+      /<link\b[^>]*rel=["'](?:shortcut )?icon["'][^>]*href=["']([^"']+)["']/i.exec(
+        html,
+      );
+    let favicon = "";
+
+    if (iconMatch) {
+      try {
+        favicon = new URL(iconMatch[1], parsedUrl).toString();
+      } catch {
+        favicon = "";
+      }
+    }
 
     const ogDescMatch =
       /<meta\b[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i.exec(
@@ -77,7 +86,7 @@ export async function fetchLinkPreview(
       title: domain,
       description: targetUrlString,
       image: null,
-      favicon,
+      favicon: "",
       domain,
     };
   }
