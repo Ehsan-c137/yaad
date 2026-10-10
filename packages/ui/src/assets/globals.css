@@ -78,6 +78,8 @@
   --spring: cubic-bezier(0.22, 1, 0.36, 1);
   --spring-duration: 0.35s;
   --press-duration: 0.1s;
+  --sidebar-slide-dir: 1;
+  --sidebar-pop-scale: 1.1;
 
   --material-blur: 24px;
   --material-saturate: 200%;
@@ -190,6 +192,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 0.08);
   --sidebar-ring: oklch(0.65 0.22 264 / 0.5);
+}
+
+[dir="rtl"] {
+  --sidebar-slide-dir: -1;
 }
 
 @layer base {

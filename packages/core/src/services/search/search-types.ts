@@ -8,6 +8,7 @@ import type {
 export interface SearchPageMeta {
   icon?: string;
   id: string;
+  isDeleted?: boolean;
   title: string;
   updatedAt?: number;
 }

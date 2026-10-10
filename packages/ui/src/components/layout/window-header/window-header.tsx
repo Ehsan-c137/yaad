@@ -1,4 +1,3 @@
-"use client";
 
 import { TooltipProvider } from "@ui/tooltip";
 import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
@@ -29,7 +28,7 @@ export function WindowHeader() {
         style={{
           height: `${WINDOW_HEADER_HEIGHT}px`,
         }}
-        className="relative z-20 flex h-10 w-full shrink-0 items-center justify-between bg-transparent px-2.5 [app-region:drag]"
+        className="relative z-20 flex w-full shrink-0 items-center justify-between bg-transparent px-1 [app-region:drag]"
         data-tauri-drag-region
       >
         <div

@@ -7,10 +7,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { WelcomeModal } from "@/components/onboarding/welcome-modal";
+import { cn } from "@/lib/utils";
 
 import { SettingsModal } from "../settings/settings-modal";
 
-export function Profile() {
+export function Profile({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation("sidebar");
   const userName = useUserStore((state) => state.userName);
 
@@ -30,15 +31,23 @@ export function Profile() {
           render={
             <Button
               variant="ghost"
-              className="size-auto w-full flex-1 justify-start gap-2 rounded-full p-2"
+              className={cn(
+                "rounded-full transition-transform active:scale-95",
+                compact
+                  ? "size-8 justify-center p-0"
+                  : "size-auto w-full flex-1 justify-start gap-2 p-2",
+              )}
               aria-label={t("openProfileMenu")}
+              title={compact ? displayName : undefined}
             />
           }
         >
           <Avatar className="size-7">
             <AvatarFallback>{initial}</AvatarFallback>
           </Avatar>
-          <span className="truncate text-sm font-medium">{displayName}</span>
+          {!compact && (
+            <span className="truncate text-sm font-medium">{displayName}</span>
+          )}
         </PopoverTrigger>
 
         <PopoverContent

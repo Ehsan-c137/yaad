@@ -58,6 +58,7 @@ function SidebarHomeHeader() {
   const activeWorkspaceId = useWorkspaceStore(
     (store) => store.activeWorkspaceId,
   );
+  const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
 
   if (!activeWorkspaceId) return null;
 
@@ -107,7 +108,11 @@ function SidebarHomeHeader() {
                 <Trash2 className="size-4" strokeWidth={1.5} />
               </Button>
             </Link>
-            <SearchBox />
+            <SearchBox
+              triggerClassName={
+                isSidebarOpen ? "sidebar-search-button" : undefined
+              }
+            />
           </div>
         )}
       </div>

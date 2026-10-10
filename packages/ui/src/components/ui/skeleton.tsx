@@ -1,6 +1,4 @@
 /* eslint-disable perfectionist/sort-imports */
-"use client";
-
 import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
@@ -33,7 +31,9 @@ export function WorkspaceLayoutSkeleton() {
         >
           {/* Workspace Switcher Header */}
           <div className="flex items-center gap-2 p-1">
-            <div className={cn(styles.skeleton, "size-7 shrink-0 rounded-lg")} />
+            <div
+              className={cn(styles.skeleton, "size-7 shrink-0 rounded-lg")}
+            />
             <div className={cn(styles.skeleton, "h-4 flex-1 rounded-md")} />
           </div>
 
@@ -51,19 +51,25 @@ export function WorkspaceLayoutSkeleton() {
                 <div
                   className={cn(styles.skeleton, "size-4 shrink-0 rounded-sm")}
                 />
-                <div className={cn(styles.skeleton, "h-4 w-2/3 rounded-full")} />
+                <div
+                  className={cn(styles.skeleton, "h-4 w-2/3 rounded-full")}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className={cn(styles.skeleton, "size-4 shrink-0 rounded-sm")}
                 />
-                <div className={cn(styles.skeleton, "h-4 w-4/5 rounded-full")} />
+                <div
+                  className={cn(styles.skeleton, "h-4 w-4/5 rounded-full")}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className={cn(styles.skeleton, "size-4 shrink-0 rounded-sm")}
                 />
-                <div className={cn(styles.skeleton, "h-4 w-1/2 rounded-full")} />
+                <div
+                  className={cn(styles.skeleton, "h-4 w-1/2 rounded-full")}
+                />
               </div>
             </div>
           </div>

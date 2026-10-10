@@ -8,6 +8,8 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
+import { cn } from "@/lib/utils";
+
 import { useSearchCommand } from "./hooks/use-search-command";
 import { MatchingPagesGroup } from "./search-group-pages";
 import { RecentPagesGroup } from "./search-group-recent";
@@ -15,7 +17,15 @@ import { MatchingTagsGroup } from "./search-group-tags";
 import { TagFilterBanner } from "./search-tag-filter-banner";
 import { SearchTrigger } from "./search-trigger";
 
-export function SearchCommand() {
+export interface SearchCommandProps {
+  className?: string;
+  triggerClassName?: string;
+}
+
+export function SearchCommand({
+  className,
+  triggerClassName,
+}: SearchCommandProps = {}) {
   const { t } = useTranslation("search");
   const {
     open,
@@ -40,8 +50,11 @@ export function SearchCommand() {
     hasActiveSearch && searchResults.length === 0 && tagResults.length === 0;
 
   return (
-    <div className="flex flex-col gap-4">
-      <SearchTrigger onOpen={() => setOpen(true)} />
+    <div className={cn("flex flex-col gap-4", className)}>
+      <SearchTrigger
+        className={triggerClassName}
+        onOpen={() => setOpen(true)}
+      />
 
       <CommandDialog open={open} onOpenChange={handleOpenChange}>
         <Command shouldFilter={false}>

@@ -10,7 +10,7 @@ export function MainLayout({ children }: { children?: React.ReactNode }) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-muted/40 text-foreground dark:bg-black/40">
       <WindowHeader />
-      <div className="flex min-h-0 flex-1 overflow-hidden p-0 md:p-2 md:pt-1">
+      <div className="flex min-h-0 flex-1 overflow-hidden p-0 md:p-2 md:pt-0">
         <Sidebar />
         <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-background md:rounded-2xl md:border md:border-border/70 md:shadow-xs dark:md:border-white/[0.08] dark:md:shadow-black/25">
           <main className="flex flex-1 scroll-fade overflow-hidden">

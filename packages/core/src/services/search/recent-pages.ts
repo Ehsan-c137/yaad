@@ -7,7 +7,7 @@ export function getRecentPages(
   limit: number,
 ): SearchItem[] {
   return Object.values(pages)
-    .filter((page): page is SearchPageMeta => Boolean(page))
+    .filter((page): page is SearchPageMeta => Boolean(page && !page.isDeleted))
     .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
     .slice(0, limit)
     .map((page) => ({

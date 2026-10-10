@@ -18,11 +18,13 @@ export interface SidebarUiSlice {
   isLoading: boolean;
   isSidebarOpen: boolean;
   activePageId: string | null;
+  sidebarTab: "bookmarked" | "home";
   // Actions
   setHasHydrated: (state: boolean) => void;
   setIsLoading: (state: boolean) => void;
   toggleSidebar: () => void;
   setActivePageId: (pageId: string) => void;
+  setSidebarTab: (tab: "bookmarked" | "home") => void;
 }
 
 export interface SidebarPagesSlice {

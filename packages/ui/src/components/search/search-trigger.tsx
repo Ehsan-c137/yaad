@@ -3,11 +3,14 @@ import { Search } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
+import { cn } from "@/lib/utils";
+
 interface SearchTriggerProps {
+  className?: string;
   onOpen: () => void;
 }
 
-export function SearchTrigger({ onOpen }: SearchTriggerProps) {
+export function SearchTrigger({ className, onOpen }: SearchTriggerProps) {
   const { t } = useTranslation("search");
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export function SearchTrigger({ onOpen }: SearchTriggerProps) {
       variant="ghost"
       onClick={onOpen}
       size="icon"
-      className="rounded-full"
+      className={cn("rounded-full", className)}
       title={t("searchPlaceholder")}
       aria-label={t("searchLabel")}
     >

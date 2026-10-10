@@ -28,7 +28,7 @@ export function searchPagesByTitle(
   const seenItemKeys = new Set<string>();
 
   for (const page of Object.values(pages)) {
-    if (!page) continue;
+    if (!page || page.isDeleted) continue;
 
     const title = page.title || "Untitled";
     const matches =
@@ -62,7 +62,8 @@ export function searchBlocksByTag({
 
   for (const record of indexRecords) {
     const pageMeta = pages[record.pageId];
-    const pageTitle = pageMeta?.title ?? "Untitled Page";
+    if (!pageMeta || pageMeta.isDeleted) continue;
+    const pageTitle = pageMeta.title || "Untitled Page";
     const snippet = record.snippet ?? "";
 
     const matches =
@@ -86,7 +87,7 @@ export function searchBlocksByTag({
           subtitle: snippet
             ? `${record.blockType}: ${snippet}`
             : `${record.blockType} block`,
-          icon: pageMeta?.icon ?? "📄",
+          icon: pageMeta.icon ?? "📄",
         });
       }
     }

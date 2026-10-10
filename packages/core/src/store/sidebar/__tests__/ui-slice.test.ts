@@ -10,6 +10,7 @@ describe("sidebar ui-slice (Unit Test)", () => {
       isLoading: true,
       isSidebarOpen: true,
       activePageId: null,
+      sidebarTab: "home",
     });
   });
 
@@ -20,6 +21,13 @@ describe("sidebar ui-slice (Unit Test)", () => {
     expect(state.isLoading).toBe(true);
     expect(state.activePageId).toBeNull();
     expect(state._hasHydrated).toBe(false);
+    expect(state.sidebarTab).toBe("home");
+  });
+
+  it("updates sidebar tab", () => {
+    useSidebarStore.getState().setSidebarTab("bookmarked");
+
+    expect(useSidebarStore.getState().sidebarTab).toBe("bookmarked");
   });
 
   it("toggles the sidebar open state", () => {

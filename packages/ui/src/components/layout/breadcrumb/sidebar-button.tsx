@@ -5,10 +5,12 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { PanelLeftOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { useSidebarToggle } from "@/hooks/sidebar/use-sidebar-toggle";
+
 export function SidebarToggleButton() {
   const { t } = useTranslation("sidebar");
   const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
-  const toggleSidebar = useSidebarStore((store) => store.toggleSidebar);
+  const toggleSidebar = useSidebarToggle();
 
   return (
     <div
@@ -16,7 +18,7 @@ export function SidebarToggleButton() {
       className={
         isSidebarOpen
           ? "pointer-events-none flex max-w-0 shrink-0 scale-95 items-center overflow-hidden opacity-0 transition-[max-width,opacity,transform] duration-200 ease-(--spring)"
-          : "flex max-w-9 shrink-0 scale-100 items-center overflow-hidden opacity-100 transition-[max-width,opacity,transform] duration-200 ease-(--spring)"
+          : "max-md:flex md:hidden max-w-9 shrink-0 scale-100 items-center overflow-hidden opacity-100 transition-[max-width,opacity,transform] duration-200 ease-(--spring)"
       }
     >
       <Button

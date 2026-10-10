@@ -20,7 +20,7 @@ export function WorkspaceForm() {
     setIsCreating(false);
   };
 
-  const handleCreate = async (e: React.ChangeEvent) => {
+  const handleCreate = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const trimmed = newWsName.trim();
     if (!trimmed) return;

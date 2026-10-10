@@ -1,9 +1,7 @@
 /* eslint-disable perfectionist/sort-imports, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return */
-"use client";
 
 import type { TabItem as TabItemType } from "@yaad/core/store/use-tab-store";
 
-import { Button } from "@ui/button";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -49,7 +47,7 @@ export function TabItem({ tab, isActive }: TabItemProps) {
   };
 
   const handleClose = (
-    e: React.KeyboardEvent<HTMLSpanElement> | React.MouseEvent,
+    e: React.KeyboardEvent<HTMLElement> | React.MouseEvent,
   ) => {
     e.stopPropagation();
     e.preventDefault();
@@ -69,9 +67,8 @@ export function TabItem({ tab, isActive }: TabItemProps) {
     <ContextMenu>
       <ContextMenuTrigger
         render={
-          <Button
+          <div
             role="tab"
-            variant="outline"
             aria-selected={isActive}
             tabIndex={0}
             onClick={handleSelectTab}
@@ -89,14 +86,13 @@ export function TabItem({ tab, isActive }: TabItemProps) {
             className={cn(
               "group relative flex h-8 cursor-pointer items-center gap-1.5 rounded-xl px-2.5 text-xs font-medium select-none [app-region:no-drag]",
               "transition-all duration-(--press-duration) ease-(--spring)",
-              "border border-transparent",
+              "border border-transparent outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
               tab.isPinned ? "max-w-32 min-w-fit" : "max-w-48 min-w-28",
               isActive
                 ? "border-border/70 bg-card/90 text-foreground shadow-xs dark:border-white/10 dark:bg-card/85"
                 : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground dark:hover:bg-white/6",
             )}
-            title={tab.title}
-            tooltipSide="bottom"
+            title={tab.title || t("common:untitled")}
           />
         }
       >
@@ -118,11 +114,10 @@ export function TabItem({ tab, isActive }: TabItemProps) {
 
         {/* Close button (only shown if not pinned) */}
         {!tab.isPinned && (
-          <span
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
             onClick={handleClose}
-            onKeyDown={(e: React.KeyboardEvent<HTMLSpanElement>) => {
+            onKeyDown={(e: React.KeyboardEvent<HTMLButtonElement>) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 e.stopPropagation();
@@ -132,14 +127,14 @@ export function TabItem({ tab, isActive }: TabItemProps) {
             aria-label={t("sidebar:closeTab")}
             title={t("sidebar:closeTabHint")}
             className={cn(
-              "flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm p-0 text-muted-foreground/60 transition-opacity hover:bg-foreground/10 hover:text-foreground",
+              "flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border-none bg-transparent p-0 text-muted-foreground/60 outline-none transition-opacity hover:bg-foreground/10 hover:text-foreground focus-visible:opacity-100",
               isActive
                 ? "opacity-80 group-hover:opacity-100"
                 : "opacity-0 group-hover:opacity-80 focus:opacity-100",
             )}
           >
             <X className="size-3" />
-          </span>
+          </button>
         )}
 
         {isActive && (
@@ -156,9 +151,7 @@ function MenuContent({
   handleClose,
 }: {
   tab: TabItemType;
-  handleClose: (
-    e: React.KeyboardEvent<HTMLSpanElement> | React.MouseEvent,
-  ) => void;
+  handleClose: (e: React.KeyboardEvent<HTMLElement> | React.MouseEvent) => void;
 }) {
   const { t } = useTranslation("sidebar");
   const navigate = useNavigate();

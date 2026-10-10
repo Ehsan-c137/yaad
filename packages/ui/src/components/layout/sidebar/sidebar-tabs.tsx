@@ -2,9 +2,9 @@
 import { Tabs, TabsList, TabsTrigger } from "@ui/tabs";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { Bookmark, House } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { useSlidingPill } from "@/hooks/use-sliding-pill";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
@@ -15,11 +15,9 @@ type Tab = "bookmarked" | "home";
 
 export const SidebarTabs = () => {
   const { t } = useTranslation("sidebar");
-  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const activeTab = useSidebarStore((state) => state.sidebarTab);
+  const setActiveTab = useSidebarStore((state) => state.setSidebarTab);
   const hasHydrated = useSidebarStore((state) => state._hasHydrated);
-  const pillRef = useRef<HTMLSpanElement>(null);
-  const tabRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const isMountedRef = useRef(false);
 
   const tabs = [
     {
@@ -35,55 +33,9 @@ export const SidebarTabs = () => {
   ];
 
   const activeIndex = tabs.findIndex((t) => t.value === activeTab);
-
-  const moveTo = (idx: number, animate: boolean) => {
-    const tab = tabRef.current[idx];
-    const pill = pillRef.current;
-    if (!tab || !pill) return false;
-
-    const left = tab.offsetLeft;
-    const top = tab.offsetTop;
-    const width = tab.offsetWidth;
-    const height = tab.offsetHeight;
-
-    if (!animate) {
-      const prev = pill.style.transition;
-      pill.style.transition = "none";
-      pill.style.transform = `translate(${left}px, ${top}px)`;
-      pill.style.width = `${width}px`;
-      pill.style.height = `${height}px`;
-      pill.style.transition = prev;
-    } else {
-      pill.style.transform = `translate(${left}px, ${top}px)`;
-      pill.style.width = `${width}px`;
-      pill.style.height = `${height}px`;
-    }
-
-    return true;
-  };
-
-  useEffect(() => {
-    if (activeIndex === -1) return;
-
-    if (!isMountedRef.current) {
-      const id = window.requestAnimationFrame(() => {
-        const success = moveTo(activeIndex, false);
-        if (success) isMountedRef.current = true;
-      });
-      return () => window.cancelAnimationFrame(id);
-    } else {
-      moveTo(activeIndex, true);
-    }
-  }, [activeIndex, hasHydrated]);
-
-  useEffect(() => {
-    const onResize = () => {
-      moveTo(activeIndex, false);
-    };
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [activeIndex]);
+  const { pillRef, itemRefs: tabRef } = useSlidingPill(activeIndex, [
+    hasHydrated,
+  ]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col px-1">
