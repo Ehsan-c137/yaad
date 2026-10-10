@@ -62,7 +62,11 @@ export class TauriSqlAdapter implements StorageAdapter {
       }
 
       const driver = this.db;
-      await Promise.all(ALL_DDL.map((ddl) => driver.execute(ddl)));
+
+      for (const ddl of ALL_DDL) {
+        // eslint-disable-next-line no-await-in-loop
+        await driver.execute(ddl);
+      }
     })();
 
     return this.initPromise;
