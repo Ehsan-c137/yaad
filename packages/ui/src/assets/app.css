@@ -190,13 +190,13 @@
   .sidebar-animating-close {
     translate: none !important;
     scale: none !important;
-    animation: sidebar-anticipate-close 380ms cubic-bezier(0.2, 0.8, 0.2, 1)
-      forwards;
+    animation: sidebar-anticipate-open 320ms cubic-bezier(0.22, 1, 0.36, 1)
+      reverse forwards;
     transition:
-      width 210ms cubic-bezier(0.32, 0.72, 0, 1) 170ms,
-      margin 210ms cubic-bezier(0.32, 0.72, 0, 1) 170ms,
-      padding 210ms cubic-bezier(0.32, 0.72, 0, 1) 170ms,
-      border-color 210ms cubic-bezier(0.32, 0.72, 0, 1) 170ms;
+      width 300ms var(--spring) 0ms,
+      margin 300ms var(--spring) 0ms,
+      padding 300ms var(--spring) 0ms,
+      border-color 300ms var(--spring) 0ms;
   }
 
   .sidebar-animating-open {
@@ -335,20 +335,15 @@
       transform: scale(1) translateX(0);
       opacity: 1;
     }
-    24% {
-      /* Anticipation pop & stretch */
-      transform: scale(var(--sidebar-pop-scale, 1.1), 1.03) translateX(0);
+    12% {
+      transform: scale(0.995, 0.995) translateX(0);
+    }
+    32% {
+      transform: scale(1.025, 1.01) translateX(0);
       opacity: 1;
     }
-    46% {
-      /* Compression recoil & squash */
-      transform: scale(0.9, 0.94)
-        translateX(calc(var(--sidebar-slide-dir, 1) * -6px));
-      opacity: 0.98;
-    }
     100% {
-      /* Full launch off-screen to the left/start */
-      transform: scale(0.85, 0.9)
+      transform: scale(0.88, 0.92)
         translateX(calc(var(--sidebar-slide-dir, 1) * -20rem));
       opacity: 0;
     }

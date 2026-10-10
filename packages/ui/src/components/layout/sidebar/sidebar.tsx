@@ -139,10 +139,10 @@ function getSidebarClasses({
 }) {
   if (isMobile) {
     return cn(
-      isClosing && "sidebar-animating-close pointer-events-none p-0",
+      isClosing && "sidebar-animating-close pointer-events-none",
       isOpening && "sidebar-animating-open",
       isVisible ? "visible" : "pointer-events-none invisible",
-      isSidebarOpen
+      isSidebarOpen || isClosing
         ? "w-[calc(100vw-1rem)] max-w-72 p-2.5 opacity-100 translate-x-0 scale-100"
         : isClosed &&
             "pointer-events-none -translate-x-full rtl:translate-x-full scale-90 p-0 opacity-0 w-0",
@@ -162,12 +162,12 @@ export function Sidebar() {
   const { transitionsEnabled } = usePageTransitionPreference();
 
   const sidebarRef = useRef<HTMLElement>(null);
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const { handleAnimationEnd, isClosed, isClosing, isOpening, isVisible } =
     useSidebarAnimation(isSidebarOpen, sidebarRef, transitionsEnabled);
 
-  const showExpandedPanel = isSidebarOpen || (isClosing && !isMobile);
+  const showExpandedPanel = isSidebarOpen || isClosing;
   const showCollapsedRail = !isMobile && !isSidebarOpen;
 
   return (

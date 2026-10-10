@@ -61,8 +61,7 @@ describe("CodeBlock", () => {
         lang: "typescript",
         theme: "github-dark",
       });
+      expect(container.querySelector(".shiki")).toBeTruthy();
     });
-
-    expect(container.querySelector(".shiki")).toBeTruthy();
   });
 });

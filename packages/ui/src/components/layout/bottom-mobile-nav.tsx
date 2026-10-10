@@ -105,6 +105,7 @@ export function BottomMobileNav() {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const createPage = useSidebarStore((store) => store.createPage);
   const activeWorkspace = useWorkspaceStore((state) => state.activeWorkspaceId);
+  const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
 
   if (!isMobile || !activeWorkspace) return null;
 
@@ -117,10 +118,13 @@ export function BottomMobileNav() {
     <nav
       style={{ height: `${MOBILE_NAV_HEIGHT}px` }}
       aria-label="Mobile navigation"
+      aria-hidden={isSidebarOpen}
+      inert={isSidebarOpen ? true : undefined}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 flex w-full items-center justify-between bg-background/95 backdrop-blur-md",
+        "fixed inset-x-0 bottom-0 z-30 flex w-full items-center justify-between bg-background/95 backdrop-blur-md",
         "border-t border-border/40 px-3 py-1.5",
         "safe-area-pb",
+        isSidebarOpen && "pointer-events-none select-none",
       )}
     >
       <SearchBox />

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { PanelLeftOpen } from "lucide-react";
@@ -17,7 +15,7 @@ export function SidebarToggleButton() {
       aria-hidden={isSidebarOpen}
       className={
         isSidebarOpen
-          ? "pointer-events-none flex max-w-0 shrink-0 scale-95 items-center overflow-hidden opacity-0 transition-[max-width,opacity,transform] duration-200 ease-(--spring)"
+          ? "pointer-events-none flex max-w-0 hidden shrink-0 scale-95 items-center overflow-hidden opacity-0 transition-[max-width,opacity,transform] duration-200 ease-(--spring)"
           : "max-md:flex md:hidden max-w-9 shrink-0 scale-100 items-center overflow-hidden opacity-100 transition-[max-width,opacity,transform] duration-200 ease-(--spring)"
       }
     >
