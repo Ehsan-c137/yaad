@@ -27,7 +27,7 @@ export function MobileBlockDrawerTrigger({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 gap-1.5 px-2 text-xs font-medium text-muted-foreground hover:text-foreground active:scale-95"
+          className="h-8 gap-1.5 rounded-full px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground active:scale-95"
           title={t("blockOptions")}
         >
           <GripVertical className="size-3.5" />

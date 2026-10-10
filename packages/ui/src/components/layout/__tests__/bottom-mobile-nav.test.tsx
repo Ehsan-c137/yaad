@@ -55,6 +55,8 @@ describe("BottomMobileNav", () => {
 
     expect(nav).toBeTruthy();
     expect(nav.className).toContain("z-30");
+    expect(nav.className).toContain("rounded-full");
+    expect(nav.className).toContain("inset-x-4");
     expect(nav.getAttribute("aria-hidden")).toBe("false");
     expect(nav.className).not.toContain("pointer-events-none");
     expect(nav.hasAttribute("inert")).toBe(false);

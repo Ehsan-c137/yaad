@@ -68,7 +68,8 @@ function MobileEditorNavActions({
     return (
       <Button
         variant="ghost"
-        size="icon-lg"
+        size="icon"
+        className="rounded-full active:scale-95"
         onClick={async () => {
           const newPageId = createPage(null);
           await navigate(
@@ -77,7 +78,7 @@ function MobileEditorNavActions({
         }}
         title={t("sidebar:createNewPage")}
       >
-        <Plus />
+        <Plus className="size-4" />
       </Button>
     );
   }
@@ -88,7 +89,7 @@ function MobileEditorNavActions({
       <Button
         size="icon"
         variant="ghost"
-        className="size-8 rounded-lg active:scale-95"
+        className="size-8 rounded-full active:scale-95"
         onClick={handleAddBlockBelow}
         title={t("sidebar:addSubPage")}
       >
@@ -116,15 +117,20 @@ export function BottomMobileNav() {
 
   return (
     <nav
-      style={{ height: `${MOBILE_NAV_HEIGHT}px` }}
+      style={{
+        height: `${MOBILE_NAV_HEIGHT}px`,
+        bottom: "max(1rem, calc(0.75rem + env(safe-area-inset-bottom, 0px)))",
+      }}
       aria-label="Mobile navigation"
       aria-hidden={isSidebarOpen}
       inert={isSidebarOpen ? true : undefined}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-30 flex w-full items-center justify-between bg-background/95 backdrop-blur-md",
-        "border-t border-border/40 px-3 py-1.5",
-        "safe-area-pb",
-        isSidebarOpen && "pointer-events-none select-none",
+        "fixed inset-x-4 z-30 mx-auto flex max-w-md items-center justify-between",
+        "rounded-full border border-border/60 bg-background/90 px-3.5 py-1.5 shadow-lg shadow-black/5 backdrop-blur-xl",
+        "dark:border-white/[0.12] dark:bg-background/85 dark:shadow-black/30",
+        "transition-all duration-300 ease-(--spring)",
+        isSidebarOpen &&
+          "pointer-events-none select-none opacity-0 translate-y-3",
       )}
     >
       <SearchBox />
@@ -139,11 +145,12 @@ export function BottomMobileNav() {
       ) : (
         <Button
           variant="ghost"
-          size="icon-lg"
+          size="icon"
+          className="rounded-full active:scale-95"
           onClick={handleNewPage}
           title={t("createNewPage")}
         >
-          <Plus />
+          <Plus className="size-4" />
         </Button>
       )}
     </nav>
