@@ -51,15 +51,21 @@ export class LocalJsonAdapter implements StorageAdapter {
   }
 
   async deleteWorkspace(id: string): Promise<void> {
-    try {
-      const workspaces = await this.getWorkspaces();
-      const updated = workspaces.filter((w) => w.id !== id);
-      await set(WORKSPACES_KEY, updated);
+    const workspaces = await this.getWorkspaces();
+    const updated = workspaces.filter((w) => w.id !== id);
+    await set(WORKSPACES_KEY, updated);
 
-      await del(`tree_${id}`);
-    } catch (error) {
-      console.error("[LocalJsonAdapter] Error deleting workspace:", error);
-    }
+    // Clean up pages and tag index records belonging to this workspace tree
+    const tree = await this.getWorkspaceTree(id);
+
+    await Promise.all(
+      tree.map(async (page) => {
+        await del(`doc_${page.id}`);
+        await this.deleteDocTags(page.id);
+      }),
+    );
+
+    await del(`tree_${id}`);
   }
 
   // WORKSPACE TREE
@@ -80,14 +86,7 @@ export class LocalJsonAdapter implements StorageAdapter {
     workspaceId: string,
     tree: WorkspacePageMeta[],
   ): Promise<void> {
-    try {
-      await set(`tree_${workspaceId}`, tree);
-    } catch (error) {
-      console.error(
-        `[LocalJsonAdapter] Error saving tree for workspace ${workspaceId}:`,
-        error,
-      );
-    }
+    await set(`tree_${workspaceId}`, tree);
   }
 
   // DOCUMENT
@@ -102,23 +101,12 @@ export class LocalJsonAdapter implements StorageAdapter {
   }
 
   async saveDocument(doc: DocumentJSON): Promise<void> {
-    try {
-      await set(`doc_${doc.id}`, doc);
-    } catch (error) {
-      console.error(
-        `[LocalJsonAdapter] Error saving document ${doc.id}:`,
-        error,
-      );
-    }
+    await set(`doc_${doc.id}`, doc);
   }
 
   async deleteDocument(id: string): Promise<void> {
-    try {
-      await del(`doc_${id}`);
-      await this.deleteDocTags(id);
-    } catch (error) {
-      console.error(`[LocalJsonAdapter] Error deleting document ${id}:`, error);
-    }
+    await del(`doc_${id}`);
+    await this.deleteDocTags(id);
   }
 
   async getAllDocuments(): Promise<DocumentJSON[]> {
@@ -147,48 +135,30 @@ export class LocalJsonAdapter implements StorageAdapter {
   }
 
   async saveTags(tags: Tag[]): Promise<void> {
-    try {
-      await set(TAGS_KEY, tags);
-    } catch (error) {
-      console.error("[LocalJsonAdapter] Error saving tags:", error);
-    }
+    await set(TAGS_KEY, tags);
   }
 
   // TAG INDEX
   async saveDocTags(pageId: string, records: TagIndexRecord[]): Promise<void> {
-    try {
-      const indexMap =
-        (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
+    const indexMap =
+      (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
 
-      if (!records || records.length === 0) {
-        delete indexMap[pageId];
-      } else {
-        indexMap[pageId] = records;
-      }
-
-      await set(TAG_INDEX_KEY, indexMap);
-    } catch (error) {
-      console.error(
-        `[LocalJsonAdapter] Error saving tag index for page ${pageId}:`,
-        error,
-      );
+    if (!records || records.length === 0) {
+      delete indexMap[pageId];
+    } else {
+      indexMap[pageId] = records;
     }
+
+    await set(TAG_INDEX_KEY, indexMap);
   }
 
   async deleteDocTags(pageId: string): Promise<void> {
-    try {
-      const indexMap =
-        (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
+    const indexMap =
+      (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
 
-      if (indexMap[pageId]) {
-        delete indexMap[pageId];
-        await set(TAG_INDEX_KEY, indexMap);
-      }
-    } catch (error) {
-      console.error(
-        `[LocalJsonAdapter] Error deleting tag index for page ${pageId}:`,
-        error,
-      );
+    if (indexMap[pageId]) {
+      delete indexMap[pageId];
+      await set(TAG_INDEX_KEY, indexMap);
     }
   }
 
@@ -220,19 +190,11 @@ export class LocalJsonAdapter implements StorageAdapter {
   }
 
   async saveBlob(id: string, blob: Blob): Promise<void> {
-    try {
-      await blobStorage.save(id, blob);
-    } catch (error) {
-      console.error(`[LocalJsonAdapter] Error saving blob ${id}:`, error);
-    }
+    await blobStorage.save(id, blob);
   }
 
   async removeBlob(id: string): Promise<void> {
-    try {
-      await blobStorage.remove(id);
-    } catch (error) {
-      console.error(`[LocalJsonAdapter] Error deleting blob ${id}:`, error);
-    }
+    await blobStorage.remove(id);
   }
 
   async getAllBlobs(): Promise<{ id: string; blob: Blob }[]> {
