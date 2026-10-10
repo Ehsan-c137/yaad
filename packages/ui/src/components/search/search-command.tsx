@@ -50,7 +50,7 @@ export function SearchCommand({
     hasActiveSearch && searchResults.length === 0 && tagResults.length === 0;
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div className={cn("inline-flex items-center", className)}>
       <SearchTrigger
         className={triggerClassName}
         onOpen={() => setOpen(true)}

@@ -89,4 +89,42 @@ describe("useSidebarToggle", () => {
     expect(mockStartViewTransition).not.toHaveBeenCalled();
     expect(useSidebarStore.getState().isSidebarOpen).toBe(false);
   });
+
+  it("does not use document.startViewTransition in Firefox", () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, "userAgent", {
+      value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+      configurable: true,
+    });
+
+    const mockStartViewTransition = vi.fn((callback: () => void) => {
+      callback();
+      return {
+        finished: Promise.resolve(),
+        ready: Promise.resolve(),
+        updateCallbackDone: Promise.resolve(),
+        skipTransition: vi.fn(),
+      };
+    });
+
+    (
+      document as unknown as {
+        startViewTransition: typeof mockStartViewTransition;
+      }
+    ).startViewTransition = mockStartViewTransition;
+
+    const { result } = renderHook(() => useSidebarToggle());
+
+    act(() => {
+      result.current();
+    });
+
+    expect(mockStartViewTransition).not.toHaveBeenCalled();
+    expect(useSidebarStore.getState().isSidebarOpen).toBe(false);
+
+    Object.defineProperty(navigator, "userAgent", {
+      value: originalUserAgent,
+      configurable: true,
+    });
+  });
 });

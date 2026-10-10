@@ -8,6 +8,7 @@ import { useLocation } from "react-router";
 import { SearchBox } from "@/components/search/search-command";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
+import { isFirefox } from "@/lib/browser";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
@@ -110,7 +111,7 @@ function SidebarHomeHeader() {
             </Link>
             <SearchBox
               triggerClassName={
-                isSidebarOpen ? "sidebar-search-button" : undefined
+                isSidebarOpen && !isFirefox() ? "sidebar-search-button" : undefined
               }
             />
           </div>

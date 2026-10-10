@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { flushSync } from "react-dom";
 
 import { usePageTransitionPreference } from "@/hooks/use-page-transition-preference";
+import { isFirefox } from "@/lib/browser";
 
 export function useSidebarToggle() {
   const toggleSidebar = useSidebarStore((store) => store.toggleSidebar);
@@ -12,7 +13,8 @@ export function useSidebarToggle() {
     if (
       typeof document !== "undefined" &&
       "startViewTransition" in document &&
-      transitionsEnabled
+      transitionsEnabled &&
+      !isFirefox()
     ) {
       try {
         document.startViewTransition(() => {

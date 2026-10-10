@@ -472,6 +472,21 @@
   width: 100%;
 }
 
+/* Firefox-specific fallback: disable view transition where flat pseudo-tree causes container overflow */
+@supports (-moz-appearance: none) {
+  .sidebar-search-button {
+    view-transition-name: none !important;
+  }
+  ::view-transition-group(sidebar-search-button) {
+    animation: none !important;
+  }
+  .sidebar-rail-items > * {
+    animation: sidebar-icon-scale-up 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: center center;
+    will-change: transform, opacity;
+  }
+}
+
 /* Low-end device & Reduced Motion Disablement */
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-page-"] {

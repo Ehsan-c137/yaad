@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from "react-router";
 import { SearchBox } from "@/components/search/search-command";
 import { Link } from "@/components/ui/link";
 import { useSidebarToggle } from "@/hooks/sidebar/use-sidebar-toggle";
+import { isFirefox } from "@/lib/browser";
 import { cn } from "@/lib/utils";
 
 import { Profile } from "./profile/profile";
@@ -123,7 +124,7 @@ export function SidebarRail() {
 
         <SearchBox
           triggerClassName={
-            !isSidebarOpen ? "sidebar-search-button" : undefined
+            !isSidebarOpen && !isFirefox() ? "sidebar-search-button" : undefined
           }
         />
 
