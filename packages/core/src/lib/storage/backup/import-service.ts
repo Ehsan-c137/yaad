@@ -1,6 +1,8 @@
 import { storage } from "@yaad/core/lib/storage/storage-provider";
+import { extractDocTagRecords } from "@yaad/core/services/document-service";
 import { useInboxStore } from "@yaad/core/store/inbox/use-inbox-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
+import { useTagStore } from "@yaad/core/store/use-tag-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 
 import type { YaadExportPayload } from "./types";
@@ -13,7 +15,8 @@ import { dataUrlToBlob } from "./blob-utils";
 export async function importUserData(
   payload: YaadExportPayload,
 ): Promise<void> {
-  const { workspaces, trees, documents, blobs, inbox, tabs } = payload.data;
+  const { workspaces, trees, documents, blobs, inbox, tabs, tags } =
+    payload.data;
 
   // 1. Save Workspaces
   await Promise.all(workspaces.map((ws) => storage.saveWorkspace(ws)));
@@ -25,9 +28,16 @@ export async function importUserData(
     ),
   );
 
-  // 3. Save Documents
+  // 3. Save Documents & Index Tags
   await Promise.all(
-    Object.values(documents).map((doc) => storage.saveDocument(doc)),
+    Object.values(documents).map(async (doc) => {
+      await storage.saveDocument(doc);
+
+      if (storage.saveDocTags) {
+        const records = extractDocTagRecords(doc);
+        await storage.saveDocTags(doc.id, records);
+      }
+    }),
   );
 
   // 4. Save Blobs
@@ -42,7 +52,15 @@ export async function importUserData(
     }),
   );
 
-  // 5. Save Inbox & Tabs to Zustand stores
+  // 5. Save Tags, Inbox & Tabs to Zustand stores
+  if (tags && tags.length > 0) {
+    if (storage.saveTags) {
+      await storage.saveTags(tags);
+    }
+
+    useTagStore.setState({ tags });
+  }
+
   if (inbox && inbox.length > 0) {
     useInboxStore.setState({ notifications: inbox });
   }

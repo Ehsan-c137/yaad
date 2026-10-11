@@ -5,6 +5,7 @@ import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 import { storage } from "@yaad/core/lib/storage/storage-provider";
 import { useInboxStore } from "@yaad/core/store/inbox/use-inbox-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
+import { useTagStore } from "@yaad/core/store/use-tag-store";
 
 import type { SerializedBlob, YaadExportPayload } from "./types";
 
@@ -61,9 +62,11 @@ export async function exportUserData(): Promise<YaadExportPayload> {
     );
   }
 
-  // 5. Inbox & Tabs from Zustand / LocalStorage
+  // 5. Inbox, Tabs & Tags
   const inbox = useInboxStore.getState().notifications;
   const { tabs } = useTabStore.getState();
+  const storedTags = storage.getTags ? await storage.getTags() : [];
+  const tags = storedTags.length > 0 ? storedTags : useTagStore.getState().tags;
 
   return {
     app: "yaad",
@@ -72,6 +75,7 @@ export async function exportUserData(): Promise<YaadExportPayload> {
       documents,
       inbox,
       tabs,
+      tags,
       trees,
       workspaces,
     },

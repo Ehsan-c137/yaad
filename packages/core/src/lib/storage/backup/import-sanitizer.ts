@@ -1,7 +1,12 @@
 /* eslint-disable regexp/no-unused-capturing-group, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, complexity */
 import type { NotificationItem } from "@yaad/core/store/inbox/use-inbox-store";
 import type { TabItem } from "@yaad/core/store/use-tab-store";
-import type { DocumentBlock, DocumentJSON } from "@yaad/core/types/document";
+import type {
+  DocumentBlock,
+  DocumentJSON,
+  Tag,
+  TagColor,
+} from "@yaad/core/types/document";
 import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 
 import type {
@@ -330,6 +335,23 @@ function sanitizeTabs(
     }));
 }
 
+function sanitizeTags(
+  rawTags: unknown,
+  stats: { sanitizedStringCount: number },
+): Tag[] {
+  if (!Array.isArray(rawTags)) return [];
+
+  return rawTags
+    .filter((t): t is Record<string, any> =>
+      Boolean(t && typeof t === "object" && typeof t.id === "string"),
+    )
+    .map((t) => ({
+      color: (t.color || "default") as TagColor,
+      id: sanitizeString(t.id, stats),
+      name: sanitizeString(t.name || "Untitled", stats),
+    }));
+}
+
 /**
  * Validates and sanitizes raw JSON import data against XSS, prototype pollution, and schema errors.
  */
@@ -381,6 +403,7 @@ export function sanitizeImportData(rawData: unknown): ImportSanitizationResult {
 
   const cleanInbox = sanitizeInbox(rawDataPayload.inbox, stats);
   const cleanTabs = sanitizeTabs(rawDataPayload.tabs, stats);
+  const cleanTags = sanitizeTags(rawDataPayload.tags, stats);
 
   const payload: YaadExportPayload = {
     app: "yaad",
@@ -389,6 +412,7 @@ export function sanitizeImportData(rawData: unknown): ImportSanitizationResult {
       documents: cleanDocuments,
       inbox: cleanInbox,
       tabs: cleanTabs,
+      tags: cleanTags,
       trees: cleanTrees,
       workspaces: cleanWorkspaces,
     },

@@ -1,6 +1,6 @@
 import type { NotificationItem } from "@yaad/core/store/inbox/use-inbox-store";
 import type { TabItem } from "@yaad/core/store/use-tab-store";
-import type { DocumentJSON } from "@yaad/core/types/document";
+import type { DocumentJSON, Tag } from "@yaad/core/types/document";
 import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 
 export interface SerializedBlob {
@@ -16,6 +16,7 @@ export interface YaadExportPayload {
     documents: Record<string, DocumentJSON>;
     inbox?: NotificationItem[];
     tabs?: TabItem[];
+    tags?: Tag[];
     trees: Record<string, WorkspacePageMeta[]>;
     workspaces: Workspace[];
   };
