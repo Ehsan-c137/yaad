@@ -6,7 +6,9 @@
  */
 export function buildBlockAnchorUrl(
   blockId: string,
-  baseHref: string = window.location.href,
+  baseHref: string = typeof window !== "undefined"
+    ? window.location.href
+    : "http://localhost/",
 ): string {
   const url = new URL(baseHref);
   url.hash = blockId;
