@@ -26,6 +26,22 @@ export function BlockCanvas() {
 
   const finalChildBlockIds = childBlockIds ?? [];
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.location.hash) return;
+    const targetId = window.location.hash.slice(1);
+    if (!targetId) return;
+
+    const timer = setTimeout(() => {
+      const element = document.getElementById(targetId);
+
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [childBlockIds]);
+
   if (!childBlockIds) {
     return null;
   }

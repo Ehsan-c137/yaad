@@ -37,6 +37,7 @@ export function BlockRow({ blockId }: BlockRowProps) {
 
   return (
     <div
+      id={block.id}
       onFocus={() => setActiveBlockId(block.id)}
       onClick={() => setActiveBlockId(block.id)}
       className={cn(
