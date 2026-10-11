@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm run lint && pnpm run format:check",
+    "check": "pnpm run lint && pnpm run format:check && pnpm -r --filter '!@yaad/config' exec tsc --noEmit",
     "fix": "pnpm run lint:fix && pnpm run format"
   },
   "devDependencies": {
