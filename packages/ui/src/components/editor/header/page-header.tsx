@@ -46,7 +46,7 @@ function PageHeaderTitle() {
     pageId ? state.pages[pageId]?.title : undefined,
   );
   const documentTitle = useDocumentStore(
-    (state) => state.currentDocument?.blocks.root.properties!.title[0]?.text,
+    (state) => state.currentDocument?.blocks.root.properties?.title?.[0]?.text,
   );
   const updateTitle = useDocumentStore((state) => state.updateTitle);
 
