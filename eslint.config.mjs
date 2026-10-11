@@ -10,9 +10,10 @@ export default defineConfig(
   },
   {
     files: ["**/*.test.*", "**/__tests__/**"],
-    rules: {      
+    rules: {
       "@typescript-eslint/unbound-method": "off",
       "@typescript-eslint/no-empty-function": "off",
+      "max-lines-per-function": "off",
     },
   },
 );

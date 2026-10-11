@@ -21,6 +21,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["eslint.config.mjs", "prettier.config.mjs"],
+  "include": [
+    "eslint.config.mjs",
+    "prettier.config.mjs",
+    "apps/desktop/scripts/**/*.mjs"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
