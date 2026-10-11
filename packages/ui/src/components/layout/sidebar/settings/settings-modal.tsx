@@ -13,7 +13,6 @@ import { AboutSection } from "./sections/about-section";
 import { AccountSection } from "./sections/account-section";
 import { AppearanceSection } from "./sections/appearance-section";
 import { DataBackupSection } from "./sections/data-backup-section";
-import { KeyboardSection } from "./sections/keyboard-section";
 import { LanguageSection } from "./sections/language-section";
 
 interface SettingsModalProps {
@@ -79,8 +78,6 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
             <LanguageSection />
 
             <SectionDivider />
-
-            <KeyboardSection />
 
             <SectionDivider />
 
