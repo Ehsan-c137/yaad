@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { VariantProps } from "class-variance-authority";
 
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
@@ -121,4 +122,4 @@ function Button({
   return ButtonToRender;
 }
 
-export { Button };
+export { Button, buttonVariants };
