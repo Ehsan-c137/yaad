@@ -16,9 +16,12 @@ export function useTabSync() {
   const tabs = useTabStore((s) => s.tabs);
   const activeTabId = useTabStore((s) => s.activeTabId);
   const openTab = useTabStore((s) => s.openTab);
-  const updateTabInfo = useTabStore((s) => s.updateTabInfo);
 
-  const sidebarPages = useSidebarStore((s) => s.pages);
+  const activePageInfo = useSidebarStore((s) =>
+    activeDocId ? s.pages[activeDocId] : undefined,
+  );
+  const activePageTitle = activePageInfo?.title;
+  const activePageIcon = activePageInfo?.icon;
   const createPage = useSidebarStore((s) => s.createPage);
 
   // Filter tabs belonging to current workspace
@@ -34,27 +37,19 @@ export function useTabSync() {
   useEffect(() => {
     if (!activeWorkspaceId || !activeDocId) return;
 
-    const pageInfo = sidebarPages[activeDocId];
     openTab({
       pageId: activeDocId,
       workspaceId: activeWorkspaceId,
-      title: pageInfo?.title || "Untitled",
-      icon: pageInfo?.icon,
+      title: activePageTitle || "Untitled",
+      icon: activePageIcon,
     });
-  }, [activeDocId, activeWorkspaceId, sidebarPages, openTab]);
-
-  // Sync page title/icon updates into open tabs
-  useEffect(() => {
-    if (!activeDocId) return;
-    const pageInfo = sidebarPages[activeDocId];
-
-    if (pageInfo) {
-      updateTabInfo(activeDocId, {
-        title: pageInfo.title,
-        icon: pageInfo.icon,
-      });
-    }
-  }, [activeDocId, sidebarPages, updateTabInfo]);
+  }, [
+    activeDocId,
+    activeWorkspaceId,
+    activePageTitle,
+    activePageIcon,
+    openTab,
+  ]);
 
   const handleCreateNewTab = useCallback(() => {
     if (!activeWorkspaceId) return;
