@@ -142,12 +142,12 @@ Common block behaviors (focus management, cursor position, Enter to split, Backs
 
 All system entities use strongly-typed, prefixed identifiers generated via [`packages/core/src/lib/id.ts`](file:///d:/CODE/CODE/yaad/packages/core/src/lib/id.ts):
 
-| Entity      | Prefix Format   | Generator Function      | Example           |
-| ----------- | --------------- | ----------------------- | ----------------- |
-| Page        | `page_<nanoid>` | `generatePageId()`      | `page_V1StGXR8_Z` |
-| Block       | `blk_<nanoid>`  | `generateBlockId()`     | `blk_u47f8B-9L`   |
-| Workspace   | `ws_<nanoid>`   | `generateWorkspaceId()` | `ws_9m18Zpx0`     |
-| Kanban Card | `crd_<nanoid>`  | `generateCardId()`      | `crd_k87a1F0z`    |
+| Entity      | Prefix Format  | Generator Function      | Example                                      |
+| ----------- | -------------- | ----------------------- | -------------------------------------------- |
+| Page        | `page_<uuid>`  | `generatePageId()`      | `page_9b1deb4d-3b7d-4bad-9bdd-2b0d7b3d07a0`  |
+| Block       | `block_<uuid>` | `generateBlockId()`     | `block_e1a72d4a-38b8-4c91-b66a-24a919fa0f3a` |
+| Workspace   | `ws_<uuid>`    | `generateWorkspaceId()` | `ws_9m18Zpx0`                                |
+| Kanban Card | `card_<uuid>`  | `generateCardId()`      | `card_f02c638a-13a4-4a25-bdf9-cc8211dbf212`  |
 
 This standard eliminates ambiguity across URLs, tree nodes, block parent pointers, and database foreign keys.
 

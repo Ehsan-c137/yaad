@@ -19,7 +19,7 @@ The serialized data structure representing a page's complete block map, root blo
 _Avoid_: Note body, content file, document payload
 
 **Block**:
-An atomic unit of content within a page, identified by a `blk_` prefix with a specific type, properties, and child IDs.
+An atomic unit of content within a page, identified by a `block_` prefix (or legacy `blk_`) with a specific type, properties, and child IDs.
 _Avoid_: Element, widget, component (when referring to the data model)
 
 **Root Block**:
