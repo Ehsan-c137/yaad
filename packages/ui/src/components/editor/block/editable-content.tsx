@@ -135,12 +135,9 @@ export function EditableContent({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-
     if (
-      (slashMenuState.isOpen &&
-        ["ArrowDown", "ArrowUp", "Enter"].includes(e.key)) ||
-      isMobile
+      slashMenuState.isOpen &&
+      ["ArrowDown", "ArrowUp", "Enter"].includes(e.key)
     ) {
       return;
     }
@@ -163,7 +160,8 @@ export function EditableContent({
   return (
     <>
       <div
-        role="button"
+        role="textbox"
+        aria-multiline="true"
         tabIndex={0}
         ref={contentRef}
         contentEditable
