@@ -6,12 +6,22 @@ import type { DocumentState } from "./types";
 
 import { createBlockSlice } from "./block-slice";
 import { createCoreSlice } from "./core-slice";
-import { flushAutoSave } from "./helpers";
+import { cancelAutoSave, flushAutoSave } from "./helpers";
 import { createMetaSlice } from "./meta-slice";
 
 export type { DocumentState };
 
 const documentStoresMap = new Map<string, StoreApi<DocumentState>>();
+
+export function hasDocumentStore(pageId: string): boolean {
+  return documentStoresMap.has(pageId);
+}
+
+export function getExistingDocumentStore(
+  pageId: string,
+): StoreApi<DocumentState> | undefined {
+  return documentStoresMap.get(pageId);
+}
 
 export function getDocumentStore(pageId: string): StoreApi<DocumentState> {
   if (!documentStoresMap.has(pageId)) {
@@ -26,14 +36,18 @@ export function getDocumentStore(pageId: string): StoreApi<DocumentState> {
   return documentStoresMap.get(pageId)!;
 }
 
-export function removeDocumentStore(pageId: string) {
+export function removeDocumentStore(pageId: string, shouldFlush = true) {
   const store = documentStoresMap.get(pageId);
 
   if (store) {
-    const doc = store.getState().currentDocument;
-    void flushAutoSave(pageId, doc).catch((error) => {
-      console.error("[useDocumentStore] Failed to flush auto-save:", error);
-    });
+    if (shouldFlush) {
+      const doc = store.getState().currentDocument;
+      void flushAutoSave(pageId, doc).catch((error) => {
+        console.error("[useDocumentStore] Failed to flush auto-save:", error);
+      });
+    } else {
+      cancelAutoSave(pageId);
+    }
     documentStoresMap.delete(pageId);
   }
 }

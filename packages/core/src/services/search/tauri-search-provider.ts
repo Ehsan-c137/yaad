@@ -35,11 +35,11 @@ export class TauriSearchProvider implements SearchProvider {
             count = records.length;
           }
 
-          const firstRecord = records[0];
+          const firstRecord = records[0] as TagIndexRecord | undefined;
           const pageId =
-            (firstRecord.pageId || tag.pageId) ?? tag.metadata?.pageId ?? "";
+            firstRecord?.pageId ?? tag.pageId ?? tag.metadata?.pageId ?? "";
           const blockId =
-            (firstRecord.blockId || tag.blockId) ?? tag.metadata?.blockId;
+            firstRecord?.blockId ?? tag.blockId ?? tag.metadata?.blockId;
 
           const tagWithMeta = {
             ...tag,
@@ -49,9 +49,9 @@ export class TauriSearchProvider implements SearchProvider {
               ...tag.metadata,
               pageId: pageId || tag.metadata?.pageId,
               blockId: blockId ?? tag.metadata?.blockId,
-              blockType: firstRecord.blockType ?? tag.metadata?.blockType,
-              snippet: firstRecord.snippet ?? tag.metadata?.snippet,
-              updatedAt: firstRecord.updatedAt || tag.metadata?.updatedAt,
+              blockType: firstRecord?.blockType ?? tag.metadata?.blockType,
+              snippet: firstRecord?.snippet ?? tag.metadata?.snippet,
+              updatedAt: firstRecord?.updatedAt ?? tag.metadata?.updatedAt,
               locations: records.map((r) => ({
                 pageId: r.pageId,
                 blockId: r.blockId,
@@ -66,7 +66,7 @@ export class TauriSearchProvider implements SearchProvider {
             id: `tag_${tag.id}`,
             pageId,
             blockId,
-            blockType: firstRecord.blockType,
+            blockType: firstRecord?.blockType,
             workspaceId: workspaceId || "",
             category: "tag" as const,
             title: `#${tag.name}`,

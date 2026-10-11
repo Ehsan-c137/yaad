@@ -13,7 +13,10 @@ import {
   applyBlockTags,
   createNewBlankDocument,
 } from "@yaad/core/store/document/helpers";
-import { getDocumentStore } from "@yaad/core/store/document/use-document-store";
+import {
+  getExistingDocumentStore,
+  removeDocumentStore,
+} from "@yaad/core/store/document/use-document-store";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useTabStore } from "@yaad/core/store/use-tab-store";
 
@@ -94,10 +97,10 @@ export class DocumentService {
   ): Promise<void> {
     if (!pageId || !blockId) return;
 
-    const docStore = getDocumentStore(pageId);
-    const currentDoc = docStore.getState().currentDocument;
+    const docStore = getExistingDocumentStore(pageId);
+    const currentDoc = docStore?.getState().currentDocument;
 
-    if (currentDoc?.id === pageId) {
+    if (docStore && currentDoc?.id === pageId) {
       const updatedDoc = applyBlockProperties(currentDoc, blockId, properties);
 
       // Block not found in the loaded document
@@ -126,10 +129,10 @@ export class DocumentService {
   ): Promise<void> {
     if (!pageId || !blockId) return;
 
-    const docStore = getDocumentStore(pageId);
-    const currentDoc = docStore.getState().currentDocument;
+    const docStore = getExistingDocumentStore(pageId);
+    const currentDoc = docStore?.getState().currentDocument;
 
-    if (currentDoc?.id === pageId) {
+    if (docStore && currentDoc?.id === pageId) {
       const updatedDoc = applyBlockTags(currentDoc, blockId, tags);
 
       if (updatedDoc === currentDoc) return;
@@ -203,10 +206,11 @@ export class DocumentService {
     });
 
     pageIdsArray.forEach((id) => {
-      const docStore = getDocumentStore(id);
+      const docStore = getExistingDocumentStore(id);
 
-      if (docStore.getState().currentDocument?.id === id) {
+      if (docStore) {
         docStore.setState({ currentDocument: null });
+        removeDocumentStore(id, false);
       }
     });
   }
@@ -254,10 +258,10 @@ export class DocumentService {
       updatedAt: Date.now(),
     };
 
-    const parentDocStore = getDocumentStore(parentPageId);
-    const parentDoc = parentDocStore.getState().currentDocument;
+    const parentDocStore = getExistingDocumentStore(parentPageId);
+    const parentDoc = parentDocStore?.getState().currentDocument;
 
-    if (parentDoc) {
+    if (parentDocStore && parentDoc) {
       const rootBlock = parentDoc.blocks.root;
       const updatedRoot = {
         ...rootBlock,

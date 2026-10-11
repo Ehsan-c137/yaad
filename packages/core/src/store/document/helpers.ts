@@ -249,3 +249,15 @@ export const flushAutoSave = async (
     }
   }
 };
+
+/**
+ * Cancels any pending autosave timer for the given page ID without saving.
+ */
+export const cancelAutoSave = (pageId: string): void => {
+  const existingTimer = autoSaveTimersMap.get(pageId);
+
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+    autoSaveTimersMap.delete(pageId);
+  }
+};

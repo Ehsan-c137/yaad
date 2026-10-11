@@ -1,7 +1,7 @@
 import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { storage } from "@yaad/core/lib/storage/storage-provider";
-import { getDocumentStore } from "@yaad/core/store/document/use-document-store";
+import { getExistingDocumentStore } from "@yaad/core/store/document/use-document-store";
 import { useCallback, useRef, useState } from "react";
 
 interface BlockPreviewState {
@@ -62,7 +62,8 @@ export function useBlockPreview() {
 
       // Check active Zustand store for the document if it's currently loaded
       try {
-        const activeDoc = getDocumentStore(pageId).getState().currentDocument;
+        const activeDoc =
+          getExistingDocumentStore(pageId)?.getState().currentDocument;
 
         if (activeDoc?.blocks) {
           documentCache.set(pageId, activeDoc.blocks);
