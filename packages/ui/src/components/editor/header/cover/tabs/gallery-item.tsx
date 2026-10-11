@@ -33,7 +33,7 @@ export function CoverGalleryItem({
         onClose();
       }}
       className={cn(
-        "group relative aspect-video h-auto w-full p-0 overflow-hidden rounded-lg border transition-all outline-none",
+        "group relative aspect-video h-20 w-full p-0 overflow-hidden rounded-lg border transition-all outline-none",
         "focus-visible:ring-2 focus-visible:ring-ring",
         isSelected
           ? "border-primary ring-2 ring-primary/40 shadow-sm"
