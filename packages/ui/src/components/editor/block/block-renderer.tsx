@@ -15,7 +15,6 @@ import { SeparatorBlock } from "./elements/separator-block";
 import { TableBlock } from "./elements/table-block";
 import { TextBlock } from "./elements/text-block";
 import { TodoBlock } from "./elements/todo-block";
-import { ToggleListBlock } from "./elements/toggle-list-block";
 
 const CodeBlock = lazy(() =>
   import("./elements/code-block").then((module) => ({
@@ -82,9 +81,6 @@ export function BlockRenderer({ block }: BlockRendererProps) {
           <KanbanBlock block={block} />
         </Suspense>
       );
-
-    case "toggle_list":
-      return <ToggleListBlock block={block} />;
 
     case "paragraph":
 

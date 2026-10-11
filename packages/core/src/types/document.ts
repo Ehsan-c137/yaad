@@ -31,8 +31,7 @@ export type DocumentBlockType =
   /** @deprecated Legacy spelling alias; use "separator" instead */
   | "seperator"
   | "table"
-  | "todo"
-  | "toggle_list";
+  | "todo";
 
 export interface TextBlockProperties {
   title?: RichTextSegment[];
