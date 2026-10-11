@@ -36,4 +36,10 @@ describe("buildBlockAnchorUrl (Unit Test)", () => {
     expect(url).toContain(window.location.origin);
     expect(url.endsWith("#block_default")).toBe(true);
   });
+
+  it("handles relative path baseHref without throwing", () => {
+    const url = buildBlockAnchorUrl("block_rel", "/workspace/ws/p1");
+
+    expect(url).toContain("/workspace/ws/p1#block_rel");
+  });
 });

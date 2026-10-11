@@ -10,7 +10,9 @@ export function buildBlockAnchorUrl(
     ? window.location.href
     : "http://localhost/",
 ): string {
-  const url = new URL(baseHref);
+  const fallback =
+    typeof window !== "undefined" ? window.location.href : "http://localhost/";
+  const url = new URL(baseHref, fallback);
   url.hash = blockId;
   return url.toString();
 }
