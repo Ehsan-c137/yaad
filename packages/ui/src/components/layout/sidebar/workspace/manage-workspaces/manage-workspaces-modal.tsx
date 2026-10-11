@@ -22,10 +22,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@ui/dialog";
+import { ROUTES } from "@yaad/core/constants/routes";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { WorkspaceForm } from "../workspace-form";
@@ -41,10 +43,15 @@ export function ManageWorkspacesModal({
   onOpenChange,
 }: ManageWorkspacesModalProps) {
   const { t } = useTranslation(["sidebar", "common"]);
+  const navigate = useNavigate();
   const workspaces = useWorkspaceStore((state) => state.workspaces);
 
   const deleteWorkspace = useWorkspaceStore((state) => state.deleteWorkspace);
   const updateWorkspace = useWorkspaceStore((state) => state.updateWorkspace);
+
+  const activeWorkspaceId = useWorkspaceStore(
+    (state) => state.activeWorkspaceId,
+  );
 
   const [deletingWorkspace, setDeletingWorkspace] = useState<Workspace | null>(
     null,
@@ -83,6 +90,7 @@ export function ManageWorkspacesModal({
     setIsDeleting(true);
 
     try {
+      const wasActive = deletingWorkspace.id === activeWorkspaceId;
       const res = await deleteWorkspace(deletingWorkspace.id);
 
       if (!res.success && res.error) {
@@ -90,6 +98,14 @@ export function ManageWorkspacesModal({
       } else {
         toast.success(t("sidebar:deleted", { name: deletingWorkspace.name }));
         setDeletingWorkspace(null);
+
+        if (wasActive) {
+          const nextActiveId = useWorkspaceStore.getState().activeWorkspaceId;
+
+          if (nextActiveId) {
+            void navigate(`/${ROUTES.workspace}/${nextActiveId}`);
+          }
+        }
       }
     } finally {
       setIsDeleting(false);
@@ -150,39 +166,64 @@ export function ManageWorkspacesModal({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
-        open={!!deletingWorkspace}
-        onOpenChange={(isOpen) => !isOpen && setDeletingWorkspace(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive">
-              <Trash2 className="size-7" />
-            </AlertDialogMedia>
-            <AlertDialogTitle>
-              {t("sidebar:deleteWorkspaceTitle", {
-                name: deletingWorkspace?.name,
-              })}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("sidebar:deleteWorkspaceDesc")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>
-              {t("common:cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              loading={isDeleting}
-              onClick={handleConfirmDelete}
-            >
-              {t("common:delete")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteWorkspaceDialog
+        deletingWorkspace={deletingWorkspace}
+        isDeleting={isDeleting}
+        onCancel={() => setDeletingWorkspace(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </>
+  );
+}
+
+interface DeleteWorkspaceDialogProps {
+  deletingWorkspace: Workspace | null;
+  isDeleting: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}
+
+function DeleteWorkspaceDialog({
+  deletingWorkspace,
+  isDeleting,
+  onCancel,
+  onConfirm,
+}: DeleteWorkspaceDialogProps) {
+  const { t } = useTranslation(["sidebar", "common"]);
+
+  return (
+    <AlertDialog
+      open={!!deletingWorkspace}
+      onOpenChange={(isOpen) => !isOpen && onCancel()}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogMedia className="bg-destructive/10 text-destructive">
+            <Trash2 className="size-7" />
+          </AlertDialogMedia>
+          <AlertDialogTitle>
+            {t("sidebar:deleteWorkspaceTitle", {
+              name: deletingWorkspace?.name,
+            })}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("sidebar:deleteWorkspaceDesc")}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isDeleting}>
+            {t("common:cancel")}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            loading={isDeleting}
+            onClick={onConfirm}
+          >
+            {t("common:delete")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

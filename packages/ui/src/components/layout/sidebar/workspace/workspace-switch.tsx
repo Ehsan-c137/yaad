@@ -1,4 +1,4 @@
-/* eslint-disable perfectionist/sort-imports, @typescript-eslint/strict-void-return, @typescript-eslint/no-floating-promises */
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/strict-void-return */
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { styles } from "@/lib/design-token";
@@ -34,6 +34,28 @@ export function WorkspaceSwitcher() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
+
+  const handleDeleteWorkspace = async (
+    e: React.MouseEvent,
+    workspaceId: string,
+  ) => {
+    e.stopPropagation();
+    const wasActive = workspaceId === activeWorkspaceId;
+    const res = await deleteWorkspace(workspaceId);
+
+    if (!res.success && res.error) {
+      toast.error(res.error);
+      return;
+    }
+
+    if (wasActive) {
+      const nextActiveId = useWorkspaceStore.getState().activeWorkspaceId;
+
+      if (nextActiveId) {
+        void navigate(`/${ROUTES.workspace}/${nextActiveId}`);
+      }
+    }
+  };
 
   const activeWorkspace = activeWorkspaceId
     ? workspaces[activeWorkspaceId]
@@ -84,59 +106,22 @@ export function WorkspaceSwitcher() {
               className="flex max-h-48 flex-col gap-0.5 overflow-y-auto"
             >
               {Object.values(workspaces).map((ws) => (
-                <div
+                <WorkspaceSwitcherItem
                   key={ws.id}
-                  role="option"
-                  tabIndex={0}
-                  aria-selected={ws.id === activeWorkspaceId}
-                  className={cn(
-                    "group flex cursor-pointer items-center justify-between rounded-lg px-2 py-1.5 transition-colors",
-                    "duration-(--press-duration) ease-(--spring)",
-                    ws.id === activeWorkspaceId
-                      ? "bg-white/10 text-foreground"
-                      : "text-foreground/80 hover:bg-white/[0.07]",
-                  )}
-                  onClick={async () => {
+                  ws={ws}
+                  isActive={ws.id === activeWorkspaceId}
+                  canDelete={Object.keys(workspaces).length > 1}
+                  onSelect={async () => {
                     await setActiveWorkspace(ws.id);
-                    navigate(`/${ROUTES.workspace}/${ws.id}`);
+                    void navigate(`/${ROUTES.workspace}/${ws.id}`);
                   }}
                   onKeyDown={async (e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       await setActiveWorkspace(ws.id);
                     }
                   }}
-                >
-                  <div className="flex min-w-0 items-center gap-2 truncate">
-                    <span className="text-base">{ws.icon}</span>
-                    <span className="truncate text-sm font-medium">
-                      {ws.name}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {ws.id === activeWorkspaceId && (
-                      <Check className="size-3.5 text-(--accent-blue)" />
-                    )}
-                    {Object.keys(workspaces).length > 1 && (
-                      <button
-                        type="button"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          const res = await deleteWorkspace(ws.id);
-
-                          if (!res.success && res.error) {
-                            toast.error(res.error);
-                          }
-                        }}
-                        aria-label={t("sidebar:deleteWorkspace", {
-                          name: ws.name,
-                        })}
-                        className="rounded-sm p-0.5 text-white/30 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400 focus-visible:opacity-100 focus-visible:outline-none"
-                      >
-                        <Trash2 className="size-3" />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                  onDelete={(e) => handleDeleteWorkspace(e, ws.id)}
+                />
               ))}
             </div>
 
@@ -166,5 +151,62 @@ export function WorkspaceSwitcher() {
         onOpenChange={setIsManageOpen}
       />
     </>
+  );
+}
+
+interface WorkspaceSwitcherItemProps {
+  ws: Workspace;
+  isActive: boolean;
+  canDelete: boolean;
+  onSelect: () => Promise<void>;
+  onKeyDown: (e: React.KeyboardEvent) => Promise<void>;
+  onDelete: (e: React.MouseEvent) => Promise<void>;
+}
+
+function WorkspaceSwitcherItem({
+  ws,
+  isActive,
+  canDelete,
+  onSelect,
+  onKeyDown,
+  onDelete,
+}: WorkspaceSwitcherItemProps) {
+  const { t } = useTranslation(["sidebar"]);
+
+  return (
+    <div
+      role="option"
+      tabIndex={0}
+      aria-selected={isActive}
+      className={cn(
+        "group flex cursor-pointer items-center justify-between rounded-lg px-2 py-1.5 transition-colors",
+        "duration-(--press-duration) ease-(--spring)",
+        isActive
+          ? "bg-white/10 text-foreground"
+          : "text-foreground/80 hover:bg-white/[0.07]",
+      )}
+      onClick={onSelect}
+      onKeyDown={onKeyDown}
+    >
+      <div className="flex min-w-0 items-center gap-2 truncate">
+        <span className="text-base">{ws.icon}</span>
+        <span className="truncate text-sm font-medium">{ws.name}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        {isActive && <Check className="size-3.5 text-(--accent-blue)" />}
+        {canDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label={t("sidebar:deleteWorkspace", {
+              name: ws.name,
+            })}
+            className="rounded-sm p-0.5 text-white/30 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400 focus-visible:opacity-100 focus-visible:outline-none"
+          >
+            <Trash2 className="size-3" />
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
