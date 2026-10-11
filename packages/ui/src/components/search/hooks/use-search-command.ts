@@ -107,58 +107,41 @@ export function useSearchCommand(): UseSearchCommandReturn {
 
   const handleSelectItem = useCallback(
     (item: SearchItem) => {
+      let { blockId, pageId } = item;
+
       if (item.category === "tag" && item.tag) {
-        const targetPageId =
-          (item.pageId || item.tag.pageId) ?? item.tag.metadata?.pageId;
-
-        const targetBlockId =
-          item.blockId ?? item.tag.blockId ?? item.tag.metadata?.blockId;
-
-        if (targetPageId) {
-          setOpen(false);
-          setSearchQuery("");
-          setSelectedTagFilter(null);
-
-          openTab({
-            pageId: targetPageId,
-            workspaceId: item.workspaceId,
-            title: item.title,
-            icon: item.icon,
-          });
-
-          const hash = targetBlockId ? `#${targetBlockId}` : "";
-
-          void navigate(
-            `/${ROUTES.workspace}/${item.workspaceId}/${targetPageId}${hash}`,
-          );
-
-          return;
+        if (!pageId) {
+          pageId = item.tag.pageId ?? item.tag.metadata?.pageId ?? "";
         }
 
-        setSelectedTagFilter(item.tag);
-        setSearchQuery("");
-        return;
+        blockId = blockId ?? item.tag.blockId ?? item.tag.metadata?.blockId;
+
+        if (!pageId) {
+          setSelectedTagFilter(item.tag);
+          setSearchQuery("");
+          return;
+        }
       }
+
+      const targetWsId = item.workspaceId
+        ? item.workspaceId
+        : (activeWorkspaceId ?? "");
 
       setOpen(false);
       setSearchQuery("");
       setSelectedTagFilter(null);
 
       openTab({
-        pageId: item.pageId,
-        workspaceId: item.workspaceId,
+        pageId,
+        workspaceId: targetWsId,
         title: item.title,
         icon: item.icon,
       });
 
-      const hash = item.blockId ? `#${item.blockId}` : "";
-
-      void navigate(
-        `/${ROUTES.workspace}/${item.workspaceId}/${item.pageId}${hash}`,
-      );
+      const hash = blockId ? `#${blockId}` : "";
+      void navigate(`/${ROUTES.workspace}/${targetWsId}/${pageId}${hash}`);
     },
-
-    [openTab, navigate],
+    [openTab, navigate, activeWorkspaceId],
   );
 
   return {
