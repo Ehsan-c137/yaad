@@ -1,4 +1,4 @@
-/* eslint-disable complexity, no-await-in-loop, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing */
+import type { TagIndexRecord } from "@yaad/core/lib/storage/types";
 import type {
   SearchItem,
   SearchOptions,
@@ -11,6 +11,7 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useTagStore } from "@yaad/core/store/use-tag-store";
 
 export class TauriSearchProvider implements SearchProvider {
+  // eslint-disable-next-line complexity
   async search({
     query,
     tagId,
@@ -26,30 +27,31 @@ export class TauriSearchProvider implements SearchProvider {
       for (const tag of allTags) {
         if (tag.name.toLowerCase().includes(q)) {
           let count = 0;
-          let records: import("../../lib/storage/types").TagIndexRecord[] = [];
+          let records: TagIndexRecord[] = [];
 
           if (storage.getTagsIndex) {
+            // eslint-disable-next-line no-await-in-loop
             records = await storage.getTagsIndex(tag.id);
             count = records.length;
           }
 
           const firstRecord = records[0];
           const pageId =
-            firstRecord?.pageId || tag.pageId || tag.metadata?.pageId || "";
+            (firstRecord.pageId || tag.pageId) ?? tag.metadata?.pageId ?? "";
           const blockId =
-            firstRecord?.blockId || tag.blockId || tag.metadata?.blockId;
+            (firstRecord.blockId || tag.blockId) ?? tag.metadata?.blockId;
 
           const tagWithMeta = {
             ...tag,
             pageId: pageId || tag.pageId,
-            blockId: blockId || tag.blockId,
+            blockId: blockId ?? tag.blockId,
             metadata: {
               ...tag.metadata,
               pageId: pageId || tag.metadata?.pageId,
-              blockId: blockId || tag.metadata?.blockId,
-              blockType: firstRecord?.blockType || tag.metadata?.blockType,
-              snippet: firstRecord?.snippet || tag.metadata?.snippet,
-              updatedAt: firstRecord?.updatedAt || tag.metadata?.updatedAt,
+              blockId: blockId ?? tag.metadata?.blockId,
+              blockType: firstRecord.blockType ?? tag.metadata?.blockType,
+              snippet: firstRecord.snippet ?? tag.metadata?.snippet,
+              updatedAt: firstRecord.updatedAt || tag.metadata?.updatedAt,
               locations: records.map((r) => ({
                 pageId: r.pageId,
                 blockId: r.blockId,
@@ -64,7 +66,7 @@ export class TauriSearchProvider implements SearchProvider {
             id: `tag_${tag.id}`,
             pageId,
             blockId,
-            blockType: firstRecord?.blockType,
+            blockType: firstRecord.blockType,
             workspaceId: workspaceId || "",
             category: "tag" as const,
             title: `#${tag.name}`,
@@ -86,11 +88,11 @@ export class TauriSearchProvider implements SearchProvider {
 
       for (const record of indexRecords) {
         const pageMeta = sidebarPages[record.pageId];
-        const pageTitle = pageMeta?.title || "Untitled Page";
+        const pageTitle = pageMeta?.title ?? "Untitled Page";
         const matchesQuery =
           !q ||
           pageTitle.toLowerCase().includes(q) ||
-          (record.snippet || "").toLowerCase().includes(q);
+          (record.snippet ?? "").toLowerCase().includes(q);
 
         if (matchesQuery) {
           const itemKey = `${record.pageId}_${record.blockId}`;
@@ -108,7 +110,7 @@ export class TauriSearchProvider implements SearchProvider {
               subtitle: record.snippet
                 ? `${record.blockType}: ${record.snippet}`
                 : `${record.blockType} block`,
-              icon: pageMeta?.icon || "📄",
+              icon: pageMeta?.icon ?? "📄",
             });
           }
         }
@@ -125,7 +127,7 @@ export class TauriSearchProvider implements SearchProvider {
               workspaceId: workspaceId || "",
               category: "page",
               title: page.title || "Untitled",
-              icon: page.icon || "📄",
+              icon: page.icon ?? "📄",
             });
           }
         }
@@ -149,7 +151,7 @@ export class TauriSearchProvider implements SearchProvider {
         workspaceId: "",
         category: "recent",
         title: page.title || "Untitled",
-        icon: page.icon || "📄",
+        icon: page.icon ?? "📄",
       }));
     return Promise.resolve(items);
   }
