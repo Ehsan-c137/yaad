@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Button } from "@ui/button";
 import { GripVertical, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -36,9 +37,6 @@ export function BlockRow({ blockId }: BlockRowProps) {
 
   return (
     <div
-      onKeyDown={() => {
-        // TODO: fix this
-      }}
       onFocus={() => setActiveBlockId(block.id)}
       onClick={() => setActiveBlockId(block.id)}
       className={cn(
