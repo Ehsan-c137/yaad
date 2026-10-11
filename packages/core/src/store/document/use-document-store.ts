@@ -6,6 +6,7 @@ import type { DocumentState } from "./types";
 
 import { createBlockSlice } from "./block-slice";
 import { createCoreSlice } from "./core-slice";
+import { flushAutoSave } from "./helpers";
 import { createMetaSlice } from "./meta-slice";
 
 export type { DocumentState };
@@ -26,7 +27,15 @@ export function getDocumentStore(pageId: string): StoreApi<DocumentState> {
 }
 
 export function removeDocumentStore(pageId: string) {
-  documentStoresMap.delete(pageId);
+  const store = documentStoresMap.get(pageId);
+
+  if (store) {
+    const doc = store.getState().currentDocument;
+    void flushAutoSave(pageId, doc).catch((error) => {
+      console.error("[useDocumentStore] Failed to flush auto-save:", error);
+    });
+    documentStoresMap.delete(pageId);
+  }
 }
 
 export function useDocumentStoreCore<T>(

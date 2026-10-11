@@ -230,3 +230,22 @@ export const saveNow = async (
   await documentService.saveDocument(doc);
   set({ isSaving: false });
 };
+
+/**
+ * Flushes any pending autosave timer for the given page ID and saves immediately if doc is provided.
+ */
+export const flushAutoSave = async (
+  pageId: string,
+  doc?: DocumentJSON | null,
+): Promise<void> => {
+  const existingTimer = autoSaveTimersMap.get(pageId);
+
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+    autoSaveTimersMap.delete(pageId);
+
+    if (doc?.id === pageId) {
+      await documentService.saveDocument(doc);
+    }
+  }
+};
