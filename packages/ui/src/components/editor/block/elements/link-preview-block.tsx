@@ -26,6 +26,7 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
   const [inputUrl, setInputUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   // Stored metadata in block.properties
   const linkData = block.properties?.linkData as
@@ -134,15 +135,14 @@ export function LinkPreviewBlock({ block }: LinkPreviewBlockProps) {
         </div>
 
         {/* Right Side: Preview Thumbnail Image */}
-        {linkData.image && (
+        {linkData.image && !imageError && (
           <div className="relative w-36 shrink-0 overflow-hidden bg-neutral-100 md:w-48 dark:bg-neutral-800">
             <img
               src={linkData.image}
               alt={linkData.title}
               className="size-full object-cover"
-              onError={(e) => {
-                // If image fails to load, hide thumbnail container
-                (e.target as HTMLElement).parentElement?.remove();
+              onError={() => {
+                setImageError(true);
               }}
             />
           </div>
