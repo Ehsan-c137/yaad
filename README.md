@@ -1,5 +1,7 @@
 # Yaad (یاد)
 
+![Yaad](./public/yaad-pic.webp)
+
 A modern, fast, local-first personal knowledge management and block-based workspace application. Built with a modular monorepo architecture supporting both desktop (Tauri v2) and web (Vite + PWA) environments.
 
 ---
