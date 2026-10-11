@@ -5,7 +5,6 @@ import type { SidebarPageItem as SidebarPageItemType } from "@yaad/core/store/us
 import type React from "react";
 
 import { Button } from "@ui/button";
-import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { ChevronRight, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -46,7 +45,6 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
     handleToggleExpand,
     handleCreateSubpage,
   } = useSidebarPageItem(pageId);
-  const pages = useSidebarStore((s) => s.pages);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   if (!page || page.isDeleted) return null;
@@ -115,15 +113,13 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
           )}
         >
           <div className="overflow-hidden flex flex-col">
-            {page.childrenIds
-              .filter((childId) => !pages[childId]?.isDeleted)
-              .map((childId) => (
-                <SidebarPageItem
-                  key={childId}
-                  pageId={childId}
-                  depth={depth + 1}
-                />
-              ))}
+            {page.childrenIds.map((childId) => (
+              <SidebarPageItem
+                key={childId}
+                pageId={childId}
+                depth={depth + 1}
+              />
+            ))}
           </div>
         </div>
       )}
