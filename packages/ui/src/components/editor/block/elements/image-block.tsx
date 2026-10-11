@@ -165,7 +165,16 @@ function AddImage({ blockId }: { blockId: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const blobId = `blob_${Date.now()}`;
+    // Security & sanity checks: limit size to 15MB, reject SVGs for XSS safety
+    if (
+      file.type === "image/svg+xml" ||
+      file.name.toLowerCase().endsWith(".svg") ||
+      file.size > 15 * 1024 * 1024
+    ) {
+      return;
+    }
+
+    const blobId = `blob_${crypto.randomUUID()}`;
     await documentService.saveBlob(blobId, file);
     await updateBlockProperties(blockId, pageId, {
       blobId,
