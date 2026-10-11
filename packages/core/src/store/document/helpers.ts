@@ -44,11 +44,11 @@ export const createBlockDefaults = (
         ],
       };
 
-    case "toggle_list":
-      return {
-        title: [{ text: "" }],
-        isOpen: true,
-      };
+    // case "toggle_list":
+    //   return {
+    //     title: [{ text: "" }],
+    //     isOpen: true,
+    //   };
 
     default:
       return {
