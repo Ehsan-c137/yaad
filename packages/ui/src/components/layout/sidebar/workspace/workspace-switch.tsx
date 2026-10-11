@@ -1,7 +1,8 @@
-/* eslint-disable perfectionist/sort-imports, @typescript-eslint/strict-void-return */
+/* eslint-disable @typescript-eslint/strict-void-return */
+import type { Workspace } from "@yaad/core/types/workspace";
+
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
-import { styles } from "@/lib/design-token";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Check, ChevronsUpDown, Settings2, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -14,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
 import { ManageWorkspacesModal } from "./manage-workspaces/manage-workspaces-modal";
