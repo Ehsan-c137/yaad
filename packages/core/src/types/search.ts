@@ -34,5 +34,6 @@ export interface SearchProvider {
   getRecentPages: (
     limit: number,
     signal?: AbortSignal,
+    workspaceId?: string,
   ) => Promise<SearchItem[]>;
 }

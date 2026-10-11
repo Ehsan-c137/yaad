@@ -140,7 +140,11 @@ export class TauriSearchProvider implements SearchProvider {
     };
   }
 
-  getRecentPages(limit: number): Promise<SearchItem[]> {
+  getRecentPages(
+    limit: number,
+    _signal?: AbortSignal,
+    workspaceId = "",
+  ): Promise<SearchItem[]> {
     const sidebarPages = useSidebarStore.getState().pages;
     const items: SearchItem[] = Object.values(sidebarPages)
       .filter((p): p is NonNullable<typeof p> => Boolean(p && !p.isDeleted))
@@ -148,7 +152,7 @@ export class TauriSearchProvider implements SearchProvider {
       .map((page) => ({
         id: page.id,
         pageId: page.id,
-        workspaceId: "",
+        workspaceId,
         category: "recent",
         title: page.title || "Untitled",
         icon: page.icon ?? "📄",

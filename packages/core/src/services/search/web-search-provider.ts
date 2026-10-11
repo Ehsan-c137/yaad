@@ -13,7 +13,11 @@ export class WebSearchProvider implements SearchProvider {
     });
   }
 
-  getRecentPages(_limit: number): Promise<SearchItem[]> {
+  getRecentPages(
+    _limit: number,
+    _signal?: AbortSignal,
+    _workspaceId?: string,
+  ): Promise<SearchItem[]> {
     return Promise.resolve([]);
   }
 }

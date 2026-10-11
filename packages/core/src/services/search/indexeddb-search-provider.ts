@@ -77,10 +77,11 @@ export function createIndexedDbSearchProvider(
     getRecentPages(
       limit: number,
       _signal?: AbortSignal,
+      workspaceId = "",
     ): Promise<SearchItem[]> {
       const pages = pageStateProvider.getPages();
 
-      return Promise.resolve(getRecentPages(pages, limit));
+      return Promise.resolve(getRecentPages(pages, limit, workspaceId));
     },
   };
 }
@@ -96,8 +97,12 @@ export class IndexedDbSearchProvider implements SearchProvider {
     return this.provider.search(options);
   }
 
-  getRecentPages(limit: number, signal?: AbortSignal): Promise<SearchItem[]> {
-    return this.provider.getRecentPages(limit, signal);
+  getRecentPages(
+    limit: number,
+    signal?: AbortSignal,
+    workspaceId = "",
+  ): Promise<SearchItem[]> {
+    return this.provider.getRecentPages(limit, signal, workspaceId);
   }
 }
 

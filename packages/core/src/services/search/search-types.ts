@@ -11,6 +11,7 @@ export interface SearchPageMeta {
   isDeleted?: boolean;
   title: string;
   updatedAt?: number;
+  workspaceId?: string;
 }
 
 export interface SearchDocumentReader {

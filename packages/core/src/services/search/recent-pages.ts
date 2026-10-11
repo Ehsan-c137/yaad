@@ -5,6 +5,7 @@ import type { SearchPageMeta } from "./search-types";
 export function getRecentPages(
   pages: Record<string, SearchPageMeta | undefined>,
   limit: number,
+  workspaceId = "",
 ): SearchItem[] {
   return Object.values(pages)
     .filter((page): page is SearchPageMeta => Boolean(page && !page.isDeleted))
@@ -13,7 +14,7 @@ export function getRecentPages(
     .map((page) => ({
       id: page.id,
       pageId: page.id,
-      workspaceId: "",
+      workspaceId: page.workspaceId ?? workspaceId,
       category: "recent" as const,
       title: page.title || "Untitled",
       icon: page.icon ?? "📄",
