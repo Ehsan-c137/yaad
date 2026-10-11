@@ -10,7 +10,7 @@ import type { SidebarPageItem, SidebarPageMap, SidebarState } from "./types";
 import { useTabStore } from "../use-tab-store";
 
 let currentWorkspaceId: string | null = null;
-let saveTreeTimer: ReturnType<typeof setTimeout> | null = null;
+const saveTreeTimersMap = new Map<string, ReturnType<typeof setTimeout>>();
 
 export function persistWorkspaceTree(
   pages: SidebarPageMap,
@@ -19,11 +19,13 @@ export function persistWorkspaceTree(
   const wsId = workspaceId ?? currentWorkspaceId;
   if (!wsId) return;
 
-  if (saveTreeTimer) {
-    clearTimeout(saveTreeTimer);
+  const existingTimer = saveTreeTimersMap.get(wsId);
+
+  if (existingTimer) {
+    clearTimeout(existingTimer);
   }
 
-  saveTreeTimer = setTimeout(() => {
+  const timer = setTimeout(() => {
     void (async () => {
       try {
         const treeNodes: WorkspacePageMeta[] = Object.values(pages)
@@ -44,9 +46,13 @@ export function persistWorkspaceTree(
         await workspaceService.saveWorkspaceTree(wsId, treeNodes);
       } catch (e) {
         console.error("Error saving workspace tree to storage:", e);
+      } finally {
+        saveTreeTimersMap.delete(wsId);
       }
     })();
   }, 100);
+
+  saveTreeTimersMap.set(wsId, timer);
 }
 
 export function setCurrentWorkspaceId(id: string | null) {
