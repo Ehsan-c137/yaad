@@ -16,6 +16,16 @@ The native desktop application for Yaad, powered by [Tauri v2](https://v2.tauri.
   - **macOS**: Xcode Command Line Tools
   - **Linux**: `libwebkit2gtk-4.1-dev`, `build-essential`, `curl`, `wget`, `file`, `libssl-dev`, `libgtk-3-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev`
 
+## Linux startup notes
+
+When the desktop app is launched from a Snap-hosted terminal (for example, VS Code installed as a Snap) while the project is outside the Snap, the `dev` script removes inherited GTK module paths and forces the X11 backend. It detects the Snap environment from either `SNAP` or inherited Snap paths, since some integrated terminals don't export `SNAP`. This avoids loading incompatible Snap GTK modules and prevents GTK's Wayland backend from requesting a missing GNOME settings key. These workarounds are Linux-only, and the launcher intentionally does nothing on Windows or macOS.
+
+If you bypass the package script and start Tauri directly from a Snap-hosted terminal, clear those variables yourself:
+
+```bash
+env -u GTK_PATH -u GIO_MODULE_DIR GDK_BACKEND=x11 pnpm exec tauri dev
+```
+
 ## Scripts
 
 ```bash
