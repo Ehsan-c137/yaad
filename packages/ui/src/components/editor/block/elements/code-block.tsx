@@ -92,32 +92,33 @@ export function CodeBlock({ block }: CodeBlockProps) {
   useEffect(() => {
     let isMounted = true;
 
-    const renderHighlightedCode = async () => {
-      if (!text) {
-        if (isMounted) setHighlightedHtml("");
-        return;
-      }
+    if (!text) {
+      setHighlightedHtml("");
+      return;
+    }
 
-      try {
-        const html = await codeToHtml(text, {
-          lang: language,
-          theme: "github-dark",
-        });
+    const timer = setTimeout(() => {
+      void (async () => {
+        try {
+          const html = await codeToHtml(text, {
+            lang: language,
+            theme: "github-dark",
+          });
 
-        if (isMounted) {
-          setHighlightedHtml(html);
+          if (isMounted) {
+            setHighlightedHtml(html);
+          }
+        } catch {
+          if (isMounted) {
+            setHighlightedHtml(`<pre><code>${escapeHtml(text)}</code></pre>`);
+          }
         }
-      } catch {
-        if (isMounted) {
-          setHighlightedHtml(`<pre><code>${escapeHtml(text)}</code></pre>`);
-        }
-      }
-    };
-
-    void renderHighlightedCode();
+      })();
+    }, 150);
 
     return () => {
       isMounted = false;
+      clearTimeout(timer);
     };
   }, [language, text]);
 
