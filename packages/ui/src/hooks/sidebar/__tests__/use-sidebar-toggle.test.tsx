@@ -33,17 +33,15 @@ describe("useSidebarToggle", () => {
   });
 
   it("uses document.startViewTransition when supported and transitions are enabled", () => {
-    const mockStartViewTransition = vi.fn(
-      (callback: () => void) => {
-        callback();
-        return {
-          finished: Promise.resolve(),
-          ready: Promise.resolve(),
-          updateCallbackDone: Promise.resolve(),
-          skipTransition: vi.fn(),
-        };
-      },
-    );
+    const mockStartViewTransition = vi.fn((callback: () => void) => {
+      callback();
+      return {
+        finished: Promise.resolve(),
+        ready: Promise.resolve(),
+        updateCallbackDone: Promise.resolve(),
+        skipTransition: vi.fn(),
+      };
+    });
 
     (
       document as unknown as {
@@ -62,7 +60,10 @@ describe("useSidebarToggle", () => {
   });
 
   it("does not use document.startViewTransition when preference is disabled", () => {
-    localStorage.setItem("page-transition-preference", JSON.stringify("disabled"));
+    localStorage.setItem(
+      "page-transition-preference",
+      JSON.stringify("disabled"),
+    );
 
     const mockStartViewTransition = vi.fn((callback: () => void) => {
       callback();
@@ -93,7 +94,8 @@ describe("useSidebarToggle", () => {
   it("does not use document.startViewTransition in Firefox", () => {
     const originalUserAgent = navigator.userAgent;
     Object.defineProperty(navigator, "userAgent", {
-      value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+      value:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
       configurable: true,
     });
 
