@@ -1,4 +1,3 @@
-
 import { TooltipProvider } from "@ui/tooltip";
 import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
 
