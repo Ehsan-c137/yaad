@@ -111,7 +111,9 @@ function SidebarHomeHeader() {
             </Link>
             <SearchBox
               triggerClassName={
-                isSidebarOpen && !isFirefox() ? "sidebar-search-button" : undefined
+                isSidebarOpen && !isFirefox()
+                  ? "sidebar-search-button"
+                  : undefined
               }
             />
           </div>
