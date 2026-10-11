@@ -1,4 +1,4 @@
-import { Button } from "@ui/button";
+import { Button, buttonVariants } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { FileText, Network, Plus, Trash2 } from "lucide-react";
@@ -78,36 +78,26 @@ function SidebarHomeHeader() {
             <Link
               href={`/workspace/${activeWorkspaceId}/graph`}
               aria-label={t("graphView")}
+              title={t("graphView")}
               className={cn(
-                isGraphActive && "bg-muted text-foreground",
+                buttonVariants({ variant: "ghost", size: "icon" }),
                 "rounded-full",
+                isGraphActive && "bg-muted text-foreground",
               )}
             >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-                title={t("graphView")}
-              >
-                <Network className="size-4" strokeWidth={1.5} />
-              </Button>
+              <Network className="size-4" strokeWidth={1.5} />
             </Link>
             <Link
               href={`/workspace/${activeWorkspaceId}/trash`}
               aria-label={t("goToTrash")}
+              title={t("trashPage")}
               className={cn(
-                isTrashActive && "bg-muted text-foreground",
+                buttonVariants({ variant: "ghost", size: "icon" }),
                 "rounded-full",
+                isTrashActive && "bg-muted text-foreground",
               )}
             >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-                title={t("trashPage")}
-              >
-                <Trash2 className="size-4" strokeWidth={1.5} />
-              </Button>
+              <Trash2 className="size-4" strokeWidth={1.5} />
             </Link>
             <SearchBox
               triggerClassName={
