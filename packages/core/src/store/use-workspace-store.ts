@@ -6,6 +6,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { useSidebarStore } from "./use-sidebar-store";
+import { useTabStore } from "./use-tab-store";
 
 export interface WorkspaceOperationResult {
   success: boolean;
@@ -157,6 +158,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         const updatedWorkspaces = Object.fromEntries(
           Object.entries(state.workspaces).filter(([wId]) => wId !== id),
         );
+
+        useTabStore.getState().cleanupWorkspaceTabs(id);
 
         set({
           workspaces: updatedWorkspaces,
