@@ -30,9 +30,9 @@ The headless business logic and state management layer for Yaad.
 Centralized typed nanoid generators:
 
 - `generatePageId()` -> `page_<id>`
-- `generateBlockId()` -> `blk_<id>`
+- `generateBlockId()` -> `block_<id>`
 - `generateWorkspaceId()` -> `ws_<id>`
-- `generateCardId()` -> `crd_<id>`
+- `generateCardId()` -> `card_<id>`
 
 ### 4. Services (`src/services`)
 
