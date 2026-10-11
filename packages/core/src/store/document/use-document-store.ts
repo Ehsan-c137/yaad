@@ -48,6 +48,7 @@ export function removeDocumentStore(pageId: string, shouldFlush = true) {
     } else {
       cancelAutoSave(pageId);
     }
+
     documentStoresMap.delete(pageId);
   }
 }

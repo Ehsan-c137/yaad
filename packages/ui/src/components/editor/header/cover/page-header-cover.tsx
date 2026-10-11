@@ -121,7 +121,7 @@ export function PageHeaderCover() {
           <div
             className={cn(
               "material",
-              "absolute end-4 bottom-4 flex items-center gap-1 rounded-xl px-2 py-1",
+              "absolute end-4 bottom-4 flex items-center gap-1 rounded-full px-2 py-1",
               "opacity-0 transition-opacity duration-200 group-hover/cover:opacity-100 focus-within:opacity-100",
               hasError && "opacity-100",
               "animate-page-cover-actions",

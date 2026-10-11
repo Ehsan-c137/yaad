@@ -7,7 +7,6 @@ import {
   CommandInput,
   CommandList,
 } from "@/components/ui/command";
-
 import { cn } from "@/lib/utils";
 
 import { useSearchCommand } from "./hooks/use-search-command";
