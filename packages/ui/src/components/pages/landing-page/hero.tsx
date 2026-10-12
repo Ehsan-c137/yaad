@@ -18,7 +18,7 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
   return (
     <section className="relative pt-16 pb-16 sm:pt-28 sm:pb-24 overflow-hidden h-[calc(100vh-8rem)] items-center flex justify-center">
       {/* Background pattern */}
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7ef_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]" />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#a5b4fc_1px,transparent_1px)] dark:bg-[radial-gradient(#525252_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]" />
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 flex flex-col justify-center items-center">
         {/* Hero heading — large, bold, with inline emoji like time.fyi */}
@@ -37,9 +37,11 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
         </h1>
 
         {/* Subtitle */}
-        <p className="t-stagger-line t-stagger-line--4 mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed text-neutral-500 dark:text-neutral-400 sm:text-base">
-          Yaad is a fast, private note editor. Capture thoughts, link ideas
-          visually, and work completely offline — no account needed.
+        <p className="t-stagger-line t-stagger-line--4 mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-base">
+          <span className="box-decoration-clone rounded-sm bg-yellow-200/70 px-1 dark:bg-yellow-500/25">
+            Yaad is a fast, private note editor. Capture thoughts, link ideas
+            visually, and work completely offline — no account needed.
+          </span>
         </p>
 
         {/* CTA buttons */}
