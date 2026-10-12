@@ -19,7 +19,7 @@ const VALID_BLOCK_TYPES: DocumentBlockType[] = [
   "quote",
   "table",
   "todo",
-  "toggle_list",
+  // "toggle_list",
 ];
 
 describe("TURN_INTO_OPTIONS (Unit Test)", () => {

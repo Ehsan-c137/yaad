@@ -27,7 +27,7 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
     handleChange,
     handleBackspaceEmpty,
     handleTransformType,
-    insertBlockBelow,
+    // insertBlockBelow,
     addBlock,
     updateBlockProperties,
   } = useEditableBlock(block);
@@ -45,9 +45,9 @@ export function ToggleListBlock({ block }: ToggleListBlockProps) {
     if (childrenIds.length === 0 && isOpen) {
       void addBlock(block.id, block.id, "paragraph");
     } else {
-      insertBlockBelow("toggle_list");
+      // insertBlockBelow("toggle_list");
     }
-  }, [childrenIds.length, isOpen, addBlock, block.id, insertBlockBelow]);
+  }, [childrenIds.length, isOpen, addBlock, block.id]);
 
   return (
     <div className="w-full">
