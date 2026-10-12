@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import {
   CheckSquare,
   Columns2,
@@ -9,6 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Reveal } from "./reveal";
 
@@ -21,73 +23,68 @@ interface FeatureItem {
   color: string;
 }
 
-const FEATURES: FeatureItem[] = [
-  {
-    id: "graph",
-    icon: Network,
-    title: "Visual knowledge graph",
-    description:
-      "See how all your notes connect. An interactive graph maps out your workspace automatically — no folders needed.",
-    color: "text-blue-500 bg-blue-50 dark:bg-blue-500/10 dark:text-blue-400",
-  },
-  {
-    id: "blocks",
-    icon: CheckSquare,
-    badge: "/",
-    title: "Block editor with slash commands",
-    description:
-      'Type "/" to insert headings, checklists, code blocks, callouts, and nested sub-pages inline.',
-    color:
-      "text-amber-600 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-400",
-  },
-  {
-    id: "search",
-    icon: Search,
-    badge: "⌘K",
-    title: "Instant search across all notes",
-    description:
-      "Find any note, tag, or idea in milliseconds. Works offline, completely indexed on your device.",
-    color: "text-sky-500 bg-sky-50 dark:bg-sky-500/10 dark:text-sky-400",
-  },
-  {
-    id: "privacy",
-    icon: ShieldCheck,
-    title: "100% local & private",
-    description:
-      "Your notes never leave your device. No telemetry, no cloud sync, no tracking. You own your data.",
-    color:
-      "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-400",
-  },
-  {
-    id: "peek",
-    icon: Columns2,
-    badge: "⌘\\",
-    title: "Side-by-side peek panel",
-    description:
-      "Open linked notes in a side panel to reference while you write — no tab-switching needed.",
-    color:
-      "text-violet-500 bg-violet-50 dark:bg-violet-500/10 dark:text-violet-400",
-  },
-];
-
 export function LandingBento() {
+  const { t } = useTranslation("landing");
   const [activeFeature, setActiveFeature] = useState("graph");
 
+  const features: FeatureItem[] = [
+    {
+      id: "graph",
+      icon: Network,
+      title: t("bento.featureGraphTitle"),
+      description: t("bento.featureGraphDesc"),
+      color: "text-blue-500 bg-blue-50 dark:bg-blue-500/10 dark:text-blue-400",
+    },
+    {
+      id: "blocks",
+      icon: CheckSquare,
+      badge: "/",
+      title: t("bento.featureBlocksTitle"),
+      description: t("bento.featureBlocksDesc"),
+      color:
+        "text-amber-600 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-400",
+    },
+    {
+      id: "search",
+      icon: Search,
+      badge: "⌘K",
+      title: t("bento.featureSearchTitle"),
+      description: t("bento.featureSearchDesc"),
+      color: "text-sky-500 bg-sky-50 dark:bg-sky-500/10 dark:text-sky-400",
+    },
+    {
+      id: "privacy",
+      icon: ShieldCheck,
+      title: t("bento.featurePrivacyTitle"),
+      description: t("bento.featurePrivacyDesc"),
+      color:
+        "text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 dark:text-emerald-400",
+    },
+    {
+      id: "peek",
+      icon: Columns2,
+      badge: "⌘\\",
+      title: t("bento.featurePeekTitle"),
+      description: t("bento.featurePeekDesc"),
+      color:
+        "text-violet-500 bg-violet-50 dark:bg-violet-500/10 dark:text-violet-400",
+    },
+  ];
+
   return (
-    <section id="features" className="py-20 sm:py-28">
+    <section id="features" className="py-20 sm:py-28 overflow-hidden">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal animation="t-stagger" className="text-center flex flex-col">
           <div className="t-stagger-line t-stagger-line--1 block">
             <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
-              Features
+              {t("bento.badge")}
             </span>
           </div>
           <h2 className="t-stagger-line t-stagger-line--2 mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-[2.75rem] sm:leading-[1.15]">
-            Everything you need to think clearly.
+            {t("bento.title")}
           </h2>
           <p className="t-stagger-line t-stagger-line--3 mx-auto mt-4 max-w-lg text-[15px] text-neutral-500 dark:text-neutral-400">
-            Fast, simple, and completely private. No confusing menus, no
-            subscription walls, no waiting on cloud sync.
+            {t("bento.description")}
           </p>
         </Reveal>
 
@@ -102,7 +99,7 @@ export function LandingBento() {
             className="space-y-1 t-slide-right"
             style={{ transitionDelay: "100ms" }}
           >
-            {FEATURES.map((f) => {
+            {features.map((f) => {
               const Icon = f.icon;
               const isActive = activeFeature === f.id;
               return (
@@ -110,7 +107,7 @@ export function LandingBento() {
                   key={f.id}
                   type="button"
                   onClick={() => setActiveFeature(f.id)}
-                  className={`group flex w-full items-start gap-3.5 rounded-xl p-4 text-left transition-all cursor-pointer ${
+                  className={`group flex w-full items-start gap-3.5 rounded-xl p-4 text-left rtl:text-right transition-all cursor-pointer ${
                     isActive
                       ? "bg-neutral-50 dark:bg-neutral-900 shadow-sm"
                       : "hover:bg-neutral-50/60 dark:hover:bg-neutral-900/60"
@@ -148,7 +145,7 @@ export function LandingBento() {
                     )}
                     {/* Active indicator line */}
                     {isActive && (
-                      <div className="mt-3 h-0.5 w-full rounded-full bg-gradient-to-r from-primary to-primary/30 animate-in fade-in duration-300" />
+                      <div className="mt-3 h-0.5 w-full rounded-full bg-gradient-to-r rtl:bg-gradient-to-l from-primary to-primary/30 animate-in fade-in duration-300" />
                     )}
                   </div>
                 </button>
@@ -167,7 +164,7 @@ export function LandingBento() {
                 <span className="size-2.5 rounded-full bg-red-400/70" />
                 <span className="size-2.5 rounded-full bg-amber-400/70" />
                 <span className="size-2.5 rounded-full bg-emerald-400/70" />
-                <span className="ml-3 text-[11px] text-neutral-400 dark:text-neutral-500">
+                <span className="ml-3 rtl:ml-0 rtl:mr-3 text-[11px] text-neutral-400 dark:text-neutral-500">
                   yaad
                 </span>
               </div>
@@ -191,13 +188,16 @@ export function LandingBento() {
 /* ── Feature preview mini-components ── */
 
 function GraphPreview() {
+  const { t } = useTranslation("landing");
   return (
     <div className="animate-in fade-in duration-300">
       <div className="mb-4 flex items-center gap-2 text-xs text-neutral-400">
         <Network className="size-3.5 text-blue-500" />
-        <span className="font-medium text-foreground">Knowledge Graph</span>
+        <span className="font-medium text-foreground">
+          {t("bento.previewGraphTitle")}
+        </span>
       </div>
-      <div className="relative h-[260px] rounded-lg bg-neutral-50/80 dark:bg-neutral-900/80 border border-neutral-100 dark:border-neutral-800">
+      <div className="relative h-[260px] rounded-lg bg-neutral-50/80 dark:bg-neutral-900/80 border border-neutral-100 dark:border-neutral-800 overflow-hidden">
         <svg className="size-full" viewBox="0 0 400 260" fill="none">
           {/* Connection lines */}
           <line
@@ -252,7 +252,7 @@ function GraphPreview() {
             fontSize="8"
             fontWeight="bold"
           >
-            Core
+            {t("bento.previewGraphCore")}
           </text>
 
           {/* Satellite nodes */}
@@ -294,17 +294,17 @@ function GraphPreview() {
           />
         </svg>
         {/* Labels */}
-        <div className="absolute top-[38px] left-[130px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
-          Block Editor
+        <div className="absolute top-[38px] left-[130px] rtl:left-auto rtl:right-[130px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
+          {t("bento.previewGraphBlockEditor")}
         </div>
-        <div className="absolute top-[32px] right-[50px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
-          Research Notes
+        <div className="absolute top-[32px] right-[50px] rtl:right-auto rtl:left-[50px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
+          {t("bento.previewGraphResearchNotes")}
         </div>
-        <div className="absolute bottom-[40px] left-[120px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
-          Weekly Goals
+        <div className="absolute bottom-[40px] left-[120px] rtl:left-auto rtl:right-[120px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
+          {t("bento.previewGraphWeeklyGoals")}
         </div>
-        <div className="absolute bottom-[46px] right-[40px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
-          Reading List
+        <div className="absolute bottom-[46px] right-[40px] rtl:right-auto rtl:left-[40px] rounded bg-white dark:bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:text-neutral-300 shadow-sm border border-neutral-100 dark:border-neutral-800">
+          {t("bento.previewGraphReadingList")}
         </div>
       </div>
     </div>
@@ -312,20 +312,25 @@ function GraphPreview() {
 }
 
 function BlocksPreview() {
+  const { t } = useTranslation("landing");
   return (
     <div className="animate-in fade-in duration-300 space-y-3">
       <div className="mb-4 flex items-center gap-2 text-xs text-neutral-400">
         <FileText className="size-3.5 text-amber-500" />
-        <span className="font-medium text-foreground">Block Canvas</span>
-        <span className="ml-auto rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500 dark:text-neutral-400">
+        <span className="font-medium text-foreground">
+          {t("bento.previewBlocksTitle")}
+        </span>
+        <span className="ml-auto rtl:ml-0 rtl:mr-auto rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500 dark:text-neutral-400">
           /
         </span>
       </div>
       {/* Fake editor blocks */}
       <div className="rounded-lg border border-neutral-100 dark:border-neutral-800 bg-background p-4 space-y-3">
-        <div className="text-lg font-bold text-foreground">Project Roadmap</div>
+        <div className="text-lg font-bold text-foreground">
+          {t("bento.previewBlocksRoadmapTitle")}
+        </div>
         <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          A plan for the next quarter, broken into milestones and tasks.
+          {t("bento.previewBlocksRoadmapDesc")}
         </p>
         <div className="space-y-2 pt-2">
           <div className="flex items-center gap-2 rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-3 py-2 text-xs">
@@ -333,19 +338,19 @@ function BlocksPreview() {
               <CheckSquare className="size-3 text-white" />
             </div>
             <span className="line-through text-neutral-400 dark:text-emerald-900/50">
-              Set up project workspace
+              {t("bento.previewBlocksTask1")}
             </span>
           </div>
           <div className="flex items-center gap-2 rounded-md bg-neutral-50 dark:bg-neutral-900 px-3 py-2 text-xs">
             <div className="size-4 rounded border-2 border-neutral-300 dark:border-neutral-700" />
             <span className="text-foreground font-medium">
-              Draft architecture diagram
+              {t("bento.previewBlocksTask2")}
             </span>
           </div>
           <div className="flex items-center gap-2 rounded-md bg-neutral-50 dark:bg-neutral-900 px-3 py-2 text-xs">
             <div className="size-4 rounded border-2 border-neutral-300 dark:border-neutral-700" />
             <span className="text-foreground font-medium">
-              Write API specifications
+              {t("bento.previewBlocksTask3")}
             </span>
           </div>
         </div>
@@ -355,12 +360,15 @@ function BlocksPreview() {
 }
 
 function SearchPreview() {
+  const { t } = useTranslation("landing");
   return (
     <div className="animate-in fade-in duration-300">
       <div className="mb-4 flex items-center gap-2 text-xs text-neutral-400">
         <Search className="size-3.5 text-sky-500" />
-        <span className="font-medium text-foreground">Quick Search</span>
-        <div className="ml-auto flex items-center gap-0.5 rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500 dark:text-neutral-400">
+        <span className="font-medium text-foreground">
+          {t("bento.previewSearchTitle")}
+        </span>
+        <div className="ml-auto rtl:ml-0 rtl:mr-auto flex items-center gap-0.5 rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500 dark:text-neutral-400">
           <Command className="size-2.5" />K
         </div>
       </div>
@@ -368,9 +376,11 @@ function SearchPreview() {
       <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-background shadow-lg overflow-hidden">
         <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 px-4 py-3">
           <Search className="size-4 text-neutral-400" />
-          <span className="text-sm text-foreground">project ideas...</span>
-          <span className="ml-auto text-[10px] text-neutral-400">
-            3 results
+          <span className="text-sm text-foreground">
+            {t("bento.previewSearchPlaceholder")}
+          </span>
+          <span className="ml-auto rtl:ml-0 rtl:mr-auto text-[10px] text-neutral-400">
+            {t("bento.previewSearchResultsCount")}
           </span>
         </div>
         <div className="divide-y divide-neutral-50 dark:divide-neutral-800/50">
@@ -378,10 +388,10 @@ function SearchPreview() {
             <FileText className="size-3.5 text-primary shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="text-xs font-medium text-foreground truncate">
-                Project Ideas for Q4
+                {t("bento.previewSearchItem1Title")}
               </div>
               <div className="text-[10px] text-neutral-400 truncate">
-                Updated 2 hours ago
+                {t("bento.previewSearchItem1Time")}
               </div>
             </div>
           </div>
@@ -389,10 +399,10 @@ function SearchPreview() {
             <FileText className="size-3.5 text-neutral-400 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="text-xs font-medium text-foreground truncate">
-                Side Project Brainstorm
+                {t("bento.previewSearchItem2Title")}
               </div>
               <div className="text-[10px] text-neutral-400 truncate">
-                Updated yesterday
+                {t("bento.previewSearchItem2Time")}
               </div>
             </div>
           </div>
@@ -400,10 +410,10 @@ function SearchPreview() {
             <FileText className="size-3.5 text-neutral-400 shrink-0" />
             <div className="min-w-0 flex-1">
               <div className="text-xs font-medium text-foreground truncate">
-                Idea Garden — Long Term
+                {t("bento.previewSearchItem3Title")}
               </div>
               <div className="text-[10px] text-neutral-400 truncate">
-                Updated 3 days ago
+                {t("bento.previewSearchItem3Time")}
               </div>
             </div>
           </div>
@@ -414,35 +424,37 @@ function SearchPreview() {
 }
 
 function PrivacyPreview() {
+  const { t } = useTranslation("landing");
   return (
     <div className="animate-in fade-in duration-300">
       <div className="mb-4 flex items-center gap-2 text-xs text-neutral-400">
         <ShieldCheck className="size-3.5 text-emerald-500" />
-        <span className="font-medium text-foreground">Local-First Privacy</span>
+        <span className="font-medium text-foreground">
+          {t("bento.previewPrivacyTitle")}
+        </span>
       </div>
       <div className="flex flex-col items-center justify-center rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 px-6 py-10 text-center">
         <div className="flex size-16 items-center justify-center rounded-2xl bg-emerald-100/60 dark:bg-emerald-500/20">
           <HardDrive className="size-7 text-emerald-600 dark:text-emerald-500" />
         </div>
         <h4 className="mt-4 text-sm font-bold text-foreground">
-          Your device, your data.
+          {t("bento.previewPrivacyHeading")}
         </h4>
         <p className="mt-2 max-w-xs text-xs leading-relaxed text-neutral-500 dark:text-neutral-400">
-          All notes are stored directly on your computer. No cloud servers, no
-          telemetry, no tracking. Export or back up anytime.
+          {t("bento.previewPrivacyDesc")}
         </p>
-        <div className="mt-6 flex items-center gap-4 text-[11px] text-neutral-400 dark:text-neutral-500">
+        <div className="mt-6 flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-[11px] text-neutral-400 dark:text-neutral-500">
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-emerald-400" />
-            Zero tracking
+            {t("bento.previewPrivacyZeroTracking")}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-emerald-400" />
-            No accounts
+            {t("bento.previewPrivacyNoAccounts")}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-emerald-400" />
-            Full export
+            {t("bento.previewPrivacyFullExport")}
           </span>
         </div>
       </div>
@@ -451,12 +463,15 @@ function PrivacyPreview() {
 }
 
 function PeekPreview() {
+  const { t } = useTranslation("landing");
   return (
     <div className="animate-in fade-in duration-300">
       <div className="mb-4 flex items-center gap-2 text-xs text-neutral-400">
         <Columns2 className="size-3.5 text-violet-500" />
-        <span className="font-medium text-foreground">Split Peek</span>
-        <span className="ml-auto rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500 dark:text-neutral-400">
+        <span className="font-medium text-foreground">
+          {t("bento.previewPeekTitle")}
+        </span>
+        <span className="ml-auto rtl:ml-0 rtl:mr-auto rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500 dark:text-neutral-400">
           ⌘\
         </span>
       </div>
@@ -467,8 +482,11 @@ function PeekPreview() {
             Architecture.md
           </div>
           <div className="space-y-2 text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
-            <p>Yaad uses a local Rust-powered SQLite database via Tauri.</p>
-            <div className="rounded bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-2 font-mono text-[10px] text-foreground">
+            <p>{t("bento.previewPeekNote")}</p>
+            <div
+              className="rounded bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-2 font-mono text-[10px] text-foreground text-left"
+              dir="ltr"
+            >
               SELECT * FROM pages
               <br />
               WHERE workspace_id = $1
@@ -483,7 +501,7 @@ function PeekPreview() {
         <div className="w-2/5 bg-neutral-50/80 dark:bg-neutral-900/80 p-4">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-semibold text-foreground">
-              Backlinks
+              {t("bento.previewPeekBacklinks")}
             </span>
             <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold text-primary">
               3
@@ -491,10 +509,10 @@ function PeekPreview() {
           </div>
           <div className="space-y-2">
             <div className="rounded-md border border-neutral-100 dark:border-neutral-800 bg-background px-2.5 py-2 text-[10px] font-medium text-foreground cursor-pointer hover:border-primary/30 transition-colors">
-              Knowledge Graph
+              {t("bento.previewPeekLinkGraph")}
             </div>
             <div className="rounded-md border border-neutral-100 dark:border-neutral-800 bg-background px-2.5 py-2 text-[10px] font-medium text-foreground cursor-pointer hover:border-primary/30 transition-colors">
-              Tauri Runtime
+              {t("bento.previewPeekLinkTauri")}
             </div>
           </div>
         </div>

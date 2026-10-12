@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 
+import "@/i18n";
 import { LandingPage } from "@/components/pages/landing-page";
 import "@yaad/ui/assets/globals.css";
 import "@yaad/ui/assets/landing.css";

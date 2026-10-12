@@ -1,4 +1,7 @@
+import "@/i18n";
+
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { LandingBento } from "./bento";
 import { LandingDownloads } from "./downloads";
@@ -14,26 +17,28 @@ interface LandingPageProps {
 }
 
 export function LandingPage({ onOpenApp }: LandingPageProps) {
+  const { t } = useTranslation("landing");
+
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = "Yaad — Fast, Private Notes & Connected Ideas";
+    document.title = t("metaTitle");
 
     return () => {
       document.title = previousTitle;
     };
-  }, []);
+  }, [t]);
 
   return (
-    <div className="paper-texture relative min-h-screen w-full bg-background text-foreground selection:bg-foreground/10 selection:text-foreground scroll-smooth flex flex-col">
+    <div className="paper-texture relative min-h-screen w-full overflow-x-clip bg-background text-foreground selection:bg-foreground/10 selection:text-foreground scroll-smooth flex flex-col">
       {/* Background Grid Lines (matches max-w-6xl) */}
       <div className="pointer-events-none fixed inset-0 z-0 flex justify-center overflow-hidden">
         <div className="w-full max-w-6xl border-x border-dashed border-neutral-300 dark:border-neutral-700" />
       </div>
 
-      <div className="relative z-10 flex flex-col flex-1">
+      <div className="relative z-10 flex flex-col flex-1 overflow-x-clip">
         <LandingHeader onOpenApp={onOpenApp} />
 
-        <main id="main-content" className="flex flex-col">
+        <main id="main-content" className="flex flex-col overflow-x-clip">
           <Reveal animation="t-stagger">
             <LandingHero onOpenApp={onOpenApp} />
           </Reveal>

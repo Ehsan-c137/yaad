@@ -112,7 +112,11 @@
     transform 0.8s var(--stagger-ease);
   will-change: transform, opacity;
 }
-.t-stagger.is-visible .t-slide-right {
+[dir="rtl"] .t-slide-right {
+  transform: translateX(16px);
+}
+.t-stagger.is-visible .t-slide-right,
+[dir="rtl"] .t-stagger.is-visible .t-slide-right {
   opacity: 1;
   transform: translateX(0);
 }

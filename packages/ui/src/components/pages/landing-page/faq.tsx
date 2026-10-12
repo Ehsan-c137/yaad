@@ -1,41 +1,38 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface FaqItem {
   question: string;
   answer: string;
 }
 
-const FAQS: FaqItem[] = [
-  {
-    question: "What makes Yaad different from other note apps?",
-    answer:
-      "Yaad combines clean, block-based writing with visual note connections—without heavy memory usage, complex setups, or slow startup times. It opens in a flash, feels lightweight, and keeps you focused on writing.",
-  },
-  {
-    question: "Where are my notes and data stored?",
-    answer:
-      "100% locally on your own machine. On desktop, notes are saved directly to your computer's local drive. In the browser, they are stored securely in your browser's private storage. We never track your keystrokes, run analytics on your notes, or lock your thoughts behind cloud servers.",
-  },
-  {
-    question: "Is Yaad free and open-source?",
-    answer:
-      "Yes. Yaad is 100% free and open-source. There are no artificial paywalls, document limits, or subscription traps.",
-  },
-  {
-    question: "Which platforms are supported?",
-    answer:
-      "Yaad runs as a native app on macOS (Apple Silicon & Intel), Windows 10/11, and Linux. You can also use it directly in any modern web browser with zero installation.",
-  },
-  {
-    question: "Can I export my notes?",
-    answer:
-      "Yes, anytime. Your notes belong completely to you. You can export individual documents or your entire workspace into clean text or standard Markdown files with your links preserved.",
-  },
-];
-
 export function LandingFaq() {
+  const { t } = useTranslation("landing");
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const faqs: FaqItem[] = [
+    {
+      question: t("faq.q1"),
+      answer: t("faq.a1"),
+    },
+    {
+      question: t("faq.q2"),
+      answer: t("faq.a2"),
+    },
+    {
+      question: t("faq.q3"),
+      answer: t("faq.a3"),
+    },
+    {
+      question: t("faq.q4"),
+      answer: t("faq.a4"),
+    },
+    {
+      question: t("faq.q5"),
+      answer: t("faq.a5"),
+    },
+  ];
 
   const toggle = (idx: number) => {
     setOpenIndex((prev) => (prev === idx ? null : idx));
@@ -49,19 +46,18 @@ export function LandingFaq() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <div className="text-center">
           <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
-            FAQ
+            {t("faq.badge")}
           </span>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Frequently Asked Questions
+            {t("faq.title")}
           </h2>
           <p className="mt-3 text-[15px] text-neutral-500 dark:text-neutral-400">
-            Everything you need to know about Yaad and how it keeps your notes
-            private.
+            {t("faq.description")}
           </p>
         </div>
 
         <div className="mt-12 space-y-2">
-          {FAQS.map((faq, idx) => {
+          {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div
@@ -71,7 +67,7 @@ export function LandingFaq() {
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
-                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-foreground transition-colors hover:text-foreground/80 cursor-pointer"
+                  className="flex w-full items-center justify-between p-5 text-left rtl:text-right text-sm font-semibold text-foreground transition-colors hover:text-foreground/80 cursor-pointer"
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
@@ -82,7 +78,7 @@ export function LandingFaq() {
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-neutral-100 dark:border-neutral-800 px-5 pt-3 pb-5 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="border-t border-neutral-100 dark:border-neutral-800 px-5 pt-3 pb-5 text-sm leading-relaxed text-neutral-500 dark:text-neutral-400 animate-in fade-in slide-in-from-top-1 duration-200 text-left rtl:text-right">
                     {faq.answer}
                   </div>
                 )}

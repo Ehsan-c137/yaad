@@ -1,11 +1,13 @@
 /* eslint-disable max-lines-per-function */
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Download, Globe, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { AppleIcon, LinuxIcon, WindowsIcon } from "./platform-utils";
 
 export function LandingDownloads() {
+  const { t } = useTranslation("landing");
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
   );
@@ -18,30 +20,30 @@ export function LandingDownloads() {
       id: "macos",
       name: "macOS",
       icon: AppleIcon,
-      badge: "macOS 11+",
-      desc: "Optimized for Apple Silicon (M1/M2/M3/M4) and Intel Macs.",
-      primary: { label: "Apple Silicon (.dmg)", size: "68 MB" },
-      secondary: { label: "Intel Mac (.dmg)", size: "72 MB" },
+      badge: t("downloads.macBadge"),
+      desc: t("downloads.macDesc"),
+      primary: { label: t("downloads.macPrimaryLabel"), size: "68 MB" },
+      secondary: { label: t("downloads.macSecondaryLabel"), size: "72 MB" },
       comingSoon: true,
     },
     {
       id: "windows",
       name: "Windows",
       icon: WindowsIcon,
-      badge: "Win 10/11",
-      desc: "Easy installer for Windows 10 and 11. Quick setup in a few clicks.",
-      primary: { label: "Installer (.exe)", size: "64 MB" },
-      secondary: { label: "Enterprise MSI (.msi)", size: "65 MB" },
+      badge: t("downloads.winBadge"),
+      desc: t("downloads.winDesc"),
+      primary: { label: t("downloads.winPrimaryLabel"), size: "64 MB" },
+      secondary: { label: t("downloads.winSecondaryLabel"), size: "65 MB" },
       comingSoon: true,
     },
     {
       id: "linux",
       name: "Linux",
       icon: LinuxIcon,
-      badge: "All Distros",
-      desc: "AppImage and .deb packages ready to run on any Linux distribution.",
-      primary: { label: "AppImage (.AppImage)", size: "75 MB" },
-      secondary: { label: "Debian (.deb)", size: "62 MB" },
+      badge: t("downloads.linuxBadge"),
+      desc: t("downloads.linuxDesc"),
+      primary: { label: t("downloads.linuxPrimaryLabel"), size: "75 MB" },
+      secondary: { label: t("downloads.linuxSecondaryLabel"), size: "62 MB" },
       comingSoon: true,
     },
   ];
@@ -52,14 +54,13 @@ export function LandingDownloads() {
         {/* Section Header */}
         <div className="text-center">
           <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
-            Downloads
+            {t("downloads.badge")}
           </span>
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-[2.75rem] sm:leading-[1.15]">
-            Get Yaad for your computer.
+            {t("downloads.title")}
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-[15px] text-neutral-500 dark:text-neutral-400">
-            Lightweight, battery-friendly, and opens in milliseconds. Download
-            the desktop app or launch directly in your browser.
+            {t("downloads.description")}
           </p>
         </div>
 
@@ -75,7 +76,7 @@ export function LandingDownloads() {
                 {platform.comingSoon && (
                   <div className="pointer-events-auto absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-background/70 backdrop-blur-[2px]">
                     <p className="rounded-full bg-neutral-100 dark:bg-neutral-800 px-3 py-1 text-[11px] font-semibold text-neutral-500 dark:text-neutral-400">
-                      Coming soon
+                      {t("downloads.comingSoon")}
                     </p>
                   </div>
                 )}
@@ -123,7 +124,7 @@ export function LandingDownloads() {
 
                 <div className="mt-5 flex items-center gap-1.5 border-t border-neutral-100 dark:border-neutral-800 pt-3 text-[11px] text-neutral-400 dark:text-neutral-500">
                   <ShieldCheck className="size-3.5 text-emerald-500 shrink-0" />
-                  <span>Verified & Secure</span>
+                  <span>{t("downloads.verifiedSecure")}</span>
                 </div>
               </div>
             );
@@ -137,7 +138,7 @@ export function LandingDownloads() {
                   <Globe className="size-5" />
                 </div>
                 <span className="rounded-full bg-foreground dark:bg-white px-2.5 py-0.5 text-[10px] font-bold text-background dark:text-black">
-                  No Install
+                  {t("downloads.webBadge")}
                 </span>
               </div>
 
@@ -145,8 +146,7 @@ export function LandingDownloads() {
                 Web App
               </h3>
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                Use Yaad directly in your web browser. All data stays saved
-                privately on your device.
+                {t("downloads.webDesc")}
               </p>
 
               <div className="mt-5 space-y-2">
@@ -154,17 +154,17 @@ export function LandingDownloads() {
                   to={targetWorkspaceHref}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-foreground dark:bg-white px-3.5 py-2.5 text-xs font-semibold text-background dark:text-black transition-all hover:bg-foreground/85 dark:hover:bg-white/85 active:scale-[0.97] cursor-pointer"
                 >
-                  Launch Yaad Web
+                  {t("downloads.webCta")}
                 </Link>
                 <div className="rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 p-2 text-center text-[10px] text-neutral-400 dark:text-neutral-500">
-                  Chrome, Safari, Firefox, Edge
+                  {t("downloads.webBrowsers")}
                 </div>
               </div>
             </div>
 
             <div className="mt-5 flex items-center gap-1.5 border-t border-neutral-100 dark:border-neutral-800 pt-3 text-[11px] text-neutral-400 dark:text-neutral-500">
               <ShieldCheck className="size-3.5 text-emerald-500 shrink-0" />
-              <span>No installation required</span>
+              <span>{t("downloads.webNoInstallFooter")}</span>
             </div>
           </div>
         </div>

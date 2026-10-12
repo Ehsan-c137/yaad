@@ -1,20 +1,43 @@
+/* eslint-disable max-lines-per-function */
 import { Button } from "@ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/select";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 interface LandingHeaderProps {
   onOpenApp?: () => void;
 }
 
-const NAV_LINKS = [
-  { href: "#features", label: "Features" },
-  { href: "#philosophy", label: "How It Works" },
-  { href: "#downloads", label: "Downloads" },
-  { href: "#faq", label: "FAQ" },
-];
+const LANGUAGE_OPTIONS = [
+  { value: "en", label: "English" },
+  { value: "fa", label: "فارسی" },
+] as const;
 
 export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
+  const { t, i18n } = useTranslation("landing");
+  const currentLanguage = i18n.resolvedLanguage?.startsWith("fa") ? "fa" : "en";
+
+  const navLinks = [
+    { href: "#features", label: t("header.features") },
+    { href: "#philosophy", label: t("header.howItWorks") },
+    { href: "#downloads", label: t("header.downloads") },
+    { href: "#faq", label: t("header.faq") },
+  ];
+
+  const handleLanguageChange = (val: string | null) => {
+    if (val) {
+      void i18n.changeLanguage(val);
+    }
+  };
+
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
   );
@@ -86,7 +109,7 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
           className="hidden items-center gap-1 md:flex"
           aria-label="Main Navigation"
         >
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -100,14 +123,40 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
 
         {/* Right CTA */}
         <div className="flex items-center gap-2">
+          <Select
+            value={currentLanguage}
+            onValueChange={handleLanguageChange}
+            items={LANGUAGE_OPTIONS}
+          >
+            <SelectTrigger
+              size="sm"
+              aria-label={t("header.switchLanguage")}
+              className="h-8 gap-1.5 rounded-full border-neutral-200 dark:border-neutral-800 bg-background/50 hover:bg-neutral-100 dark:hover:bg-neutral-800/80 px-2.5 text-xs font-medium cursor-pointer"
+            >
+              <Globe className="size-3.5 text-neutral-500 dark:text-neutral-400" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end" alignItemWithTrigger={false}>
+              {LANGUAGE_OPTIONS.map((opt) => (
+                <SelectItem
+                  key={opt.value}
+                  value={opt.value}
+                  className="text-xs cursor-pointer"
+                >
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           {onOpenApp ? (
             <Button
               onClick={onOpenApp}
               size="sm"
               className="h-8 gap-1.5 rounded-full bg-foreground dark:bg-white px-4 text-[13px] font-medium text-background dark:text-black hover:bg-foreground/85 dark:hover:bg-white/85 cursor-pointer"
             >
-              <span>Open Yaad</span>
-              <ArrowRight className="size-3.5" />
+              <span>{t("header.openYaad")}</span>
+              <ArrowRight className="size-3.5 rtl:rotate-180" />
             </Button>
           ) : (
             <Link to={targetWorkspaceHref}>
@@ -115,8 +164,8 @@ export function LandingHeader({ onOpenApp }: LandingHeaderProps) {
                 size="sm"
                 className="h-8 gap-1.5 rounded-full bg-foreground dark:bg-white px-4 text-[13px] font-medium text-background dark:text-black hover:bg-foreground/85 dark:hover:bg-white/85 cursor-pointer"
               >
-                <span>Open Yaad</span>
-                <ArrowRight className="size-3.5" />
+                <span>{t("header.openYaad")}</span>
+                <ArrowRight className="size-3.5 rtl:rotate-180" />
               </Button>
             </Link>
           )}

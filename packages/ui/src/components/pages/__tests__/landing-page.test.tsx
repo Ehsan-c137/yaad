@@ -2,6 +2,8 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n";
+
 import { LandingPage } from "../landing-page";
 
 // Mock zustand stores & router
@@ -26,8 +28,9 @@ Object.defineProperty(navigator, "clipboard", {
 });
 
 describe("LandingPage", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    await i18n.changeLanguage("en");
   });
 
   afterEach(() => {
@@ -99,5 +102,56 @@ describe("LandingPage", () => {
     fireEvent.click(questionButton);
 
     expect(screen.getByText(/100% locally on your own machine/i)).toBeDefined();
+  });
+
+  it("supports switching language via select menu and applies RTL direction", () => {
+    render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>,
+    );
+
+    // Initial state is English
+    expect(document.documentElement.dir).toBe("ltr");
+    const langSelect = screen.getByRole("combobox", {
+      name: /switch language/i,
+    });
+    expect(langSelect).toBeDefined();
+    expect(screen.getByText("English")).toBeDefined();
+
+    // Open select dropdown and choose Persian
+    fireEvent.click(langSelect);
+    const faOption = screen.getByRole("option", { name: "فارسی" });
+    fireEvent.pointerDown(faOption);
+    fireEvent.click(faOption);
+
+    // Check Persian UI and RTL attributes
+    expect(document.documentElement.dir).toBe("rtl");
+    expect(document.documentElement.lang).toBe("fa");
+    expect(screen.getAllByText(/یادداشت\u200cها/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/قابلیت\u200cها/).length).toBeGreaterThan(0);
+
+    // Open select dropdown and switch back to English
+    fireEvent.click(langSelect);
+    const enOption = screen.getByRole("option", { name: "English" });
+    fireEvent.pointerDown(enOption);
+    fireEvent.click(enOption);
+
+    expect(document.documentElement.dir).toBe("ltr");
+    expect(document.documentElement.lang).toBe("en");
+  });
+
+  it("applies horizontal overflow containment classes across main containers", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>,
+    );
+
+    const rootWrapper = container.firstElementChild!;
+    expect(rootWrapper.className).toContain("overflow-x-clip");
+
+    const mainContent = container.querySelector("#main-content")!;
+    expect(mainContent.className).toContain("overflow-x-clip");
   });
 });

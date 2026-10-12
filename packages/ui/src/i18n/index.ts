@@ -4,11 +4,13 @@ import { initReactI18next } from "react-i18next";
 
 import enCommon from "./locales/en/common.json";
 import enEditor from "./locales/en/editor.json";
+import enLanding from "./locales/en/landing.json";
 import enSearch from "./locales/en/search.json";
 import enSettings from "./locales/en/settings.json";
 import enSidebar from "./locales/en/sidebar.json";
 import faCommon from "./locales/fa/common.json";
 import faEditor from "./locales/fa/editor.json";
+import faLanding from "./locales/fa/landing.json";
 import faSearch from "./locales/fa/search.json";
 import faSettings from "./locales/fa/settings.json";
 import faSidebar from "./locales/fa/sidebar.json";
@@ -39,6 +41,7 @@ void i18n
       en: {
         common: enCommon,
         editor: enEditor,
+        landing: enLanding,
         settings: enSettings,
         sidebar: enSidebar,
         search: enSearch,
@@ -46,6 +49,7 @@ void i18n
       fa: {
         common: faCommon,
         editor: faEditor,
+        landing: faLanding,
         settings: faSettings,
         sidebar: faSidebar,
         search: faSearch,
@@ -53,7 +57,7 @@ void i18n
     },
     fallbackLng: "en",
     defaultNS: "common",
-    ns: ["common", "editor", "settings", "sidebar", "search"],
+    ns: ["common", "editor", "settings", "sidebar", "search", "landing"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator"],

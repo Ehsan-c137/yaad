@@ -1,11 +1,13 @@
 import { Button } from "@ui/button";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ArrowRight, Download, Heart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { GithubIcon } from "./platform-utils";
 
 export function LandingFooter() {
+  const { t } = useTranslation("landing");
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
   );
@@ -19,11 +21,10 @@ export function LandingFooter() {
         {/* CTA banner */}
         <div className="rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 p-8 sm:p-12 text-center">
           <h3 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
-            Ready for a calmer, faster way to take notes?
+            {t("footer.bannerTitle")}
           </h3>
           <p className="mx-auto mt-3 max-w-md text-sm text-neutral-500 dark:text-neutral-400">
-            No sign-up or credit card required. Download the desktop app or
-            start writing in your browser right away.
+            {t("footer.bannerDesc")}
           </p>
 
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -33,7 +34,7 @@ export function LandingFooter() {
                 className="h-11 gap-2 rounded-full bg-foreground dark:bg-white px-6 text-sm font-semibold text-background dark:text-black hover:bg-foreground/85 dark:hover:bg-white/85 active:scale-[0.97] cursor-pointer"
               >
                 <Download className="size-4" />
-                <span>Download Desktop App</span>
+                <span>{t("footer.btnDownloadDesktop")}</span>
               </Button>
             </a>
 
@@ -43,8 +44,8 @@ export function LandingFooter() {
                 size="lg"
                 className="h-11 gap-2 rounded-full border-neutral-200 dark:border-neutral-700 px-6 text-sm font-semibold text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800 active:scale-[0.97] cursor-pointer"
               >
-                <span>Launch Web App</span>
-                <ArrowRight className="size-4" />
+                <span>{t("footer.btnLaunchWeb")}</span>
+                <ArrowRight className="size-4 rtl:rotate-180" />
               </Button>
             </Link>
           </div>
@@ -59,7 +60,7 @@ export function LandingFooter() {
               Yaad
             </span>
             <span className="text-xs text-neutral-400 dark:text-neutral-500">
-              • Simple & Connected Notes
+              {t("footer.tagline")}
             </span>
           </div>
 
@@ -69,22 +70,22 @@ export function LandingFooter() {
               href="#features"
               className="hover:text-foreground transition-colors"
             >
-              Features
+              {t("footer.linkFeatures")}
             </a>
             <a
               href="#downloads"
               className="hover:text-foreground transition-colors"
             >
-              Downloads
+              {t("footer.linkDownloads")}
             </a>
             <a
               href="#philosophy"
               className="hover:text-foreground transition-colors"
             >
-              How It Works
+              {t("footer.linkHowItWorks")}
             </a>
             <a href="#faq" className="hover:text-foreground transition-colors">
-              FAQ
+              {t("footer.linkFaq")}
             </a>
             <a
               href="https://github.com"
@@ -93,14 +94,14 @@ export function LandingFooter() {
               className="flex items-center gap-1 hover:text-foreground transition-colors"
             >
               <GithubIcon className="size-3.5" />
-              <span>GitHub</span>
+              <span>{t("footer.linkGithub")}</span>
             </a>
           </div>
 
           <div className="text-xs text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
-            <span>Crafted with</span>
+            <span>{t("footer.craftedWith")}</span>
             <Heart className="size-3 text-rose-500 fill-rose-500" />
-            <span>for thinkers & creators</span>
+            <span>{t("footer.forThinkers")}</span>
           </div>
         </div>
       </div>
