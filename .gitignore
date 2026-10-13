@@ -29,3 +29,9 @@ target
 
 # Vercel
 .vercel
+
+# Environment & Build Info
+.env
+.env.*
+!.env.example
+*.tsbuildinfo

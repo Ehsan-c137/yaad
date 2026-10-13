@@ -179,3 +179,13 @@ Yaad utilizes React Router v8:
 ```
 
 All workspace routes are wrapped within `MainLayout`, which hosts the collapsible sidebar, navigation tabs header, and global search command palette (`Cmd/Ctrl + K`).
+
+---
+
+## 8. Architecture Decision Records (ADRs)
+
+Core architectural decisions with non-trivial trade-offs are documented under [`docs/adr/`](file:///run/media/ehsan/Local%20Disk/CODE/CODE/yaad/docs/adr/):
+
+- [`0001: Local-First Mutation-Driven Sync Engine`](file:///run/media/ehsan/Local%20Disk/CODE/CODE/yaad/docs/adr/0001-local-first-sync-engine.md)
+- [`0002: CRDT-Powered Real-Time Collaborative Multiplayer`](file:///run/media/ehsan/Local%20Disk/CODE/CODE/yaad/docs/adr/0002-crdt-collaborative-multiplayer.md)
+
