@@ -5,9 +5,10 @@ import { randomUUID } from 'node:crypto';
 import * as Y from 'yjs';
 import type { Database } from '../../database/database.module.js';
 import { documentCrdtUpdates, documents } from '../../database/schema.js';
+import type { ICollabPersistence } from './interfaces/collab-persistence.interface.js';
 
 @Injectable()
-export class CollabPersistenceService {
+export class CollabPersistenceService implements ICollabPersistence {
   private readonly logger = new Logger(CollabPersistenceService.name);
 
   constructor(@InjectDrizzle() private readonly db: Database) {}

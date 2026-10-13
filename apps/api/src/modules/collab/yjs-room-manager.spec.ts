@@ -121,4 +121,20 @@ describe('YjsRoomManager', () => {
     Y.applyUpdate(clientDoc, diff);
     expect(clientDoc.getText('notes').toString()).toBe('Initial World');
   });
+
+  it('manages consumer lifecycle via acquireRoom and releaseRoom', async () => {
+    await roomManager.acquireRoom('ws_1', 'doc_1');
+    const room = await roomManager.getOrCreateRoom('ws_1', 'doc_1');
+    expect(room.activeConsumers).toBe(1);
+
+    roomManager.releaseRoom('ws_1', 'doc_1');
+    expect(room.activeConsumers).toBe(0);
+    // Should immediately trigger snapshot materialization upon last release
+    expect(mockPersistence.materializeSnapshot).toHaveBeenCalledWith(
+      'ws_1',
+      'doc_1',
+      room.ydoc,
+    );
+  });
 });
+

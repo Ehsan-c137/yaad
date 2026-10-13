@@ -1,28 +1,32 @@
-import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import type { WebSocket } from 'ws';
+import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import * as Y from 'yjs';
-import { CollabPersistenceService } from './collab-persistence.service.js';
+import { COLLAB_PERSISTENCE } from './collab.tokens.js';
+import type { ICollabPersistence } from './interfaces/collab-persistence.interface.js';
+import type { IRoomManager } from './interfaces/room-manager.interface.js';
 
 export interface CollabRoom {
   workspaceId: string;
   documentId: string;
   ydoc: Y.Doc;
-  clients: Set<WebSocket>;
+  activeConsumers: number;
   saveTimeout?: NodeJS.Timeout;
   evictionTimeout?: NodeJS.Timeout;
 }
 
 @Injectable()
-export class YjsRoomManager implements OnModuleDestroy {
+export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
   private readonly logger = new Logger(YjsRoomManager.name);
   private readonly rooms = new Map<string, CollabRoom>();
 
   // Snapshot debounce delay (10 seconds of idle typing)
   private readonly SNAPSHOT_DEBOUNCE_MS = 10_000;
-  // Room in-memory cache time after all clients disconnect (5 minutes)
+  // Room in-memory cache time after all consumers disconnect (5 minutes)
   private readonly ROOM_EVICTION_MS = 5 * 60_000;
 
-  constructor(private readonly persistence: CollabPersistenceService) {}
+  constructor(
+    @Inject(COLLAB_PERSISTENCE)
+    private readonly persistence: ICollabPersistence,
+  ) {}
 
   private getRoomKey(workspaceId: string, documentId: string): string {
     return `${workspaceId}:${documentId}`;
@@ -72,7 +76,7 @@ export class YjsRoomManager implements OnModuleDestroy {
       workspaceId,
       documentId,
       ydoc,
-      clients: new Set<WebSocket>(),
+      activeConsumers: 0,
     };
 
     this.rooms.set(key, room);
@@ -114,34 +118,25 @@ export class YjsRoomManager implements OnModuleDestroy {
   }
 
   /**
-   * Registers a client socket in the room.
+   * Registers a consumer of this room (incrementing ref count).
    */
-  async addClient(
-    workspaceId: string,
-    documentId: string,
-    client: WebSocket,
-  ): Promise<CollabRoom> {
+  async acquireRoom(workspaceId: string, documentId: string): Promise<void> {
     const room = await this.getOrCreateRoom(workspaceId, documentId);
-    room.clients.add(client);
-    return room;
+    room.activeConsumers += 1;
   }
 
   /**
-   * Unregisters a client socket. Triggers snapshot persistence and room eviction when empty.
+   * Releases a consumer of this room. Triggers snapshotting & RAM eviction when ref count hits 0.
    */
-  removeClient(
-    workspaceId: string,
-    documentId: string,
-    client: WebSocket,
-  ): void {
+  releaseRoom(workspaceId: string, documentId: string): void {
     const key = this.getRoomKey(workspaceId, documentId);
     const room = this.rooms.get(key);
     if (!room) return;
 
-    room.clients.delete(client);
+    room.activeConsumers = Math.max(0, room.activeConsumers - 1);
 
-    if (room.clients.size === 0) {
-      // Materialize snapshot immediately on last client disconnect
+    if (room.activeConsumers === 0) {
+      // Materialize snapshot immediately on last consumer release
       void this.persistence.materializeSnapshot(
         workspaceId,
         documentId,
@@ -202,7 +197,6 @@ export class YjsRoomManager implements OnModuleDestroy {
   }
 
   async onModuleDestroy(): Promise<void> {
-    // Flush all active rooms to disk on shutdown
     for (const room of this.rooms.values()) {
       if (room.saveTimeout) clearTimeout(room.saveTimeout);
       if (room.evictionTimeout) clearTimeout(room.evictionTimeout);

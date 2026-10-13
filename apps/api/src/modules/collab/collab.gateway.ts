@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,7 +9,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { type Server, type WebSocket } from 'ws';
-import { YjsRoomManager } from './yjs-room-manager.js';
+import { ROOM_MANAGER } from './collab.tokens.js';
+import type { IRoomManager } from './interfaces/room-manager.interface.js';
 
 interface ClientContext {
   workspaceId?: string;
@@ -23,10 +24,20 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(CollabGateway.name);
   private readonly clientContexts = new WeakMap<WebSocket, ClientContext>();
 
+  // Gateway manages its own WebSocket room subscribers (SRP & Law of Demeter compliant)
+  private readonly roomSubscribers = new Map<string, Set<WebSocket>>();
+
   @WebSocketServer()
   server!: Server;
 
-  constructor(private readonly roomManager: YjsRoomManager) {}
+  constructor(
+    @Inject(ROOM_MANAGER)
+    private readonly roomManager: IRoomManager,
+  ) {}
+
+  private getRoomKey(workspaceId: string, documentId: string): string {
+    return `${workspaceId}:${documentId}`;
+  }
 
   handleConnection(client: WebSocket): void {
     this.clientContexts.set(client, {});
@@ -36,7 +47,19 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: WebSocket): void {
     const ctx = this.clientContexts.get(client);
     if (ctx?.workspaceId && ctx?.documentId) {
-      this.roomManager.removeClient(ctx.workspaceId, ctx.documentId, client);
+      const roomKey = this.getRoomKey(ctx.workspaceId, ctx.documentId);
+      const subscribers = this.roomSubscribers.get(roomKey);
+      if (subscribers) {
+        subscribers.delete(client);
+        if (subscribers.size === 0) {
+          this.roomSubscribers.delete(roomKey);
+        }
+      }
+
+      // Notify RoomManager of consumer release
+      this.roomManager.releaseRoom(ctx.workspaceId, ctx.documentId);
+
+      // Broadcast peer leave to remaining room subscribers
       this.broadcastToRoom(
         ctx.workspaceId,
         ctx.documentId,
@@ -47,6 +70,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client,
       );
     }
+
     this.clientContexts.delete(client);
     this.logger.debug('Collab client disconnected');
   }
@@ -65,27 +89,37 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
   ): Promise<void> {
     const { workspaceId, documentId, stateVector } = data;
+    const roomKey = this.getRoomKey(workspaceId, documentId);
+
     const ctx = this.clientContexts.get(client) ?? {};
     ctx.workspaceId = workspaceId;
     ctx.documentId = documentId;
     this.clientContexts.set(client, ctx);
 
-    // Register socket in the room
-    await this.roomManager.addClient(workspaceId, documentId, client);
+    // 1. Manage WebSocket subscriber registration in Gateway
+    let subscribers = this.roomSubscribers.get(roomKey);
+    if (!subscribers) {
+      subscribers = new Set<WebSocket>();
+      this.roomSubscribers.set(roomKey, subscribers);
+    }
+    subscribers.add(client);
 
-    // Decode client state vector if provided
+    // 2. Acquire room in CRDT RoomManager
+    await this.roomManager.acquireRoom(workspaceId, documentId);
+
+    // 3. Decode client state vector if provided
     const clientVector = stateVector
       ? Buffer.from(stateVector, 'base64')
       : undefined;
 
-    // Calculate missing updates (Sync Step 2)
+    // 4. Calculate missing updates (Sync Step 2)
     const diffUpdate = await this.roomManager.getDiffUpdate(
       workspaceId,
       documentId,
       clientVector,
     );
 
-    // Send missing updates to the newly connected client
+    // 5. Send missing updates back to joining client
     client.send(
       JSON.stringify({
         event: 'sync-step-2',
@@ -94,7 +128,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }),
     );
 
-    this.logger.debug(`Client joined room ${workspaceId}:${documentId}`);
+    this.logger.debug(`Client joined room ${roomKey}`);
   }
 
   /**
@@ -113,7 +147,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const { workspaceId, documentId, update } = data;
     const binaryUpdate = Buffer.from(update, 'base64');
 
-    // 1. Apply to server-side room and queue persistence
+    // 1. Apply to CRDT engine and queue persistence
     await this.roomManager.applyUpdate(workspaceId, documentId, binaryUpdate);
 
     // 2. Broadcast the update to all OTHER collaborators in the room
@@ -139,7 +173,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       workspaceId: string;
       documentId: string;
-      awarenessData: any; // Cursor position, active block, user name, color
+      awarenessData: any; // Cursor coordinates, active block ID, user avatar/name
     },
   ): void {
     const { workspaceId, documentId, awarenessData } = data;
@@ -157,7 +191,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
-   * Helper to broadcast a message to all connected clients in a specific room.
+   * Helper to broadcast a message to room subscribers directly from Gateway state.
    */
   private broadcastToRoom(
     workspaceId: string,
@@ -165,17 +199,15 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     message: Record<string, any>,
     excludeClient?: WebSocket,
   ): void {
-    const payload = JSON.stringify(message);
+    const roomKey = this.getRoomKey(workspaceId, documentId);
+    const subscribers = this.roomSubscribers.get(roomKey);
+    if (!subscribers) return;
 
-    // We can fetch room clients from YjsRoomManager
-    void this.roomManager
-      .getOrCreateRoom(workspaceId, documentId)
-      .then((room) => {
-        for (const peer of room.clients) {
-          if (peer !== excludeClient && peer.readyState === peer.OPEN) {
-            peer.send(payload);
-          }
-        }
-      });
+    const payload = JSON.stringify(message);
+    for (const peer of subscribers) {
+      if (peer !== excludeClient && peer.readyState === 1) {
+        peer.send(payload);
+      }
+    }
   }
 }
