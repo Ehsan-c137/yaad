@@ -21,6 +21,7 @@ interface EditableContentProps {
   autoFocus?: boolean;
   onFocusHandled?: () => void;
   blockId?: string;
+  readOnly?: boolean;
   onChange: (text: string) => void;
   onEnter?: (e: KeyboardEvent) => void;
   onBackspaceEmpty?: () => void;
@@ -57,6 +58,7 @@ export function EditableContent({
   autoFocus,
   onFocusHandled,
   blockId,
+  readOnly = false,
   onChange,
   onEnter,
   onBackspaceEmpty,
@@ -68,7 +70,7 @@ export function EditableContent({
     INITIAL_SLASH_MENU_STATE,
   );
 
-  useAutoFocus(contentRef, autoFocus, onFocusHandled);
+  useAutoFocus(contentRef, readOnly ? false : autoFocus, onFocusHandled);
 
   useEffect(() => {
     if (contentRef.current && contentRef.current.innerText !== html) {
@@ -106,6 +108,8 @@ export function EditableContent({
   };
 
   const handleInput = () => {
+    if (readOnly) return;
+
     const element = contentRef.current;
 
     if (!element) return;
@@ -120,6 +124,8 @@ export function EditableContent({
   };
 
   const handleSelectOption = (option: SlashOption) => {
+    if (readOnly) return;
+
     const element = contentRef.current;
 
     if (!element) return;
@@ -135,6 +141,8 @@ export function EditableContent({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (readOnly) return;
+
     if (
       slashMenuState.isOpen &&
       ["ArrowDown", "ArrowUp", "Enter"].includes(e.key)
@@ -162,19 +170,20 @@ export function EditableContent({
       <div
         role="textbox"
         aria-multiline="true"
-        tabIndex={0}
+        aria-readonly={readOnly}
+        tabIndex={readOnly ? -1 : 0}
         ref={contentRef}
-        contentEditable
+        contentEditable={!readOnly}
         suppressContentEditableWarning
         dir="ltr"
         style={{ direction: "ltr" }}
         onInput={handleInput}
         onKeyDown={handleKeyDown}
-        data-placeholder={placeholder}
+        data-placeholder={readOnly ? undefined : placeholder}
         data-block-id={blockId}
-        className={`w-full text-start wrap-break-word whitespace-pre-wrap outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)] ${className}`}
+        className={`w-full text-start wrap-break-word whitespace-pre-wrap outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)] ${readOnly ? "cursor-default select-text" : ""} ${className}`}
       />
-      {slashMenuState.isOpen && (
+      {!readOnly && slashMenuState.isOpen && (
         <SlashMenu
           position={slashMenuState.position}
           query={slashMenuState.query}

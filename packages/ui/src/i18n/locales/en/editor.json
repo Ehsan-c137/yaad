@@ -137,5 +137,7 @@
   "pageNotFound": "Page not found",
   "pageMayBeDeleted": "This page may have been deleted.",
   "openPage": "Open Page",
-  "closePreview": "Close preview"
+  "closePreview": "Close preview",
+  "emptyPageReadOnly": "This page is empty.",
+  "noBlocksYet": "No blocks yet. Click \"Add Initial Block\" or press Enter in a block."
 }

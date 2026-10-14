@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,7 @@ import { useCoverResolution } from "./use-cover-resolution";
 
 export function PageHeaderCover() {
   const { t } = useTranslation("editor");
+  const { isReadOnly } = useEditorPermissions();
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
 
   const coverImage = useDocumentStore(
@@ -29,14 +31,18 @@ export function PageHeaderCover() {
   const hasError = status === "error";
 
   const handleSelectCover = async (url: string) => {
+    if (isReadOnly) return;
     await updatePageCover(url);
   };
 
   const handleRemoveCover = async () => {
+    if (isReadOnly) return;
     await removeCoverImage();
   };
 
   if (!hasCover) {
+    if (isReadOnly) return null;
+
     return (
       <>
         <div className="flex items-end justify-end px-4">
@@ -117,7 +123,7 @@ export function PageHeaderCover() {
           )
         )}
 
-        {(isLoaded || hasError) && (
+        {!isReadOnly && (isLoaded || hasError) && (
           <div
             className={cn(
               "material",

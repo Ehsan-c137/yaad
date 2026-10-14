@@ -27,3 +27,10 @@ export interface WorkspaceMember {
   role: WorkspaceRole;
   createdAt: string | Date;
 }
+
+export interface WorkspacePermissions {
+  role: WorkspaceRole;
+  isReadOnly: boolean;
+  canEdit: boolean;
+  canManage: boolean;
+}

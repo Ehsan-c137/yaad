@@ -7,6 +7,8 @@ import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { styles } from "@/lib/design-token";
 import { EditorPageIdProvider } from "@/providers/document-provider";
 
+import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
+import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { BlockCanvas } from "./block-canvas";
 import { BlockCanvasSkeleton } from "./block-canvas-skeleton";
 import { PageHeader } from "./header/page-header";
@@ -21,6 +23,7 @@ export function EditorShell({ pageId }: EditorShellProps) {
   const loadDocument = useDocumentStore((state) => state.loadDocument, pageId);
   const isDeleted = useSidebarStore((s) => s.pages[pageId]?.isDeleted);
   const hasHydrated = useDocumentStore((state) => state._hasHydrated, pageId);
+  const permissions = useWorkspacePermissions(workspaceId);
 
   useEffect(() => {
     const loadDoc = async () => {
@@ -38,18 +41,20 @@ export function EditorShell({ pageId }: EditorShellProps) {
 
   return (
     <EditorPageIdProvider pageId={pageId}>
-      <CollabProvider workspaceId={workspaceId} pageId={pageId}>
-        <div className={styles.editorSurface}>
-          {isDeleted && <PageTrashBar pageId={pageId} />}
-          <PageHeader />
-          <div
-            key={pageId}
-            className="mx-auto pb-32 sm:px-4 md:px-12 animate-page-body"
-          >
-            {hasHydrated ? <BlockCanvas /> : <BlockCanvasSkeleton />}
+      <EditorPermissionsProvider value={permissions}>
+        <CollabProvider workspaceId={workspaceId} pageId={pageId}>
+          <div className={styles.editorSurface}>
+            {isDeleted && <PageTrashBar pageId={pageId} />}
+            <PageHeader />
+            <div
+              key={pageId}
+              className="mx-auto pb-32 sm:px-4 md:px-12 animate-page-body"
+            >
+              {hasHydrated ? <BlockCanvas /> : <BlockCanvasSkeleton />}
+            </div>
           </div>
-        </div>
-      </CollabProvider>
+        </CollabProvider>
+      </EditorPermissionsProvider>
     </EditorPageIdProvider>
   );
 }

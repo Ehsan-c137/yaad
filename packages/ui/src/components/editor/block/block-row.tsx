@@ -12,6 +12,7 @@ import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
 import { useCollabContext } from "@/context/collab-context";
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { BlockActionMenu } from "../menu/block-action-menu";
 import { COLOR_OPTIONS } from "../menu/menu-constants";
 import { BlockRenderer } from "./block-renderer";
@@ -23,6 +24,7 @@ interface BlockRowProps {
 
 export function BlockRow({ blockId }: BlockRowProps) {
   const { t } = useTranslation("editor");
+  const { isReadOnly } = useEditorPermissions();
   const block = useDocumentStore(
     (state) => state.currentDocument?.blocks[blockId],
   );
@@ -72,46 +74,48 @@ export function BlockRow({ blockId }: BlockRowProps) {
           <span>{peer.name}</span>
         </div>
       ))}
-      <div
-        contentEditable={false}
-        className="hidden md:flex absolute bottom-0 ltr:md:-left-15 rtl:md:-right-15 items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100"
-      >
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={() =>
-            void addBlock(block.parentId ?? "root", block.id, "paragraph")
-          }
-          title={t("addBlockBelow")}
-          tooltipSide="bottom"
+      {!isReadOnly && (
+        <div
+          contentEditable={false}
+          className="hidden md:flex absolute bottom-0 ltr:md:-left-15 rtl:md:-right-15 items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100"
         >
-          <Plus className="size-3.5" />
-        </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className="cursor-grab active:cursor-grabbing"
-                title={t("openBlockOptions")}
-                tooltipSide="bottom"
-              >
-                <GripVertical className="size-3.5" />
-              </Button>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={() =>
+              void addBlock(block.parentId ?? "root", block.id, "paragraph")
             }
-          />
-          <DropdownMenuContent
-            side="bottom"
-            align="start"
-            sideOffset={4}
-            className="w-60 text-xs"
+            title={t("addBlockBelow")}
+            tooltipSide="bottom"
           >
-            <BlockActionMenu block={block} />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+            <Plus className="size-3.5" />
+          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="cursor-grab active:cursor-grabbing"
+                  title={t("openBlockOptions")}
+                  tooltipSide="bottom"
+                >
+                  <GripVertical className="size-3.5" />
+                </Button>
+              }
+            />
+            <DropdownMenuContent
+              side="bottom"
+              align="start"
+              sideOffset={4}
+              className="w-60 text-xs"
+            >
+              <BlockActionMenu block={block} />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
 
       <div className="max-w-3xl w-full mx-auto flex flex-col">
         <BlockTags tags={block.tags ?? []} blockId={blockId} />

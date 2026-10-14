@@ -8,6 +8,7 @@ import { useLocation } from "react-router";
 import { SearchBox } from "@/components/search/search-command";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
+import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { isFirefox } from "@/lib/browser";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
@@ -59,6 +60,7 @@ function SidebarHomeHeader() {
   const activeWorkspaceId = useWorkspaceStore(
     (store) => store.activeWorkspaceId,
   );
+  const { isReadOnly } = useWorkspacePermissions(activeWorkspaceId);
   const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
 
   if (!activeWorkspaceId) return null;
@@ -113,17 +115,19 @@ function SidebarHomeHeader() {
       <div className="text-xs font-semibold uppercase tracking-widest flex items-center justify-between">
         <span>{t("private")}</span>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => void createPage(null)}
-          title={t("createPage")}
-          aria-label={t("createNewPage")}
-          className="text-muted-foreground hover:text-(--accent-blue)"
-        >
-          <Plus className="size-3.5" />
-        </Button>
+        {!isReadOnly && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => void createPage(null)}
+            title={t("createPage")}
+            aria-label={t("createNewPage")}
+            className="text-muted-foreground hover:text-(--accent-blue)"
+          >
+            <Plus className="size-3.5" />
+          </Button>
+        )}
       </div>
     </div>
   );

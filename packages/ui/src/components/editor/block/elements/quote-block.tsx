@@ -17,6 +17,7 @@ export function QuoteBlock({ block }: QuoteBlockProps) {
   const {
     text,
     isFocused,
+    isReadOnly,
     handleClearFocus,
     handleChange,
     changeBlockType,
@@ -50,6 +51,7 @@ export function QuoteBlock({ block }: QuoteBlockProps) {
           autoFocus={isFocused}
           onFocusHandled={handleClearFocus}
           blockId={block.id}
+          readOnly={isReadOnly}
           onChange={handleChange}
           onEnter={handleEnter}
           onBackspaceEmpty={handleBackspaceEmpty}

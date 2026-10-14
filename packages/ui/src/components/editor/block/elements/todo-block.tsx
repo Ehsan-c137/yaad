@@ -21,6 +21,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
     pageId,
     text,
     isFocused,
+    isReadOnly,
     handleClearFocus,
     handleChange,
     handleBackspaceEmpty,
@@ -62,6 +63,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
   }, [isChecked]);
 
   const handleToggleCheck = () => {
+    if (isReadOnly) return;
     void updateBlockProperties(block.id, pageId, {
       checked: !isChecked,
     });
@@ -72,6 +74,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
       <button
         type="button"
         role="checkbox"
+        disabled={isReadOnly}
         aria-checked={isChecked}
         aria-label={isChecked ? t("markTodoIncomplete") : t("markTodoComplete")}
         onClick={handleToggleCheck}
@@ -80,7 +83,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
           "transition-all duration-200 ease-out",
           "focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1",
           "after:absolute after:-inset-1.5",
-          "active:scale-85",
+          isReadOnly ? "cursor-default" : "active:scale-85",
           isChecked
             ? "border-primary bg-primary text-primary-foreground shadow-xs shadow-primary/25"
             : "border-border/80 bg-input/30 hover:border-primary/60 hover:bg-primary/5",
@@ -124,6 +127,7 @@ export function TodoBlock({ block }: TodoBlockProps) {
           autoFocus={isFocused}
           onFocusHandled={handleClearFocus}
           blockId={block.id}
+          readOnly={isReadOnly}
           onChange={handleChange}
           onEnter={() => insertBlockBelow("todo")}
           onBackspaceEmpty={handleBackspaceEmpty}

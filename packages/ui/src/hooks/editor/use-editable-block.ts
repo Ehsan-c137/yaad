@@ -7,11 +7,18 @@ import type {
 
 import { useCallback } from "react";
 
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
-export function useEditableBlock(block: DocumentBlock) {
+export function useEditableBlock(
+  block: DocumentBlock,
+  options?: { readOnly?: boolean },
+) {
   const pageId = useEditorPageIdContext();
+  const permissions = useEditorPermissions();
+  const isReadOnly = options?.readOnly ?? permissions.isReadOnly;
+
   const updateBlockProperties = useDocumentStore(
     (state) => state.updateBlockProperties,
   );
@@ -29,18 +36,20 @@ export function useEditableBlock(block: DocumentBlock) {
 
   const handleChange = useCallback(
     (newText: string) => {
+      if (isReadOnly) return;
       void updateBlockProperties(block.id, pageId, {
         title: [{ text: newText }],
       });
     },
-    [block.id, pageId, updateBlockProperties],
+    [isReadOnly, block.id, pageId, updateBlockProperties],
   );
 
   const handleBackspaceEmpty = useCallback(() => {
+    if (isReadOnly) return;
     if (block.id !== "root") {
       void deleteBlock(block.id);
     }
-  }, [block.id, deleteBlock]);
+  }, [isReadOnly, block.id, deleteBlock]);
 
   const handleClearFocus = useCallback(() => {
     setFocusedBlockId(null);
@@ -48,22 +57,25 @@ export function useEditableBlock(block: DocumentBlock) {
 
   const handleTransformType = useCallback(
     (newType: DocumentBlockType) => {
+      if (isReadOnly) return;
       void changeBlockType(block.id, newType);
     },
-    [block.id, changeBlockType],
+    [isReadOnly, block.id, changeBlockType],
   );
 
   const insertBlockBelow = useCallback(
     (type: DocumentBlockType = "paragraph") => {
+      if (isReadOnly) return;
       void addBlock(block.parentId ?? "root", block.id, type);
     },
-    [block.parentId, block.id, addBlock],
+    [isReadOnly, block.parentId, block.id, addBlock],
   );
 
   return {
     pageId,
     text,
     isFocused,
+    isReadOnly,
     setFocusedBlockId,
     handleClearFocus,
     handleChange,

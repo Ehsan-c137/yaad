@@ -1,12 +1,14 @@
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 
 import { IconPickerPopover } from "@/components/shared/icon-picker-popover";
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
 export function PageIcon() {
   const contextPageId = useEditorPageIdContext();
+  const { isReadOnly } = useEditorPermissions();
   const currentDocumentId = useDocumentStore(
     (state) => state.currentDocument?.id,
   );
@@ -27,14 +29,31 @@ export function PageIcon() {
   if (!effectiveDocumentId) return null;
 
   const handleIcon = async (newIcon: string) => {
+    if (isReadOnly) return;
     updatePageTitleInTree(effectiveDocumentId, undefined, newIcon);
     await updateIcon(newIcon);
   };
 
   const handleRemoveIcon = async () => {
+    if (isReadOnly) return;
     updatePageTitleInTree(effectiveDocumentId, undefined, undefined);
     await removePageIcon();
   };
+
+  if (isReadOnly) {
+    return (
+      <span
+        id="page_icon"
+        className={cn(
+          "text-start text-5xl leading-none select-none",
+          "inline-block",
+          "animate-page-icon",
+        )}
+      >
+        {icon}
+      </span>
+    );
+  }
 
   return (
     <IconPickerPopover

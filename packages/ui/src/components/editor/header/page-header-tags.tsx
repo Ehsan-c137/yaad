@@ -1,8 +1,10 @@
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 import { TagList } from "../tags/tag-list";
 
 export function PageHeaderTags() {
+  const { isReadOnly } = useEditorPermissions();
   const rootBlock = useDocumentStore(
     (state) => state.currentDocument?.blocks.root,
   );
@@ -20,12 +22,15 @@ export function PageHeaderTags() {
     <div className="mb-4 flex items-center">
       <TagList
         tags={rootBlock.tags ?? []}
+        readOnly={isReadOnly}
         onAddTag={(tag) => {
+          if (isReadOnly) return;
           void addTagToBlock(rootBlock.id, currentDocId, tag);
         }}
-        onRemoveTag={(tagId) =>
-          void removeTagFromBlock(rootBlock.id, currentDocId, tagId)
-        }
+        onRemoveTag={(tagId) => {
+          if (isReadOnly) return;
+          void removeTagFromBlock(rootBlock.id, currentDocId, tagId);
+        }}
       />
     </div>
   );

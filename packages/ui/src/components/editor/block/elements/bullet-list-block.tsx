@@ -17,6 +17,7 @@ export function BulletListBlock({ block }: BulletListBlockProps) {
   const {
     text,
     isFocused,
+    isReadOnly,
     handleClearFocus,
     handleChange,
     handleBackspaceEmpty,
@@ -36,6 +37,7 @@ export function BulletListBlock({ block }: BulletListBlockProps) {
         autoFocus={isFocused}
         onFocusHandled={handleClearFocus}
         blockId={block.id}
+        readOnly={isReadOnly}
         onChange={handleChange}
         onEnter={() => insertBlockBelow("bulleted_list")}
         onBackspaceEmpty={handleBackspaceEmpty}

@@ -12,6 +12,7 @@ import { MobileBlockDrawer } from "@/components/editor/menu/mobile-block-drawer"
 import { SearchBox } from "@/components/search/search-command";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { cn } from "@/lib/utils";
 import { EditorPageIdProvider } from "@/providers/document-provider";
 
@@ -26,6 +27,7 @@ function MobileEditorNavActions({
 }: MobileEditorNavActionsProps) {
   const { t } = useTranslation(["sidebar", "editor"]);
   const navigate = useNavigate();
+  const { isReadOnly } = useWorkspacePermissions(activeWorkspace);
   const createPage = useSidebarStore((store) => store.createPage);
   const currentDocument = useDocumentStore(
     (state) => state.currentDocument,
@@ -53,6 +55,7 @@ function MobileEditorNavActions({
     : null;
 
   const handleAddBlockBelow = async () => {
+    if (isReadOnly) return;
     if (activeBlock) {
       await addBlock(
         activeBlock.parentId ?? "root",
@@ -65,6 +68,8 @@ function MobileEditorNavActions({
   };
 
   if (!isEditorPage) {
+    if (isReadOnly) return null;
+
     return (
       <Button
         variant="ghost"
@@ -82,6 +87,8 @@ function MobileEditorNavActions({
       </Button>
     );
   }
+
+  if (isReadOnly) return null;
 
   return (
     <div className="flex items-center gap-1.5">
@@ -106,11 +113,13 @@ export function BottomMobileNav() {
   const isMobile = useMediaQuery("(max-width: 767px)");
   const createPage = useSidebarStore((store) => store.createPage);
   const activeWorkspace = useWorkspaceStore((state) => state.activeWorkspaceId);
+  const { isReadOnly } = useWorkspacePermissions(activeWorkspace);
   const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
 
   if (!isMobile || !activeWorkspace) return null;
 
   const handleNewPage = () => {
+    if (isReadOnly) return;
     const newPageId = createPage(null);
     navigate(`/${ROUTES.workspace}/${activeWorkspace}/${newPageId}`);
   };
@@ -143,15 +152,17 @@ export function BottomMobileNav() {
           />
         </EditorPageIdProvider>
       ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full active:scale-95"
-          onClick={handleNewPage}
-          title={t("createNewPage")}
-        >
-          <Plus className="size-4" />
-        </Button>
+        !isReadOnly && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full active:scale-95"
+            onClick={handleNewPage}
+            title={t("createNewPage")}
+          >
+            <Plus className="size-4" />
+          </Button>
+        )
       )}
     </nav>
   );

@@ -74,5 +74,7 @@
   "live": "زنده",
   "connecting": "در حال اتصال",
   "offline": "آفلاین",
-  "userIsEditing": "{{name}} در حال ویرایش است"
+  "userIsEditing": "{{name}} در حال ویرایش است",
+  "viewOnly": "فقط مشاهده",
+  "viewOnlyDesc": "شما فقط دسترسی مشاهده به این فضای کاری را دارید."
 }

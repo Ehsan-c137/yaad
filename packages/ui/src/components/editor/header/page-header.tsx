@@ -1,19 +1,19 @@
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
-import { Network } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
 import { Link } from "@/components/ui/link";
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@ui/button";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { Share2 } from "lucide-react";
+import { Eye, Network, Share2 } from "lucide-react";
 import { ShareModal } from "@/components/workspace/share-modal";
 
 import { BookmarkButton } from "./bookmark-button";
@@ -24,6 +24,7 @@ import { PageHeaderTags } from "./page-header-tags";
 
 export function PageHeader() {
   const { t } = useTranslation(["common", "editor"]);
+  const { isReadOnly } = useEditorPermissions();
   const { workspaceId = "ws_personal", pageId } = useParams<{
     workspaceId: string;
     pageId: string;
@@ -39,6 +40,15 @@ export function PageHeader() {
         <div className="flex items-center justify-between">
           <PageIcon />
           <div className="flex items-center gap-2">
+            {isReadOnly && (
+              <div
+                className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-600 dark:text-amber-400 select-none"
+                title={t("common:viewOnlyDesc", "You have read-only access to this workspace.")}
+              >
+                <Eye className="size-3.5" />
+                <span>{t("common:viewOnly", "View only")}</span>
+              </div>
+            )}
             <CollabPresence />
             <Button
               type="button"
@@ -71,6 +81,7 @@ export function PageHeader() {
 
 function PageHeaderTitle() {
   const { t } = useTranslation(["editor", "common"]);
+  const { isReadOnly } = useEditorPermissions();
   const { pageId: routePageId, workspaceId } = useParams<{
     pageId: string;
     workspaceId: string;
@@ -113,6 +124,7 @@ function PageHeaderTitle() {
   }, [exitingTitle]);
 
   const handleTitleChange = async (newTitle: string) => {
+    if (isReadOnly) return;
     await updateTitle(newTitle);
   };
 
@@ -132,6 +144,7 @@ function PageHeaderTitle() {
         key={pageId}
         html={titleText}
         placeholder={t("common:untitled")}
+        readOnly={isReadOnly}
         className="leading-tight font-bold tracking-tight text-foreground md:text-[2.75rem] animate-page-title"
         onChange={(newTitle: string) => {
           void handleTitleChange(newTitle);

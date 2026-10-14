@@ -21,6 +21,7 @@ import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { useSidePeek } from "@/hooks/editor/use-side-peek";
+import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { cn } from "@/lib/utils";
 
 interface SidebarActionsProps {
@@ -42,6 +43,7 @@ export function SidebarActions({
   const navigate = useNavigate();
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
   const workspaceId = workspaceIdProp ?? activeWorkspaceId ?? "";
+  const { isReadOnly } = useWorkspacePermissions(workspaceId);
 
   const [isDuplicating, setIsDuplicating] = useState(false);
 
@@ -125,17 +127,19 @@ export function SidebarActions({
 
       {/* Actions */}
       <div className="flex flex-col gap-0.5 py-1">
-        <Button
-          variant="outline"
-          onClick={handleDuplicate}
-          disabled={isDuplicating}
-          className={cn(itemClass, "disabled:opacity-50")}
-        >
-          <Copy className="size-3.5 text-muted-foreground" />
-          <span>
-            {isDuplicating ? t("sidebar:duplicating") : t("sidebar:duplicate")}
-          </span>
-        </Button>
+        {!isReadOnly && (
+          <Button
+            variant="outline"
+            onClick={handleDuplicate}
+            disabled={isDuplicating}
+            className={cn(itemClass, "disabled:opacity-50")}
+          >
+            <Copy className="size-3.5 text-muted-foreground" />
+            <span>
+              {isDuplicating ? t("sidebar:duplicating") : t("sidebar:duplicate")}
+            </span>
+          </Button>
+        )}
 
         <Button
           variant="outline"
@@ -165,14 +169,17 @@ export function SidebarActions({
             <span>{t("sidebar:openInSidepeek")}</span>
           </Button>
         )}
-        <Button
-          variant="outline"
-          onClick={handleAddSubPage}
-          className={itemClass}
-        >
-          <Plus className="size-3.5 text-muted-foreground" />
-          <span>{t("sidebar:addSubPage")}</span>
-        </Button>
+
+        {!isReadOnly && (
+          <Button
+            variant="outline"
+            onClick={handleAddSubPage}
+            className={itemClass}
+          >
+            <Plus className="size-3.5 text-muted-foreground" />
+            <span>{t("sidebar:addSubPage")}</span>
+          </Button>
+        )}
 
         <Button
           variant="outline"
@@ -184,20 +191,24 @@ export function SidebarActions({
         </Button>
       </div>
 
-      <div className="my-1 h-px bg-border/40" />
+      {!isReadOnly && (
+        <>
+          <div className="my-1 h-px bg-border/40" />
 
-      <Button
-        variant="outline"
-        onClick={handleDeleteClick}
-        className={cn(
-          styles.menuItem,
-          isMobile ? "min-h-[44px] py-3 text-sm" : "py-1.5 text-xs",
-          "w-full cursor-pointer justify-start gap-2 text-destructive hover:bg-destructive/10",
-        )}
-      >
-        <Trash2 className="size-3.5" />
-        <span>{t("sidebar:deletePage")}</span>
-      </Button>
+          <Button
+            variant="outline"
+            onClick={handleDeleteClick}
+            className={cn(
+              styles.menuItem,
+              isMobile ? "min-h-[44px] py-3 text-sm" : "py-1.5 text-xs",
+              "w-full cursor-pointer justify-start gap-2 text-destructive hover:bg-destructive/10",
+            )}
+          >
+            <Trash2 className="size-3.5" />
+            <span>{t("sidebar:deletePage")}</span>
+          </Button>
+        </>
+      )}
     </div>
   );
 }

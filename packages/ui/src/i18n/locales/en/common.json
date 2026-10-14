@@ -74,5 +74,7 @@
   "live": "Live",
   "connecting": "Connecting",
   "offline": "Offline",
-  "userIsEditing": "{{name}} is editing"
+  "userIsEditing": "{{name}} is editing",
+  "viewOnly": "View only",
+  "viewOnlyDesc": "You have read-only access to this workspace."
 }

@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 
 import { useSidebarPageItem } from "@/hooks/sidebar/use-sidebar-page-item";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
+import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { cn } from "@/lib/utils";
 
 import { SidebarItemOptions } from "./sidebar-item-options";
@@ -37,6 +39,8 @@ function getIndentStyle(depth: number): React.CSSProperties {
 
 export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
   const { t } = useTranslation(["sidebar", "common"]);
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
+  const { isReadOnly } = useWorkspacePermissions(activeWorkspaceId);
   const {
     page,
     isActive,
@@ -86,17 +90,19 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
           >
             <SidebarItemOptions pageId={pageId} />
 
-            <Button
-              type="button"
-              size="icon-xs"
-              variant="ghost"
-              title={t("sidebar:addSubPage")}
-              aria-label={t("sidebar:addSubPage")}
-              onClick={handleCreateSubpage}
-              className="size-5 rounded-sm p-0 text-muted-foreground hover:bg-foreground/8 hover:text-foreground"
-            >
-              <Plus className="size-3.5" />
-            </Button>
+            {!isReadOnly && (
+              <Button
+                type="button"
+                size="icon-xs"
+                variant="ghost"
+                title={t("sidebar:addSubPage")}
+                aria-label={t("sidebar:addSubPage")}
+                onClick={handleCreateSubpage}
+                className="size-5 rounded-sm p-0 text-muted-foreground hover:bg-foreground/8 hover:text-foreground"
+              >
+                <Plus className="size-3.5" />
+              </Button>
+            )}
           </div>
         )}
       </div>

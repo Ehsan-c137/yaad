@@ -17,6 +17,7 @@ export function TextBlock({ block }: TextBlockProps) {
   const {
     text,
     isFocused,
+    isReadOnly,
     handleClearFocus,
     handleChange,
     handleBackspaceEmpty,
@@ -31,6 +32,7 @@ export function TextBlock({ block }: TextBlockProps) {
     autoFocus: isFocused,
     onFocusHandled: handleClearFocus,
     blockId: block.id,
+    readOnly: isReadOnly,
     onChange: handleChange,
     onEnter: handleEnter,
     onBackspaceEmpty: handleBackspaceEmpty,

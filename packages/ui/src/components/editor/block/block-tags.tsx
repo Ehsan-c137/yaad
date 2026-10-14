@@ -3,6 +3,7 @@
 
 import type { Tag } from "@yaad/core/types/document";
 
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
@@ -15,6 +16,7 @@ interface BlockTagsProps {
 
 export function BlockTags({ tags, blockId }: BlockTagsProps) {
   const pageId = useEditorPageIdContext();
+  const { isReadOnly } = useEditorPermissions();
   const addTagToBlock = useDocumentStore((state) => state.addTagToBlock);
   const removeTagFromBlock = useDocumentStore(
     (state) => state.removeTagFromBlock,
@@ -27,13 +29,15 @@ export function BlockTags({ tags, blockId }: BlockTagsProps) {
           <TagList
             tags={tags}
             size="sm"
-            // showAddButton={true}
+            readOnly={isReadOnly}
             onAddTag={(tag) => {
+              if (isReadOnly) return;
               void addTagToBlock(blockId, pageId, tag);
             }}
-            onRemoveTag={(tagId) =>
-              void removeTagFromBlock(blockId, pageId, tagId)
-            }
+            onRemoveTag={(tagId) => {
+              if (isReadOnly) return;
+              void removeTagFromBlock(blockId, pageId, tagId);
+            }}
           />
         </div>
       )}

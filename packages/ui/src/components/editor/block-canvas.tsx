@@ -1,12 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
+import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 import { TestEditorStateInspector } from "./__dev__/test-editor-state-inspector";
 import { BlockRow } from "./block/block-row";
 
 export function BlockCanvas() {
+  const { t } = useTranslation("editor");
+  const { isReadOnly } = useEditorPermissions();
   const addBlock = useDocumentStore((state) => state.addBlock);
 
   const childBlockIds = useDocumentStore(
@@ -18,11 +21,11 @@ export function BlockCanvas() {
       await addBlock("root", "root", "paragraph");
     };
 
-    // When a document is loaded and it has no blocks, add an initial paragraph block.
-    if (childBlockIds?.length === 0) {
+    // When a document is loaded and it has no blocks, add an initial paragraph block if permitted
+    if (!isReadOnly && childBlockIds?.length === 0) {
       void handleAddBlock();
     }
-  }, [childBlockIds, addBlock]);
+  }, [childBlockIds, addBlock, isReadOnly]);
 
   const finalChildBlockIds = childBlockIds ?? [];
 
@@ -51,7 +54,9 @@ export function BlockCanvas() {
       {finalChildBlockIds.length === 0 ? (
         <div>
           <p className="text-sm text-muted-foreground italic">
-            No blocks yet. Click "Add Initial Block" or press Enter in a block.
+            {isReadOnly
+              ? t("emptyPageReadOnly", "This page is empty.")
+              : t("noBlocksYet", "No blocks yet. Click \"Add Initial Block\" or press Enter in a block.")}
           </p>
         </div>
       ) : (
