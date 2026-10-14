@@ -101,7 +101,6 @@ export function LandingFooter() {
           <div className="text-xs text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
             <span>{t("footer.craftedWith")}</span>
             <Heart className="size-3 text-rose-500 fill-rose-500" />
-            <span>{t("footer.forThinkers")}</span>
           </div>
         </div>
       </div>

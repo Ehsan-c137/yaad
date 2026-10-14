@@ -1,0 +1,21 @@
+/* Estedad Font Face Definitions */
+
+@font-face {
+  font-family: "Estedad";
+  src:
+    url("./fonts/webfonts/Estedad[wght].woff2") format("woff2-variations"),
+    url("./fonts/webfonts/Estedad[wght].woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Estedad Mad";
+  src:
+    url("./fonts/webfonts/Estedad-Mad.woff2") format("woff2-variations"),
+    url("./fonts/webfonts/Estedad-Mad.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
