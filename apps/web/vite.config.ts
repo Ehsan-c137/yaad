@@ -81,7 +81,11 @@ function mpaDevPlugin(): Plugin {
         if (
           url === "/app" ||
           url.startsWith("/app/") ||
-          url.startsWith("/workspace")
+          url.startsWith("/workspace") ||
+          url === "/login" ||
+          url.startsWith("/login") ||
+          url === "/register" ||
+          url.startsWith("/register")
         ) {
           req.url = "/app.html";
         }
