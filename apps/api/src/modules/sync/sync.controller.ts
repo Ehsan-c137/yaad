@@ -8,6 +8,9 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { WorkspaceMemberGuard } from '../auth/guards/workspace-member.guard.js';
 import {
   PullSyncDto,
   PushSyncDto,
@@ -16,6 +19,7 @@ import {
 } from './dto/sync.dto.js';
 import { SyncService } from './sync.service.js';
 
+@UseGuards(JwtAuthGuard, WorkspaceMemberGuard)
 @Controller('sync')
 export class SyncController {
   constructor(private readonly syncService: SyncService) {}

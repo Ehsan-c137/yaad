@@ -7,8 +7,10 @@ import { WorkspaceTreeMutationHandler } from './handlers/workspace-tree-mutation
 import { SyncController } from './sync.controller.js';
 import { SyncService } from './sync.service.js';
 
+import { AuthModule } from '../auth/auth.module.js';
+
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, AuthModule],
   controllers: [SyncController],
   providers: [
     PageMutationHandler,

@@ -12,9 +12,13 @@ import { type Server, type WebSocket } from 'ws';
 import { ROOM_MANAGER } from './collab.tokens.js';
 import type { IRoomManager } from './interfaces/room-manager.interface.js';
 
+import { Optional } from '@nestjs/common';
+import { AuthService } from '../auth/auth.service.js';
+
 interface ClientContext {
   workspaceId?: string;
   documentId?: string;
+  userId?: string;
 }
 
 @WebSocketGateway({
@@ -33,6 +37,8 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     @Inject(ROOM_MANAGER)
     private readonly roomManager: IRoomManager,
+    @Optional()
+    private readonly authService?: AuthService,
   ) {}
 
   private getRoomKey(workspaceId: string, documentId: string): string {
@@ -85,15 +91,50 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     data: {
       workspaceId: string;
       documentId: string;
+      token?: string; // JWT authentication token
       stateVector?: string; // Base64 encoded client state vector
     },
   ): Promise<void> {
-    const { workspaceId, documentId, stateVector } = data;
+    const { workspaceId, documentId, token, stateVector } = data;
+
+    // Verify token and membership if authService and token are present
+    let authenticatedUserId = 'anonymous';
+    if (this.authService && token) {
+      try {
+        const payload = await this.authService.verifyToken(token);
+        const isMember = await this.authService.isUserMemberOfWorkspace(
+          payload.sub,
+          workspaceId,
+        );
+        if (!isMember) {
+          client.send(
+            JSON.stringify({
+              event: 'error',
+              message: `Forbidden: not an authorized member of workspace ${workspaceId}`,
+            }),
+          );
+          client.close();
+          return;
+        }
+        authenticatedUserId = payload.sub;
+      } catch {
+        client.send(
+          JSON.stringify({
+            event: 'error',
+            message: 'Unauthorized: invalid or expired authentication token',
+          }),
+        );
+        client.close();
+        return;
+      }
+    }
+
     const roomKey = this.getRoomKey(workspaceId, documentId);
 
     const ctx = this.clientContexts.get(client) ?? {};
     ctx.workspaceId = workspaceId;
     ctx.documentId = documentId;
+    ctx.userId = authenticatedUserId;
     this.clientContexts.set(client, ctx);
 
     // 1. Manage WebSocket subscriber registration in Gateway
