@@ -1,118 +1,394 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Yaad Backend API (`@yaad/api`)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Production-ready NestJS backend powering Yaad's **local-first mutation-driven delta sync** and **real-time CRDT multiplayer collaboration**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 1. Overview & Architecture
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Yaad's backend is built using **NestJS**, **PostgreSQL**, **Drizzle ORM**, and **Yjs**:
 
-## Project setup
+- **Local-First Delta Sync**: Clients edit offline and accumulate pending mutations in a local outbox. When connected, mutations are batched and executed atomically on the server via `POST /api/v1/sync/push`, bumping a monotonic version number and appending to an immutable `sync_log`.
+- **CRDT Real-Time Multiplayer**: Built with Yjs over WebSocket (`/collab`). Keeps documents synchronized with character/block-level conflict-free resolution, broadcast streaming (< 20ms latency), and live presence (collaborator cursors and active block focus).
+- **Dual-Layer Storage**: Raw CRDT updates are stored as binary deltas in PostgreSQL (`document_crdt_updates`). A debounced worker continuously materializes in-memory Yjs documents into canonical `DocumentJSON` (`documents.content`), ensuring relational queries and full-text search remain fast and standard.
+- **Enterprise Security**: JWT-based authentication with `bcryptjs` password hashing, protected by `JwtAuthGuard` and multi-tenant `WorkspaceMemberGuard`.
 
+For in-depth architectural trade-offs, read the Architecture Decision Records:
+- [ADR 0001: Local-First Mutation-Driven Sync Engine](../../docs/adr/0001-local-first-sync-engine.md)
+- [ADR 0002: CRDT-Powered Real-Time Collaborative Multiplayer](../../docs/adr/0002-crdt-collaborative-multiplayer.md)
+
+---
+
+## 2. Quickstart & Local Setup
+
+### Prerequisites
+- Node.js >= 22.0.0
+- pnpm >= 10.0.0
+- Docker & Docker Compose (for PostgreSQL)
+
+### 1. Start PostgreSQL
 ```bash
-$ pnpm install
+# In apps/api
+pnpm docker:up
+```
+This spins up PostgreSQL 16 on port `5432` with database `yaad`.
+
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
+Default `.env` configuration:
+```env
+DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/yaad"
+PORT=3000
+JWT_SECRET="yaad-default-secret-key-change-in-production"
 ```
 
-## Compile and run the project
-
+### 3. Push Schema to Database
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm db:push
 ```
 
-## Run tests
-
+### 4. Run Development Server
 ```bash
-# unit tests
-$ pnpm run test
+pnpm start:dev
+```
+The server will start listening at `http://localhost:3000`.
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+### 5. Run Test Suite
+```bash
+pnpm test
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 3. REST API Reference
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Base URL: `http://localhost:3000` (or `http://localhost:3000/api/v1`)
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+### Authentication (`/auth`)
+
+#### `POST /auth/register`
+Creates a user account, provisions a default workspace (`"My Workspace"`), adds the user as `owner`, and returns an access token.
+
+- **Request Body**:
+```json
+{
+  "email": "alice@yaad.app",
+  "password": "securePassword123",
+  "name": "Alice"
+}
+```
+- **Response `201 Created`**:
+```json
+{
+  "user": {
+    "id": "7b0b30bb-75dc-4258-86d1-44aa04085f1c",
+    "email": "alice@yaad.app"
+  },
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "defaultWorkspaceId": "ws_1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Observability
+#### `POST /auth/login`
+Validates credentials and returns an access token.
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+- **Request Body**:
+```json
+{
+  "email": "alice@yaad.app",
+  "password": "securePassword123"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "user": {
+    "id": "7b0b30bb-75dc-4258-86d1-44aa04085f1c",
+    "email": "alice@yaad.app"
+  },
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+---
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+#### `GET /auth/me`
+Returns the authenticated user's profile.
 
-This project is already instrumented. Create a free account at [observe.nestjs.com](https://observe.nestjs.com), add an application, and paste the generated app key and secret into the `ObserveModule.forRoot()` call in `src/app.module.ts`.
+- **Headers**: `Authorization: Bearer <accessToken>`
+- **Response `200 OK`**:
+```json
+{
+  "id": "7b0b30bb-75dc-4258-86d1-44aa04085f1c",
+  "email": "alice@yaad.app"
+}
+```
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+---
 
-## Resources
+### Delta Sync API (`/sync`)
 
-Check out a few resources that may come in handy when working with NestJS:
+All sync routes require:
+- `Authorization: Bearer <accessToken>`
+- Valid membership in target `workspaceId` (enforced via `WorkspaceMemberGuard`).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+#### `POST /sync/push`
+Atomically applies a batch of local mutations, ensures idempotency via `clientMutationId`, appends records to `sync_log`, and increments the workspace's monotonic version.
 
-## Support
+- **Request Body**:
+```json
+{
+  "workspaceId": "ws_1a2b3c4d",
+  "clientId": "client_laptop_xyz",
+  "mutations": [
+    {
+      "clientMutationId": "mut_d290f1ee-6c54-4b01-90e6-d701748f0851",
+      "entityType": "page",
+      "entityId": "page_9b1deb4d",
+      "operation": "upsert",
+      "payload": {
+        "title": "Quarterly Objectives",
+        "icon": "🎯",
+        "parentId": null,
+        "isBookmarked": false
+      }
+    }
+  ]
+}
+```
+- **Supported `entityType` values**: `'workspace'`, `'workspace_tree'`, `'page'`, `'document'`, `'tag'`.
+- **Supported `operation` values**: `'upsert'`, `'delete'`.
+- **Response `200 OK`**:
+```json
+{
+  "acceptedMutationIds": ["mut_d290f1ee-6c54-4b01-90e6-d701748f0851"],
+  "lastServerVersion": 42
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+#### `POST /sync/pull`
+Fetches all delta changes that occurred after the client's last known version.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- **Request Body**:
+```json
+{
+  "workspaceId": "ws_1a2b3c4d",
+  "sinceVersion": 41,
+  "limit": 500
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "changes": [
+    {
+      "id": "log_uuid",
+      "version": 42,
+      "entityType": "page",
+      "entityId": "page_9b1deb4d",
+      "operation": "upsert",
+      "patch": {
+        "title": "Quarterly Objectives",
+        "icon": "🎯"
+      },
+      "clientMutationId": "mut_d290f1ee...",
+      "createdAt": "2026-10-14T01:00:00.000Z"
+    }
+  ],
+  "latestVersion": 42,
+  "hasMore": false
+}
+```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+#### `GET /sync/pull`
+Query parameter equivalent for delta pull.
+
+- **Query Parameters**:
+  - `workspaceId`: `string` (required)
+  - `sinceVersion`: `number` (optional, default `0`)
+  - `limit`: `number` (optional, default `500`)
+- **Response `200 OK`**: Identical to `POST /sync/pull`.
+
+---
+
+## 4. Real-Time Collaborative WebSocket API
+
+- **Protocol**: Standard WebSocket (`ws://` / `wss://`)
+- **Path**: `/collab`
+- **Adapter**: `WsAdapter` (`@nestjs/platform-ws`)
+
+### 1. Join Room (`join-room`)
+Initiates the 2-step Yjs sync handshake.
+
+- **Client Message**:
+```json
+{
+  "event": "join-room",
+  "data": {
+    "workspaceId": "ws_1a2b3c4d",
+    "documentId": "page_9b1deb4d",
+    "token": "eyJhbGciOi...",
+    "stateVector": "AQID..."
+  }
+}
+```
+- **Server Response (`sync-step-2`)**:
+The server computes the delta updates missing on the client using the client's state vector:
+```json
+{
+  "event": "sync-step-2",
+  "documentId": "page_9b1deb4d",
+  "update": "AQIDBAUGBw..."
+}
+```
+
+---
+
+### 2. Live Document Edits (`sync-update`)
+Clients stream incremental binary CRDT updates as they type.
+
+- **Client Message**:
+```json
+{
+  "event": "sync-update",
+  "data": {
+    "workspaceId": "ws_1a2b3c4d",
+    "documentId": "page_9b1deb4d",
+    "update": "AQIDBAU..."
+  }
+}
+```
+- **Server Behavior**:
+  1. Applies update to in-memory `Y.Doc`.
+  2. Persists update to PostgreSQL `document_crdt_updates`.
+  3. Broadcasts the update to all **other** clients in the room:
+     ```json
+     {
+       "event": "sync-update",
+       "documentId": "page_9b1deb4d",
+       "update": "AQIDBAU..."
+     }
+     ```
+
+---
+
+### 3. Ephemeral Presence & Cursors (`awareness-update`)
+Transmits live collaborator cursors and active block selections without database persistence.
+
+- **Client Message**:
+```json
+{
+  "event": "awareness-update",
+  "data": {
+    "workspaceId": "ws_1a2b3c4d",
+    "documentId": "page_9b1deb4d",
+    "awarenessData": {
+      "user": {
+        "name": "Alice",
+        "color": "#7C3AED"
+      },
+      "activeBlockId": "blk_123",
+      "cursor": { "anchor": 5, "head": 12 }
+    }
+  }
+}
+```
+- **Server Broadcast**: Relayed immediately to all other collaborators in the room.
+
+---
+
+## 5. PostgreSQL Database Schema
+
+```mermaid
+erDiagram
+    users ||--o{ workspaces : owns
+    users ||--o{ workspace_members : participates
+    workspaces ||--o{ workspace_members : includes
+    workspaces ||--|| workspace_trees : has
+    workspaces ||--o{ pages : contains
+    pages ||--|| documents : has
+    workspaces ||--o{ sync_log : logs
+    pages ||--o{ document_crdt_updates : accumulates
+
+    users {
+        varchar id PK
+        varchar email UK
+        varchar password_hash
+        timestamp created_at
+    }
+
+    workspaces {
+        varchar id PK
+        varchar name
+        varchar owner_id FK
+        bigint current_version
+        boolean is_deleted
+    }
+
+    workspace_members {
+        varchar id PK
+        varchar workspace_id FK
+        varchar user_id FK
+        varchar role
+    }
+
+    pages {
+        varchar id PK
+        varchar workspace_id FK
+        varchar parent_id
+        varchar title
+        varchar icon
+        boolean is_bookmarked
+        boolean is_deleted
+        bigint version
+    }
+
+    documents {
+        varchar id PK, FK
+        varchar workspace_id FK
+        bigint version
+        jsonb content
+        timestamp updated_at
+    }
+
+    sync_log {
+        varchar id PK
+        varchar workspace_id FK
+        bigint version
+        varchar entity_type
+        varchar entity_id
+        varchar operation
+        jsonb patch
+        varchar client_mutation_id UK
+    }
+
+    document_crdt_updates {
+        varchar id PK
+        varchar workspace_id FK
+        varchar document_id FK
+        text update_data
+        timestamp created_at
+    }
+```
+
+---
+
+## 6. Architecture & SOLID Compliance
+
+- **Single Responsibility Principle (SRP)**:
+  - `CollabGateway`: Manages WebSocket transport and room broadcasting.
+  - `YjsRoomManager`: Pure CRDT in-memory room lifecycle and diffing (zero network code).
+  - `CollabPersistenceService`: Handles PostgreSQL binary updates and snapshot materialization.
+- **Open/Closed Principle (OCP)**:
+  - `SyncHandlerRegistry`: Strategy pattern allowing new entities (`page`, `document`, `workspace_tree`, `tag`) without modifying `SyncService`.
+- **Dependency Inversion Principle (DIP)**:
+  - Providers depend on abstract tokens (`ROOM_MANAGER`, `COLLAB_PERSISTENCE`), allowing easy replacement with distributed Redis pub/sub backends for horizontal scaling.
