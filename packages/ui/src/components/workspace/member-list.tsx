@@ -10,7 +10,7 @@ export function MemberList({
   onRemove,
 }: MemberListProps) {
   return (
-    <div className="mt-4 flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground px-0.5">
         <span className="flex items-center gap-1.5">
           <Users className="size-3.5" />

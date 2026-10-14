@@ -21,7 +21,7 @@ export function ShareLinkBar({ shareUrl }: ShareLinkBarProps) {
   };
 
   return (
-    <div className="mt-2 flex items-center gap-2 rounded-xl border border-border/50 bg-muted/40 p-1.5">
+    <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-muted/40 p-1.5">
       <div className="flex min-w-0 flex-1 items-center gap-2 px-2 text-xs text-muted-foreground">
         <Globe className="size-3.5 shrink-0 text-muted-foreground/70" />
         <span className="truncate select-all">{shareUrl}</span>

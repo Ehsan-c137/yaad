@@ -5,7 +5,7 @@ import type { GuestNoticeProps } from "./types";
 
 export function GuestNotice({ onSignInClick }: GuestNoticeProps) {
   return (
-    <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-muted/20 p-5 text-center">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-muted/20 p-5 text-center">
       <div className="mb-2 flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
         <Shield className="size-4" />
       </div>

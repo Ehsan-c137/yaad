@@ -30,12 +30,12 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label className="text-xs font-semibold text-foreground">
         Invite Collaborator
       </label>
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
+      <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
+        <div className="relative min-w-[160px] flex-1">
           <Mail className="absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
             type="email"

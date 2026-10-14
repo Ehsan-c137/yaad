@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Dialog,
   DialogContent,
@@ -50,8 +48,8 @@ export function ShareModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-lg p-6 sm:p-7">
-          <DialogHeader className="flex flex-col gap-1">
+        <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col gap-4 overflow-hidden p-6 sm:p-7">
+          <DialogHeader className="flex flex-col gap-1 shrink-0">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-base">
                 {workspaceIcon}
@@ -61,35 +59,38 @@ export function ShareModal({
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              Invite team members by email or copy the link to collaborate in real-time.
+              Invite team members by email or copy the link to collaborate in
+              real-time.
             </DialogDescription>
           </DialogHeader>
 
-          <ShareLinkBar shareUrl={shareUrl} />
+          <div className="flex flex-col gap-4 overflow-y-auto min-h-0 flex-1 pe-1 -me-1">
+            <ShareLinkBar shareUrl={shareUrl} />
 
-          {!isAuthenticated ? (
-            <GuestNotice onSignInClick={() => setIsAuthOpen(true)} />
-          ) : (
-            <>
-              <InviteMemberForm
-                onInvite={async (email, role) => {
-                  await addMember(email, role);
-                }}
-              />
+            {!isAuthenticated ? (
+              <GuestNotice onSignInClick={() => setIsAuthOpen(true)} />
+            ) : (
+              <>
+                <InviteMemberForm
+                  onInvite={async (email, role) => {
+                    await addMember(email, role);
+                  }}
+                />
 
-              <MemberList
-                members={members}
-                isLoading={isLoading}
-                currentUserEmail={currentUserEmail}
-                onRemove={async (userId) => {
-                  const target = members.find((m) => m.userId === userId);
-                  if (target) {
-                    await removeMember(userId, target.email);
-                  }
-                }}
-              />
-            </>
-          )}
+                <MemberList
+                  members={members}
+                  isLoading={isLoading}
+                  currentUserEmail={currentUserEmail}
+                  onRemove={async (userId) => {
+                    const target = members.find((m) => m.userId === userId);
+                    if (target) {
+                      await removeMember(userId, target.email);
+                    }
+                  }}
+                />
+              </>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
