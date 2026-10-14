@@ -379,16 +379,3 @@ erDiagram
         timestamp created_at
     }
 ```
-
----
-
-## 6. Architecture & SOLID Compliance
-
-- **Single Responsibility Principle (SRP)**:
-  - `CollabGateway`: Manages WebSocket transport and room broadcasting.
-  - `YjsRoomManager`: Pure CRDT in-memory room lifecycle and diffing (zero network code).
-  - `CollabPersistenceService`: Handles PostgreSQL binary updates and snapshot materialization.
-- **Open/Closed Principle (OCP)**:
-  - `SyncHandlerRegistry`: Strategy pattern allowing new entities (`page`, `document`, `workspace_tree`, `tag`) without modifying `SyncService`.
-- **Dependency Inversion Principle (DIP)**:
-  - Providers depend on abstract tokens (`ROOM_MANAGER`, `COLLAB_PERSISTENCE`), allowing easy replacement with distributed Redis pub/sub backends for horizontal scaling.
