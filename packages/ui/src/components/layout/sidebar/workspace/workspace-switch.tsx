@@ -4,12 +4,13 @@ import type { Workspace } from "@yaad/core/types/workspace";
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { Check, ChevronsUpDown, Settings2, Trash2 } from "lucide-react";
+import { Check, ChevronsUpDown, Settings2, Share2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { ShareModal } from "@/components/workspace/share-modal";
 import {
   Popover,
   PopoverContent,
@@ -36,6 +37,7 @@ export function WorkspaceSwitcher() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleDeleteWorkspace = async (
     e: React.MouseEvent,
@@ -137,6 +139,18 @@ export function WorkspaceSwitcher() {
               type="button"
               onClick={() => {
                 setIsOpen(false);
+                setIsShareOpen(true);
+              }}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
+            >
+              <Share2 className="size-3.5" />
+              <span>Share Workspace</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
                 setIsManageOpen(true);
               }}
               className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
@@ -152,6 +166,16 @@ export function WorkspaceSwitcher() {
         open={isManageOpen}
         onOpenChange={setIsManageOpen}
       />
+
+      {activeWorkspace && (
+        <ShareModal
+          open={isShareOpen}
+          onOpenChange={setIsShareOpen}
+          workspaceId={activeWorkspace.id}
+          workspaceName={activeWorkspace.name}
+          workspaceIcon={activeWorkspace.icon}
+        />
+      )}
     </>
   );
 }

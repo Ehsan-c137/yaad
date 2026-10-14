@@ -11,6 +11,11 @@ import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
+import { Button } from "@ui/button";
+import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
+import { Share2 } from "lucide-react";
+import { ShareModal } from "@/components/workspace/share-modal";
+
 import { BookmarkButton } from "./bookmark-button";
 import { CollabPresence } from "./collab-presence";
 import { PageHeaderCover } from "./cover/page-header-cover";
@@ -18,6 +23,13 @@ import { PageIcon } from "./icon/page-icon";
 import { PageHeaderTags } from "./page-header-tags";
 
 export function PageHeader() {
+  const { workspaceId = "ws_personal", pageId } = useParams<{
+    workspaceId: string;
+    pageId: string;
+  }>();
+  const workspace = useWorkspaceStore((state) => state.workspaces[workspaceId]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
   return (
     <div className="group/header relative flex w-full flex-col">
       <PageHeaderCover />
@@ -27,12 +39,31 @@ export function PageHeader() {
           <PageIcon />
           <div className="flex items-center gap-2">
             <CollabPresence />
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              onClick={() => setIsShareOpen(true)}
+              className="gap-1.5 rounded-full border-border/40 text-xs font-medium text-foreground hover:bg-foreground/5 shadow-2xs"
+            >
+              <Share2 className="size-3.5 text-muted-foreground" />
+              <span>Share</span>
+            </Button>
             <BookmarkButton />
           </div>
         </div>
         <PageHeaderTitle />
         <PageHeaderTags />
       </div>
+
+      <ShareModal
+        open={isShareOpen}
+        onOpenChange={setIsShareOpen}
+        workspaceId={workspaceId}
+        workspaceName={workspace?.name}
+        workspaceIcon={workspace?.icon}
+        pageId={pageId}
+      />
     </div>
   );
 }

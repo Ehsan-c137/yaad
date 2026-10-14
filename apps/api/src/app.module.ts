@@ -3,6 +3,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { SyncModule } from './modules/sync/sync.module.js';
 import { CollabModule } from './modules/collab/collab.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { WorkspacesModule } from './modules/workspaces/workspaces.module.js';
 import { createObserveModule } from '@nestjs/observe';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -20,6 +21,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
     DatabaseModule,
     AuthModule,
+    WorkspacesModule,
     SyncModule,
     CollabModule,
   ],

@@ -18,3 +18,12 @@ export interface WorkspacePageMeta {
   updatedAt: number;
   isBookmarked?: boolean;
 }
+export type WorkspaceRole = 'owner' | 'member' | 'viewer';
+
+export interface WorkspaceMember {
+  id: string;
+  userId: string;
+  email: string;
+  role: WorkspaceRole;
+  createdAt: string | Date;
+}
