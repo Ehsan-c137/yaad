@@ -50,18 +50,6 @@ const GraphPage = lazy(() =>
   })),
 );
 
-const LoginPage = lazy(() =>
-  import("@/components/pages/auth/login-page").then((m) => ({
-    default: m.LoginPage,
-  })),
-);
-
-const RegisterPage = lazy(() =>
-  import("@/components/pages/auth/register-page").then((m) => ({
-    default: m.RegisterPage,
-  })),
-);
-
 function RootRedirect() {
   const [isStandalone] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -124,22 +112,6 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/landing" element={<RootRedirect />} />
-          <Route
-            path="/login"
-            element={
-              <Suspense fallback={<WorkspaceLayoutSkeleton />}>
-                <LoginPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <Suspense fallback={<WorkspaceLayoutSkeleton />}>
-                <RegisterPage />
-              </Suspense>
-            }
-          />
           <Route
             element={
               <Suspense fallback={<WorkspaceLayoutSkeleton />}>

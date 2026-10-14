@@ -6,16 +6,14 @@ import { useUserStore } from "@yaad/core/store/use-user-store";
 import { LogIn, LogOut, Pencil, Settings, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
-
 import { WelcomeModal } from "@/components/onboarding/welcome-modal";
+import { AuthModal } from "@/components/auth/auth-modal";
 import { cn } from "@/lib/utils";
 
 import { SettingsModal } from "../settings/settings-modal";
 
 export function Profile({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation("sidebar");
-  const navigate = useNavigate();
   const userName = useUserStore((state) => state.userName);
   const email = useUserStore((state) => state.email);
   const token = useUserStore((state) => state.token);
@@ -24,6 +22,8 @@ export function Profile({ compact = false }: { compact?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditNameOpen, setIsEditNameOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   const isLoggedIn = Boolean(token);
   const displayName = userName
@@ -36,7 +36,6 @@ export function Profile({ compact = false }: { compact?: boolean }) {
   const handleLogout = () => {
     setIsMenuOpen(false);
     authService.logout();
-    navigate("/login");
   };
 
   return (
@@ -129,7 +128,8 @@ export function Profile({ compact = false }: { compact?: boolean }) {
                 className="flex w-full items-center justify-start gap-2 text-xs font-medium text-primary hover:text-primary hover:bg-primary/10"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  navigate("/login");
+                  setAuthMode("login");
+                  setIsAuthOpen(true);
                 }}
               >
                 <LogIn strokeWidth={1.5} className="size-3.5" />
@@ -141,7 +141,8 @@ export function Profile({ compact = false }: { compact?: boolean }) {
                 className="flex w-full items-center justify-start gap-2 text-xs"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  navigate("/register");
+                  setAuthMode("register");
+                  setIsAuthOpen(true);
                 }}
               >
                 <UserPlus strokeWidth={1.5} className="size-3.5" />
@@ -179,6 +180,7 @@ export function Profile({ compact = false }: { compact?: boolean }) {
       </Popover>
       <SettingsModal open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
       <WelcomeModal open={isEditNameOpen} onOpenChange={setIsEditNameOpen} />
+      <AuthModal open={isAuthOpen} onOpenChange={setIsAuthOpen} initialMode={authMode} />
     </>
   );
 }
