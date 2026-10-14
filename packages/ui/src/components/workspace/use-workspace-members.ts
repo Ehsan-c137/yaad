@@ -2,6 +2,7 @@ import type { IWorkspaceMemberService } from "@yaad/core/services/workspace-memb
 import type { WorkspaceMember, WorkspaceRole } from "@yaad/core/types/workspace";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export interface UseWorkspaceMembersOptions {
@@ -17,6 +18,7 @@ export function useWorkspaceMembers({
   isAuthenticated,
   isOpen,
 }: UseWorkspaceMembersOptions) {
+  const { t } = useTranslation();
   const [members, setMembers] = useState<WorkspaceMember[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,14 +68,19 @@ export function useWorkspaceMembers({
       return [...filtered, added];
     });
 
-    toast.success(`Added ${trimmed} as ${role === "member" ? "Editor" : "Viewer"}`);
+    toast.success(
+      t("memberAdded", {
+        email: trimmed,
+        role: role === "member" ? t("editor") : t("viewer"),
+      }),
+    );
     return added;
   };
 
   const removeMember = async (userId: string, email: string) => {
     await memberService.removeMember(workspaceId, userId);
     setMembers((prev) => prev.filter((m) => m.userId !== userId));
-    toast.success(`Removed ${email}`);
+    toast.success(t("memberRemoved", { email }));
   };
 
   return {

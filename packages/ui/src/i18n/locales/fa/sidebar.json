@@ -74,5 +74,11 @@
   "openInBrowserTab": "باز کردن در تب مرورگر",
   "copyLink": "کپی پیوند",
   "pageLinkCopied": "پیوند صفحه در حافظه کپی شد",
-  "failedCopyLink": "کپی پیوند ناموفق بود"
+  "failedCopyLink": "کپی پیوند ناموفق بود",
+  "shareWorkspace": "اشتراک‌گذاری فضای کاری",
+  "logOut": "خروج از حساب",
+  "signIn": "ورود",
+  "createAccount": "ایجاد حساب",
+  "guestMode": "حالت مهمان",
+  "guestModeDesc": "برای همگام‌سازی در دستگاه‌ها وارد شوید"
 }

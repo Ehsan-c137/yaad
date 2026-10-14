@@ -34,7 +34,7 @@ describe("ShareModal", () => {
       />,
     );
 
-    expect(screen.getByText(/Share “Personal”/i)).toBeDefined();
+    expect(screen.getByText(/Share.*Personal/i)).toBeDefined();
     expect(
       screen.getByText(/Sign In to Invite Collaborators/i),
     ).toBeDefined();
@@ -81,8 +81,8 @@ describe("ShareModal", () => {
       expect(screen.getByText("editor@yaad.app")).toBeDefined();
     });
 
-    expect(screen.getByText("Owner")).toBeDefined();
-    expect(screen.getByText("Can Edit")).toBeDefined();
+    expect(screen.getAllByText("Owner").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Can edit/i).length).toBeGreaterThan(0);
   });
 
   it("allows inviting a collaborator with role", async () => {

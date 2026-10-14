@@ -9,23 +9,11 @@ import {
 } from "@ui/dialog";
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 import type { AuthMode, AuthModalProps, AuthViewConfig } from "./types";
-
-const AUTH_VIEWS: Record<AuthMode, AuthViewConfig> = {
-  login: {
-    title: "Welcome back",
-    description: "Sign in to your Yaad account to collaborate and sync",
-    component: LoginForm,
-  },
-  register: {
-    title: "Create an account",
-    description: "Sign up to enable real-time collaboration across devices",
-    component: RegisterForm,
-  },
-};
 
 export function AuthModal({
   open,
@@ -33,6 +21,7 @@ export function AuthModal({
   initialMode = "login",
   authService,
 }: AuthModalProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<AuthMode>(initialMode);
 
   // Sync mode whenever modal opens or initialMode changes
@@ -42,7 +31,20 @@ export function AuthModal({
     }
   }, [open, initialMode]);
 
-  const currentView = AUTH_VIEWS[mode] ?? AUTH_VIEWS.login;
+  const viewConfig: Record<AuthMode, AuthViewConfig> = {
+    login: {
+      title: t("welcomeBack"),
+      description: t("welcomeBackDesc"),
+      component: LoginForm,
+    },
+    register: {
+      title: t("createAccount"),
+      description: t("createAccountDesc"),
+      component: RegisterForm,
+    },
+  };
+
+  const currentView = viewConfig[mode] ?? viewConfig.login;
   const ActiveFormComponent = currentView.component;
 
   return (
@@ -71,7 +73,7 @@ export function AuthModal({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Sign In
+            {t("signIn")}
           </button>
           <button
             type="button"
@@ -82,7 +84,7 @@ export function AuthModal({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Create Account
+            {t("createAccount")}
           </button>
         </div>
 

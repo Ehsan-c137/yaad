@@ -5,6 +5,7 @@ import { Input } from "@ui/input";
 import { authService as defaultAuthService } from "@yaad/core/services/auth-service";
 import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { AuthFormProps } from "./types";
 import { validateLoginInput } from "./validation";
@@ -14,6 +15,7 @@ export function LoginForm({
   onSwitchMode,
   authService = defaultAuthService,
 }: AuthFormProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -56,10 +58,10 @@ export function LoginForm({
             htmlFor="login-email"
             className="mb-1 block text-xs font-medium text-foreground"
           >
-            Email address
+            {t("email")}
           </label>
           <div className="relative flex items-center">
-            <Mail className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="login-email"
               type="email"
@@ -68,7 +70,7 @@ export function LoginForm({
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 text-xs"
+              className="ps-10 text-xs"
             />
           </div>
         </div>
@@ -78,10 +80,10 @@ export function LoginForm({
             htmlFor="login-password"
             className="mb-1 block text-xs font-medium text-foreground"
           >
-            Password
+            {t("password")}
           </label>
           <div className="relative flex items-center">
-            <Lock className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="login-password"
               type={showPassword ? "text" : "password"}
@@ -90,12 +92,12 @@ export function LoginForm({
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 pr-10 text-xs"
+              className="ps-10 pe-10 text-xs"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute end-3.5 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -114,23 +116,23 @@ export function LoginForm({
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              {t("signingIn")}
             </>
           ) : (
-            "Sign In"
+            t("signIn")
           )}
         </Button>
       </form>
 
       <div className="border-t border-border/40 pt-4 text-center text-xs text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        {t("dontHaveAccount")}{" "}
         <button
           type="button"
           onClick={() => onSwitchMode("register")}
           className="font-semibold text-primary underline-offset-4 hover:underline"
         >
-          Sign up
+          {t("signUp")}
         </button>
       </div>
     </div>

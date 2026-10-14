@@ -8,6 +8,7 @@ import {
 import { workspaceMemberService as defaultMemberService } from "@yaad/core/services/workspace-member-service";
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AuthModal } from "@/components/auth/auth-modal";
 
@@ -27,6 +28,7 @@ export function ShareModal({
   pageId,
   memberService = defaultMemberService,
 }: ShareModalProps) {
+  const { t } = useTranslation();
   const token = useUserStore((s) => s.token);
   const currentUserEmail = useUserStore((s) => s.email);
   const isAuthenticated = Boolean(token);
@@ -55,12 +57,11 @@ export function ShareModal({
                 {workspaceIcon}
               </span>
               <DialogTitle className="text-lg font-semibold tracking-tight">
-                Share &ldquo;{workspaceName}&rdquo;
+                {t("shareWorkspaceTitle", { name: workspaceName })}
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              Invite team members by email or copy the link to collaborate in
-              real-time.
+              {t("shareWorkspaceDesc")}
             </DialogDescription>
           </DialogHeader>
 

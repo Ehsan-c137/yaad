@@ -1,11 +1,13 @@
 import { Button } from "@ui/button";
 import { Check, Copy, Globe } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import type { ShareLinkBarProps } from "./types";
 
 export function ShareLinkBar({ shareUrl }: ShareLinkBarProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -13,10 +15,10 @@ export function ShareLinkBar({ shareUrl }: ShareLinkBarProps) {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      toast.success("Link copied to clipboard");
+      toast.success(t("linkCopied"));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(t("failedCopyLink"));
     }
   };
 
@@ -36,12 +38,12 @@ export function ShareLinkBar({ shareUrl }: ShareLinkBarProps) {
         {copied ? (
           <>
             <Check className="size-3 text-emerald-500" />
-            <span className="text-emerald-500 font-medium">Copied</span>
+            <span className="text-emerald-500 font-medium">{t("copied")}</span>
           </>
         ) : (
           <>
             <Copy className="size-3" />
-            <span>Copy Link</span>
+            <span>{t("copyLink")}</span>
           </>
         )}
       </Button>

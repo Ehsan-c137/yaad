@@ -113,14 +113,14 @@ export function Profile({ compact = false }: { compact?: boolean }) {
                 onClick={handleLogout}
               >
                 <LogOut strokeWidth={1.5} className="size-3.5" />
-                Log out
+                {t("sidebar:logOut")}
               </Button>
             </>
           ) : (
             <>
               <div className="px-2 py-1.5 border-b border-border/50">
-                <p className="text-xs font-semibold text-foreground">Guest Mode</p>
-                <p className="text-[11px] text-muted-foreground">Sign in to sync across devices</p>
+                <p className="text-xs font-semibold text-foreground">{t("sidebar:guestMode")}</p>
+                <p className="text-[11px] text-muted-foreground">{t("sidebar:guestModeDesc")}</p>
               </div>
 
               <Button
@@ -133,7 +133,7 @@ export function Profile({ compact = false }: { compact?: boolean }) {
                 }}
               >
                 <LogIn strokeWidth={1.5} className="size-3.5" />
-                Sign in
+                {t("sidebar:signIn")}
               </Button>
 
               <Button
@@ -146,7 +146,7 @@ export function Profile({ compact = false }: { compact?: boolean }) {
                 }}
               >
                 <UserPlus strokeWidth={1.5} className="size-3.5" />
-                Create account
+                {t("sidebar:createAccount")}
               </Button>
 
               <div className="my-1 border-t border-border/50" />

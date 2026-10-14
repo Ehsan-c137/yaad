@@ -144,7 +144,7 @@ export function WorkspaceSwitcher() {
               className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
             >
               <Share2 className="size-3.5" />
-              <span>Share Workspace</span>
+              <span>{t("sidebar:shareWorkspace")}</span>
             </button>
 
             <button

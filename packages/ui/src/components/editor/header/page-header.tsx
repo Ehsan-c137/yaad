@@ -23,6 +23,7 @@ import { PageIcon } from "./icon/page-icon";
 import { PageHeaderTags } from "./page-header-tags";
 
 export function PageHeader() {
+  const { t } = useTranslation(["common", "editor"]);
   const { workspaceId = "ws_personal", pageId } = useParams<{
     workspaceId: string;
     pageId: string;
@@ -47,7 +48,7 @@ export function PageHeader() {
               className="gap-1.5 rounded-full border-border/40 text-xs font-medium text-foreground hover:bg-foreground/5 shadow-2xs"
             >
               <Share2 className="size-3.5 text-muted-foreground" />
-              <span>Share</span>
+              <span>{t("common:share")}</span>
             </Button>
             <BookmarkButton />
           </div>

@@ -4,11 +4,13 @@ import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { Loader2, Mail, UserPlus } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import type { InviteMemberFormProps } from "./types";
 
 export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<WorkspaceRole>("member");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,7 +25,7 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
       await onInvite(trimmed, role);
       setEmail("");
     } catch (err: any) {
-      toast.error(err.message || "Failed to invite member");
+      toast.error(err.message || t("failedInviteMember"));
     } finally {
       setIsSubmitting(false);
     }
@@ -32,7 +34,7 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <label className="text-xs font-semibold text-foreground">
-        Invite Collaborator
+        {t("inviteCollaborator")}
       </label>
       <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
         <div className="relative min-w-[160px] flex-1">
@@ -41,7 +43,7 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="colleague@example.com"
+            placeholder={t("colleagueEmailPlaceholder")}
             disabled={isSubmitting}
             className="ps-8 text-xs"
             required
@@ -52,11 +54,11 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
           value={role}
           onChange={(e) => setRole(e.target.value as WorkspaceRole)}
           disabled={isSubmitting}
-          aria-label="Collaborator role"
+          aria-label={t("collaboratorRole")}
           className="h-8 rounded-xl border border-border/40 bg-input/70 px-2.5 py-1 text-xs text-foreground outline-none transition-colors hover:border-border/60 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 dark:bg-input/30"
         >
-          <option value="member">Can edit</option>
-          <option value="viewer">Can view</option>
+          <option value="member">{t("canEdit")}</option>
+          <option value="viewer">{t("canView")}</option>
         </select>
 
         <Button
@@ -70,7 +72,7 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
           ) : (
             <UserPlus className="size-3" />
           )}
-          <span>Invite</span>
+          <span>{t("invite")}</span>
         </Button>
       </div>
     </form>

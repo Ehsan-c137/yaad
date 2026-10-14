@@ -5,6 +5,7 @@ import { Input } from "@ui/input";
 import { authService as defaultAuthService } from "@yaad/core/services/auth-service";
 import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type { AuthFormProps } from "./types";
 import { validateRegisterInput } from "./validation";
@@ -14,6 +15,7 @@ export function RegisterForm({
   onSwitchMode,
   authService = defaultAuthService,
 }: AuthFormProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,10 +64,10 @@ export function RegisterForm({
             htmlFor="register-name"
             className="mb-1 block text-xs font-medium text-foreground"
           >
-            Your Name <span className="text-muted-foreground font-normal">(optional)</span>
+            {t("yourNameOptional")}
           </label>
           <div className="relative flex items-center">
-            <User className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
+            <User className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-name"
               type="text"
@@ -73,7 +75,7 @@ export function RegisterForm({
               placeholder="Jane Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="pl-10 text-xs"
+              className="ps-10 text-xs"
             />
           </div>
         </div>
@@ -83,10 +85,10 @@ export function RegisterForm({
             htmlFor="register-email"
             className="mb-1 block text-xs font-medium text-foreground"
           >
-            Email address
+            {t("email")}
           </label>
           <div className="relative flex items-center">
-            <Mail className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-email"
               type="email"
@@ -95,7 +97,7 @@ export function RegisterForm({
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 text-xs"
+              className="ps-10 text-xs"
             />
           </div>
         </div>
@@ -105,10 +107,10 @@ export function RegisterForm({
             htmlFor="register-password"
             className="mb-1 block text-xs font-medium text-foreground"
           >
-            Password
+            {t("password")}
           </label>
           <div className="relative flex items-center">
-            <Lock className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-password"
               type={showPassword ? "text" : "password"}
@@ -117,12 +119,12 @@ export function RegisterForm({
               placeholder="At least 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 pr-10 text-xs"
+              className="ps-10 pe-10 text-xs"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute end-3.5 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -139,10 +141,10 @@ export function RegisterForm({
             htmlFor="register-confirm-password"
             className="mb-1 block text-xs font-medium text-foreground"
           >
-            Confirm Password
+            {t("confirmPassword")}
           </label>
           <div className="relative flex items-center">
-            <Lock className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-confirm-password"
               type={showPassword ? "text" : "password"}
@@ -151,7 +153,7 @@ export function RegisterForm({
               placeholder="Repeat your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 text-xs"
+              className="ps-10 text-xs"
             />
           </div>
         </div>
@@ -163,23 +165,23 @@ export function RegisterForm({
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              {t("creatingAccount")}
             </>
           ) : (
-            "Create Account"
+            t("createAccount")
           )}
         </Button>
       </form>
 
       <div className="border-t border-border/40 pt-4 text-center text-xs text-muted-foreground">
-        Already have an account?{" "}
+        {t("alreadyHaveAccount")}{" "}
         <button
           type="button"
           onClick={() => onSwitchMode("login")}
           className="font-semibold text-primary underline-offset-4 hover:underline"
         >
-          Sign in
+          {t("signIn")}
         </button>
       </div>
     </div>
