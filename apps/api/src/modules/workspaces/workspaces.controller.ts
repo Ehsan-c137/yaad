@@ -18,7 +18,7 @@ import {
 } from './dto/workspace-member.dto.js';
 import { WorkspacesService } from './workspaces.service.js';
 
-@UseGuards(JwtAuthGuard, WorkspaceMemberGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('workspaces')
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
@@ -26,6 +26,7 @@ export class WorkspacesController {
   /**
    * Retrieves all members of the specified workspace.
    */
+  @UseGuards(WorkspaceMemberGuard)
   @Get(':workspaceId/members')
   async getMembers(
     @Param('workspaceId') workspaceId: string,
@@ -36,6 +37,7 @@ export class WorkspacesController {
   /**
    * Adds or updates a collaborator in the workspace.
    */
+  @UseGuards(WorkspaceMemberGuard)
   @Post(':workspaceId/members')
   @HttpCode(HttpStatus.OK)
   async addMember(
@@ -49,6 +51,7 @@ export class WorkspacesController {
   /**
    * Removes a member's access from the workspace.
    */
+  @UseGuards(WorkspaceMemberGuard)
   @Delete(':workspaceId/members/:memberUserId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMember(
@@ -61,5 +64,17 @@ export class WorkspacesController {
       memberUserId,
       req.user?.id,
     );
+  }
+
+  /**
+   * Joins the workspace using the current user session.
+   */
+  @Post(':workspaceId/join')
+  @HttpCode(HttpStatus.OK)
+  async joinWorkspace(
+    @Param('workspaceId') workspaceId: string,
+    @Req() req: any,
+  ): Promise<WorkspaceMemberResponseDto> {
+    return this.workspacesService.joinWorkspace(workspaceId, req.user?.id);
   }
 }

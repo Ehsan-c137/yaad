@@ -83,5 +83,13 @@
   "savedOfflineWithCount": "{{count}} تغییر در صف همگام‌سازی",
   "syncError": "خطا در همگام‌سازی",
   "retrySync": "تلاش مجدد همگام‌سازی",
-  "allChangesSaved": "تمام تغییرات در ابری ذخیره و همگام‌سازی شدند"
+  "allChangesSaved": "تمام تغییرات در ابری ذخیره و همگام‌سازی شدند",
+  "roleUpdated": "{{email}} به {{role}} تغییر یافت",
+  "joinWorkspace": "پیوستن به فضای کاری",
+  "joinWorkspaceTitle": "پیوستن به فضای کاری",
+  "joinWorkspaceDesc": "شما برای همکاری در این فضای کاری دعوت شده‌اید.",
+  "joiningWorkspace": "در حال پیوستن به فضای کاری...",
+  "joinedWorkspaceSuccess": "با موفقیت به فضای کاری ملحق شدید!",
+  "failedJoinWorkspace": "پیوستن به فضای کاری با شکست مواجه شد",
+  "signInToJoin": "برای پیوستن وارد شوید"
 }

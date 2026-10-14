@@ -26,12 +26,17 @@ export interface InviteMemberFormProps {
 export interface MemberRowProps {
   member: WorkspaceMember;
   currentUserEmail?: string | null;
+  canManageRoles?: boolean;
   onRemove: (userId: string) => Promise<void> | void;
+  onUpdateRole?: (userId: string, role: WorkspaceRole) => Promise<void> | void;
 }
 
 export interface MemberListProps {
   members: WorkspaceMember[];
   isLoading: boolean;
   currentUserEmail?: string | null;
+  canManageRoles?: boolean;
   onRemove: (userId: string) => Promise<void> | void;
+  onUpdateRole?: (userId: string, role: WorkspaceRole) => Promise<void> | void;
 }
+

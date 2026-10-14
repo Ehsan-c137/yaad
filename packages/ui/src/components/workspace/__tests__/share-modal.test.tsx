@@ -193,4 +193,63 @@ describe("ShareModal", () => {
       );
     });
   });
+
+  it("allows workspace owner to change a member's role", async () => {
+    useUserStore.getState().setAuth({
+      token: "jwt-token-123",
+      userId: "u_owner",
+      email: "owner@yaad.app",
+    });
+
+    mockMemberService.getMembers.mockResolvedValue([
+      {
+        id: "m1",
+        userId: "u_owner",
+        email: "owner@yaad.app",
+        role: "owner",
+        createdAt: new Date(),
+      },
+      {
+        id: "m2",
+        userId: "u_editor",
+        email: "editor@yaad.app",
+        role: "member",
+        createdAt: new Date(),
+      },
+    ]);
+    mockMemberService.addMember.mockResolvedValue({
+      id: "m2",
+      userId: "u_editor",
+      email: "editor@yaad.app",
+      role: "viewer",
+      createdAt: new Date(),
+    });
+
+    render(
+      <ShareModal
+        open={true}
+        onOpenChange={vi.fn()}
+        workspaceId="ws_1"
+        workspaceName="Engineering"
+        memberService={mockMemberService}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("editor@yaad.app")).toBeDefined();
+    });
+
+    const roleDropdowns = screen.getAllByLabelText("Collaborator role");
+    const memberRoleSelect = roleDropdowns[1];
+    expect(memberRoleSelect).toBeDefined();
+
+    fireEvent.change(memberRoleSelect, { target: { value: "viewer" } });
+
+    await waitFor(() => {
+      expect(mockMemberService.addMember).toHaveBeenCalledWith("ws_1", {
+        email: "editor@yaad.app",
+        role: "viewer",
+      });
+    });
+  });
 });

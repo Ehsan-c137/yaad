@@ -8,7 +8,9 @@ export function MemberList({
   members,
   isLoading,
   currentUserEmail,
+  canManageRoles,
   onRemove,
+  onUpdateRole,
 }: MemberListProps) {
   const { t } = useTranslation();
 
@@ -33,7 +35,9 @@ export function MemberList({
               key={member.id || member.userId}
               member={member}
               currentUserEmail={currentUserEmail}
+              canManageRoles={canManageRoles}
               onRemove={onRemove}
+              onUpdateRole={onUpdateRole}
             />
           ))
         )}

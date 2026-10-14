@@ -74,6 +74,34 @@ describe('WorkspaceMemberService', () => {
     });
   });
 
+  it('joins a workspace via POST :workspaceId/join', async () => {
+    const joined = {
+      id: '4',
+      userId: 'u4',
+      email: 'dave@example.com',
+      role: 'member',
+      createdAt: new Date(),
+      workspaceName: 'Dev Workspace',
+    };
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => joined,
+    });
+
+    const service = createWorkspaceMemberService('http://localhost:3000', getToken, mockFetch as any);
+    const result = await service.joinWorkspace('ws-123');
+
+    expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/workspaces/ws-123/join', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer mock-jwt-token',
+      },
+    });
+    expect(result).toEqual(joined);
+  });
+
   it('throws descriptive error on failure', async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: false,

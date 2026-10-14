@@ -83,10 +83,33 @@ export function useWorkspaceMembers({
     toast.success(t("memberRemoved", { email }));
   };
 
+  const updateMemberRole = async (userId: string, newRole: WorkspaceRole) => {
+    const target = members.find((m) => m.userId === userId);
+    if (!target) return;
+
+    const updated = await memberService.addMember(workspaceId, {
+      email: target.email,
+      role: newRole,
+    });
+
+    setMembers((prev) =>
+      prev.map((m) => (m.userId === userId ? { ...m, role: newRole } : m)),
+    );
+
+    toast.success(
+      t("roleUpdated", {
+        email: target.email,
+        role: newRole === "member" ? t("editor") : t("viewer"),
+      }),
+    );
+    return updated;
+  };
+
   return {
     members,
     isLoading,
     addMember,
     removeMember,
+    updateMemberRole,
   };
 }

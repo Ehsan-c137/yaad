@@ -282,6 +282,33 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   /**
+   * Relays real-time workspace tree (sidebar page hierarchy) updates to all clients in the workspace.
+   */
+  @SubscribeMessage('tree-update')
+  handleTreeUpdate(
+    @ConnectedSocket() client: WebSocket,
+    @MessageBody() rawData: any,
+  ): void {
+    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
+      ? rawData.data
+      : (rawData ?? {});
+    const workspaceId = data.workspaceId ?? rawData?.workspaceId;
+    const tree = data.tree ?? rawData?.tree;
+
+    if (!workspaceId || !tree) return;
+
+    this.broadcastToWorkspace(
+      workspaceId,
+      {
+        event: 'tree-update',
+        workspaceId,
+        tree,
+      },
+      client,
+    );
+  }
+
+  /**
    * Helper to broadcast a message to room subscribers directly from Gateway state.
    */
   private broadcastToRoom(
@@ -300,6 +327,26 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     for (const peer of subscribers) {
       if (peer !== excludeClient && peer.readyState === 1) {
+        peer.send(payload);
+      }
+    }
+  }
+
+  /**
+   * Helper to broadcast a message to all active clients in a workspace.
+   */
+  private broadcastToWorkspace(
+    workspaceId: string,
+    message: Record<string, any>,
+    excludeClient?: WebSocket,
+  ): void {
+    const payload = JSON.stringify({
+      ...message,
+      data: message,
+    });
+
+    for (const [peer, ctx] of this.clientContexts.entries()) {
+      if (peer !== excludeClient && ctx.workspaceId === workspaceId && peer.readyState === 1) {
         peer.send(payload);
       }
     }

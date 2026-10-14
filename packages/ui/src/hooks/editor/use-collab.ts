@@ -6,6 +6,10 @@ import {
   yDocToDocumentJson,
 } from '@yaad/core/lib/crdt/yjs-converter';
 import { getDocumentStore } from '@yaad/core/store/document/use-document-store';
+import {
+  onWorkspaceTreePersisted,
+  useSidebarStore,
+} from '@yaad/core/store/use-sidebar-store';
 import { useUserStore } from '@yaad/core/store/use-user-store';
 
 export interface CollabCursor {
@@ -131,6 +135,11 @@ export function useCollab(
           return next;
         });
       },
+      onTreeUpdate: () => {
+        if (workspaceId) {
+          void useSidebarStore.getState().loadWorkspacePages(workspaceId);
+        }
+      },
     });
 
     clientRef.current = client;
@@ -141,7 +150,15 @@ export function useCollab(
       user: { id: userId, name: userName, color: userColor },
     });
 
+    // 6. Listen to local sidebar tree changes and broadcast over WebSocket
+    const unsubTree = onWorkspaceTreePersisted((wsId, treeNodes) => {
+      if (wsId === workspaceId) {
+        client.sendTreeUpdate(treeNodes);
+      }
+    });
+
     return () => {
+      unsubTree();
       unsubscribeStore();
       ydoc.off('update', handleYDocUpdate);
       client.disconnect();

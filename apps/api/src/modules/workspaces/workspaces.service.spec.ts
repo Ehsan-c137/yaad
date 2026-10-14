@@ -112,4 +112,73 @@ describe('WorkspacesService', () => {
       expect(mockDb.delete).toHaveBeenCalled();
     });
   });
+
+  describe('joinWorkspace', () => {
+    it('throws NotFoundException if workspace does not exist', async () => {
+      mockDb.select.mockReturnValue(mockDb);
+      mockDb.from.mockReturnValue(mockDb);
+      mockDb.where.mockReturnValue(mockDb);
+      mockDb.limit.mockResolvedValue([]);
+
+      await expect(service.joinWorkspace('ws_nonexistent', 'user_1')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('returns existing membership if user is already a member', async () => {
+      // 1. Workspace lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'ws_1', name: 'My Team', ownerId: 'user_owner' }]);
+
+      // 2. User lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'user_1', email: 'user@test.com' }]);
+
+      // 3. Existing check
+      const createdAt = new Date();
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'mem_1', role: 'member', createdAt }]);
+
+      const result = await service.joinWorkspace('ws_1', 'user_1');
+      expect(result.id).toBe('mem_1');
+      expect(result.role).toBe('member');
+      expect(result.workspaceName).toBe('My Team');
+    });
+
+    it('creates membership and returns it if user is joining for first time', async () => {
+      // 1. Workspace lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'ws_1', name: 'New Collab', ownerId: 'user_owner' }]);
+
+      // 2. User lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'user_2', email: 'newbie@test.com' }]);
+
+      // 3. Existing check
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([]);
+
+      // 4. Insert
+      mockDb.insert.mockReturnValue(mockDb);
+      mockDb.values.mockResolvedValue({});
+
+      const result = await service.joinWorkspace('ws_1', 'user_2');
+      expect(result.userId).toBe('user_2');
+      expect(result.email).toBe('newbie@test.com');
+      expect(result.role).toBe('member');
+      expect(result.workspaceName).toBe('New Collab');
+    });
+  });
 });

@@ -8,6 +8,7 @@ export interface CollabClientOptions {
   token?: string;
   onAwareness?: (awarenessData: any) => void;
   onPeerLeave?: (userId: string) => void;
+  onTreeUpdate?: (tree: any) => void;
   onStatusChange?: (status: 'connecting' | 'connected' | 'disconnected') => void;
   WebSocketClass?: typeof WebSocket;
 }
@@ -21,6 +22,7 @@ export class CollabClient {
   private readonly token?: string;
   private readonly onAwareness?: (awarenessData: any) => void;
   private readonly onPeerLeave?: (userId: string) => void;
+  private readonly onTreeUpdate?: (tree: any) => void;
   private readonly onStatusChange?: (status: 'connecting' | 'connected' | 'disconnected') => void;
   private readonly WebSocketClass: typeof WebSocket;
   private pendingAwareness: any = null;
@@ -36,6 +38,7 @@ export class CollabClient {
     this.token = options.token;
     this.onAwareness = options.onAwareness;
     this.onPeerLeave = options.onPeerLeave;
+    this.onTreeUpdate = options.onTreeUpdate;
     this.onStatusChange = options.onStatusChange;
     this.WebSocketClass =
       options.WebSocketClass ?? (typeof WebSocket !== 'undefined' ? WebSocket : (null as any));
@@ -140,6 +143,11 @@ export class CollabClient {
       if (userId) {
         this.onPeerLeave?.(userId);
       }
+    } else if (event === 'tree-update') {
+      const tree = payload.tree ?? data.tree;
+      if (tree) {
+        this.onTreeUpdate?.(tree);
+      }
     }
   }
 
@@ -152,6 +160,16 @@ export class CollabClient {
       workspaceId: this.workspaceId,
       documentId: this.documentId,
       awarenessData,
+    });
+  }
+
+  sendTreeUpdate(tree: any): void {
+    if (!this.isConnected()) return;
+
+    this.send({
+      event: 'tree-update',
+      workspaceId: this.workspaceId,
+      tree,
     });
   }
 

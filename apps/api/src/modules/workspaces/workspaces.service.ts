@@ -132,4 +132,82 @@ export class WorkspacesService {
         ),
       );
   }
+
+  /**
+   * Joins the workspace using the current user identity.
+   */
+  async joinWorkspace(
+    workspaceId: string,
+    userId: string,
+  ): Promise<WorkspaceMemberResponseDto> {
+    // 1. Locate workspace
+    const [ws] = await this.db
+      .select({ id: workspaces.id, name: workspaces.name, ownerId: workspaces.ownerId })
+      .from(workspaces)
+      .where(and(eq(workspaces.id, workspaceId), eq(workspaces.isDeleted, false)))
+      .limit(1);
+
+    if (!ws) {
+      throw new NotFoundException(`Workspace "${workspaceId}" was not found.`);
+    }
+
+    // 2. Locate user
+    const [targetUser] = await this.db
+      .select({ id: users.id, email: users.email })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!targetUser) {
+      throw new NotFoundException('User was not found.');
+    }
+
+    // 3. Check existing membership
+    const [existing] = await this.db
+      .select({
+        id: workspaceMembers.id,
+        role: workspaceMembers.role,
+        createdAt: workspaceMembers.createdAt,
+      })
+      .from(workspaceMembers)
+      .where(
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId),
+        ),
+      )
+      .limit(1);
+
+    if (existing) {
+      return {
+        id: existing.id,
+        userId: targetUser.id,
+        email: targetUser.email,
+        role: existing.role,
+        createdAt: existing.createdAt,
+        workspaceName: ws.name,
+      };
+    }
+
+    const memberId = randomUUID();
+    const now = new Date();
+    const role = ws.ownerId === userId ? 'owner' : 'member';
+
+    await this.db.insert(workspaceMembers).values({
+      id: memberId,
+      workspaceId,
+      userId: targetUser.id,
+      role,
+      createdAt: now,
+    });
+
+    return {
+      id: memberId,
+      userId: targetUser.id,
+      email: targetUser.email,
+      role,
+      createdAt: now,
+      workspaceName: ws.name,
+    };
+  }
 }

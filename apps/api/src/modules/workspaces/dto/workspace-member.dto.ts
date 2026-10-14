@@ -21,4 +21,5 @@ export interface WorkspaceMemberResponseDto {
   email: string;
   role: string;
   createdAt: Date;
+  workspaceName?: string;
 }

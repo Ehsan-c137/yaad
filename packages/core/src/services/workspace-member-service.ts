@@ -10,6 +10,7 @@ export interface IWorkspaceMemberService {
   getMembers(workspaceId: string): Promise<WorkspaceMember[]>;
   addMember(workspaceId: string, payload: AddMemberPayload): Promise<WorkspaceMember>;
   removeMember(workspaceId: string, memberUserId: string): Promise<void>;
+  joinWorkspace(workspaceId: string): Promise<WorkspaceMember & { workspaceName?: string }>;
 }
 
 export function createWorkspaceMemberService(
@@ -62,6 +63,18 @@ export function createWorkspaceMemberService(
         const err = await res.json().catch(() => ({ message: res.statusText }));
         throw new Error(err.message || 'Failed to remove member');
       }
+    },
+
+    async joinWorkspace(workspaceId: string): Promise<WorkspaceMember & { workspaceName?: string }> {
+      const res = await fetchFn(`${baseUrl}/workspaces/${workspaceId}/join`, {
+        method: 'POST',
+        headers: getHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: res.statusText }));
+        throw new Error(err.message || 'Failed to join workspace');
+      }
+      return res.json();
     },
   };
 }

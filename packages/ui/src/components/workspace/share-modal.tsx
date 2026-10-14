@@ -35,12 +35,16 @@ export function ShareModal({
 
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  const { members, isLoading, addMember, removeMember } = useWorkspaceMembers({
-    workspaceId,
-    memberService,
-    isAuthenticated,
-    isOpen: open,
-  });
+  const { members, isLoading, addMember, removeMember, updateMemberRole } =
+    useWorkspaceMembers({
+      workspaceId,
+      memberService,
+      isAuthenticated,
+      isOpen: open,
+    });
+
+  const currentMember = members.find((m) => m.email === currentUserEmail);
+  const canManageRoles = !currentMember || currentMember.role === "owner";
 
   const shareUrl =
     typeof window !== "undefined"
@@ -82,11 +86,15 @@ export function ShareModal({
                   members={members}
                   isLoading={isLoading}
                   currentUserEmail={currentUserEmail}
+                  canManageRoles={canManageRoles}
                   onRemove={async (userId) => {
                     const target = members.find((m) => m.userId === userId);
                     if (target) {
                       await removeMember(userId, target.email);
                     }
+                  }}
+                  onUpdateRole={async (userId, role) => {
+                    await updateMemberRole(userId, role);
                   }}
                 />
               </>

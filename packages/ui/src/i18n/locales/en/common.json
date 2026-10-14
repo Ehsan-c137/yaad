@@ -83,5 +83,13 @@
   "savedOfflineWithCount": "{{count}} pending sync",
   "syncError": "Sync issue",
   "retrySync": "Retry sync",
-  "allChangesSaved": "All changes saved to cloud"
+  "allChangesSaved": "All changes saved to cloud",
+  "roleUpdated": "Updated {{email}} to {{role}}",
+  "joinWorkspace": "Join Workspace",
+  "joinWorkspaceTitle": "Join Workspace",
+  "joinWorkspaceDesc": "You have been invited to collaborate on this workspace.",
+  "joiningWorkspace": "Joining workspace...",
+  "joinedWorkspaceSuccess": "Successfully joined workspace!",
+  "failedJoinWorkspace": "Failed to join workspace",
+  "signInToJoin": "Sign In to Join"
 }

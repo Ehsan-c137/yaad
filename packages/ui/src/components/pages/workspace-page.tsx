@@ -1,10 +1,11 @@
 "use client";
 
 import type { Workspace } from "@yaad/core/types/workspace";
-
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router";
 
 import { RecentDocsList } from "@/components/pages/recent-docs-list/recent-docs-list";
+import { JoinWorkspacePrompt } from "@/components/workspace/join-workspace-prompt";
 
 interface WorkspaceHomePageProps {
   workspace?: Workspace;
@@ -12,8 +13,14 @@ interface WorkspaceHomePageProps {
 
 export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
   const { t } = useTranslation("common");
+  const { workspaceId } = useParams<{ workspaceId: string }>();
 
-  if (!workspace) return null;
+  if (!workspace) {
+    if (workspaceId) {
+      return <JoinWorkspacePrompt workspaceId={workspaceId} />;
+    }
+    return null;
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-12 py-16">

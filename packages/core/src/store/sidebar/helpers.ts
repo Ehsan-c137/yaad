@@ -12,6 +12,14 @@ import { useTabStore } from "../use-tab-store";
 let currentWorkspaceId: string | null = null;
 const saveTreeTimersMap = new Map<string, ReturnType<typeof setTimeout>>();
 
+type TreeChangeCallback = (workspaceId: string, treeNodes: WorkspacePageMeta[]) => void;
+const treeChangeListeners = new Set<TreeChangeCallback>();
+
+export function onWorkspaceTreePersisted(cb: TreeChangeCallback): () => void {
+  treeChangeListeners.add(cb);
+  return () => treeChangeListeners.delete(cb);
+}
+
 export function persistWorkspaceTree(
   pages: SidebarPageMap,
   workspaceId?: string | null,
@@ -44,6 +52,13 @@ export function persistWorkspaceTree(
           }));
 
         await workspaceService.saveWorkspaceTree(wsId, treeNodes);
+        treeChangeListeners.forEach((fn) => {
+          try {
+            fn(wsId, treeNodes);
+          } catch (err) {
+            console.error("Error in tree change listener:", err);
+          }
+        });
       } catch (e) {
         console.error("Error saving workspace tree to storage:", e);
       } finally {

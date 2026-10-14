@@ -27,6 +27,7 @@ interface WorkspaceState {
     updates: WorkspaceUpdates,
   ) => Promise<WorkspaceOperationResult>;
   deleteWorkspace: (id: string) => Promise<WorkspaceOperationResult>;
+  registerWorkspace: (workspace: Workspace) => Promise<void>;
   loadInitialWorkspaces: () => Promise<void>;
 }
 
@@ -136,6 +137,15 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         }));
 
         return { success: true };
+      },
+
+      registerWorkspace: async (workspace: Workspace) => {
+        await workspaceService.saveWorkspace(workspace);
+        set((state) => ({
+          workspaces: { ...state.workspaces, [workspace.id]: workspace },
+          activeWorkspaceId: workspace.id,
+        }));
+        await useSidebarStore.getState().loadWorkspacePages(workspace.id);
       },
 
       deleteWorkspace: async (id: string) => {
