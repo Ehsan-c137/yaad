@@ -9,7 +9,14 @@ export interface AuthResponse {
   defaultWorkspaceId?: string;
 }
 
-export class AuthService {
+export interface IAuthService {
+  register(email: string, password: string, name?: string): Promise<AuthResponse>;
+  login(email: string, password: string): Promise<AuthResponse>;
+  logout(): void;
+  getToken(): string | null;
+}
+
+export class AuthService implements IAuthService {
   private readonly baseUrl: string;
 
   constructor(baseUrl = 'http://localhost:3000') {

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,98 +7,48 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@ui/dialog";
-import { Input } from "@ui/input";
-import { authService } from "@yaad/core/services/auth-service";
-import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail, Sparkles, User } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export interface AuthModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialMode?: "login" | "register";
-}
+import { LoginForm } from "./login-form";
+import { RegisterForm } from "./register-form";
+import type { AuthMode, AuthModalProps, AuthViewConfig } from "./types";
+
+/**
+ * Open/Closed Principle (OCP):
+ * New auth views (e.g. forgot-password, sso) can be registered here
+ * without modifying the modal container shell.
+ */
+const AUTH_VIEWS: Record<AuthMode, AuthViewConfig> = {
+  login: {
+    title: "Welcome back",
+    description: "Sign in to your Yaad account to collaborate and sync",
+    component: LoginForm,
+  },
+  register: {
+    title: "Create an account",
+    description: "Sign up to enable real-time collaboration across devices",
+    component: RegisterForm,
+  },
+};
 
 export function AuthModal({
   open,
   onOpenChange,
   initialMode = "login",
+  authService,
 }: AuthModalProps) {
-  const [mode, setMode] = useState<"login" | "register">(initialMode);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<AuthMode>(initialMode);
 
-  // Sync mode when initialMode changes or modal opens
+  // Sync mode whenever modal opens or initialMode changes
   useEffect(() => {
     if (open) {
       setMode(initialMode);
-      setError(null);
     }
   }, [open, initialMode]);
 
-  const resetForm = () => {
-    setName("");
-    setEmail("");
-    setPassword("");
-    confirmPassword && setConfirmPassword("");
-    setError(null);
-  };
-
-  const handleSwitchMode = (newMode: "login" | "register") => {
-    setMode(newMode);
-    resetForm();
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail || !password) {
-      setError("Please fill in all required fields.");
-      return;
-    }
-
-    if (mode === "register") {
-      if (password.length < 6) {
-        setError("Password must be at least 6 characters long.");
-        return;
-      }
-      if (password !== confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-      }
-    }
-
-    setIsLoading(true);
-    try {
-      if (mode === "login") {
-        await authService.login(trimmedEmail, password);
-      } else {
-        await authService.register(
-          trimmedEmail,
-          password,
-          name.trim() || undefined,
-        );
-      }
-
-      resetForm();
-      onOpenChange(false);
-    } catch (err: any) {
-      setError(
-        err.message ||
-          (mode === "login"
-            ? "Failed to log in. Please check your credentials."
-            : "Failed to create account. Please try again."),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const currentView = AUTH_VIEWS[mode] ?? AUTH_VIEWS.login;
+  const ActiveFormComponent = currentView.component;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,12 +58,10 @@ export function AuthModal({
             <Sparkles className="h-5 w-5" />
           </div>
           <DialogTitle className="text-xl font-bold tracking-tight">
-            {mode === "login" ? "Welcome back" : "Create an account"}
+            {currentView.title}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            {mode === "login"
-              ? "Sign in to your Yaad account to collaborate and sync"
-              : "Sign up to enable real-time collaboration across devices"}
+            {currentView.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -122,7 +69,7 @@ export function AuthModal({
         <div className="flex w-full items-center rounded-xl bg-muted/60 p-1 border border-border/40">
           <button
             type="button"
-            onClick={() => handleSwitchMode("login")}
+            onClick={() => setMode("login")}
             className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition-all ${
               mode === "login"
                 ? "bg-background text-foreground shadow-xs font-semibold"
@@ -133,7 +80,7 @@ export function AuthModal({
           </button>
           <button
             type="button"
-            onClick={() => handleSwitchMode("register")}
+            onClick={() => setMode("register")}
             className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition-all ${
               mode === "register"
                 ? "bg-background text-foreground shadow-xs font-semibold"
@@ -144,163 +91,18 @@ export function AuthModal({
           </button>
         </div>
 
-        {/* Error Banner */}
-        {error && (
-          <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-medium text-destructive animate-shake">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Auth Form */}
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          {mode === "register" && (
-            <div>
-              <label
-                htmlFor="auth-name"
-                className="mb-1 block text-xs font-medium text-foreground"
-              >
-                Your Name <span className="text-muted-foreground font-normal">(optional)</span>
-              </label>
-              <div className="relative flex items-center">
-                <User className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="auth-name"
-                  type="text"
-                  autoComplete="name"
-                  placeholder="Jane Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="pl-10 text-xs"
-                />
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label
-              htmlFor="auth-email"
-              className="mb-1 block text-xs font-medium text-foreground"
-            >
-              Email address
-            </label>
-            <div className="relative flex items-center">
-              <Mail className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="auth-email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 text-xs"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="auth-password"
-              className="mb-1 block text-xs font-medium text-foreground"
-            >
-              Password
-            </label>
-            <div className="relative flex items-center">
-              <Lock className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="auth-password"
-                type={showPassword ? "text" : "password"}
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
-                required
-                placeholder={mode === "register" ? "At least 6 characters" : "••••••••"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10 text-xs"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {mode === "register" && (
-            <div>
-              <label
-                htmlFor="auth-confirm-password"
-                className="mb-1 block text-xs font-medium text-foreground"
-              >
-                Confirm Password
-              </label>
-              <div className="relative flex items-center">
-                <Lock className="absolute left-3.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="auth-confirm-password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  placeholder="Repeat your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10 text-xs"
-                />
-              </div>
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="mt-2 w-full rounded-xl py-2 text-xs font-semibold shadow-sm transition-all active:scale-[0.99]"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === "login" ? "Signing in..." : "Creating account..."}
-              </>
-            ) : mode === "login" ? (
-              "Sign In"
-            ) : (
-              "Create Account"
-            )}
-          </Button>
-        </form>
-
-        {/* Footer switch */}
-        <div className="border-t border-border/40 pt-4 text-center text-xs text-muted-foreground">
-          {mode === "login" ? (
-            <>
-              Don&apos;t have an account?{" "}
-              <button
-                type="button"
-                onClick={() => handleSwitchMode("register")}
-                className="font-semibold text-primary underline-offset-4 hover:underline"
-              >
-                Sign up
-              </button>
-            </>
-          ) : (
-            <>
-              Already have an account?{" "}
-              <button
-                type="button"
-                onClick={() => handleSwitchMode("login")}
-                className="font-semibold text-primary underline-offset-4 hover:underline"
-              >
-                Sign in
-              </button>
-            </>
-          )}
-        </div>
+        {/* Active Form Component (LSP & DIP) */}
+        <ActiveFormComponent
+          onSuccess={() => onOpenChange(false)}
+          onSwitchMode={setMode}
+          authService={authService}
+        />
       </DialogContent>
     </Dialog>
   );
 }
+
+export * from "./types";
+export * from "./validation";
+export { LoginForm } from "./login-form";
+export { RegisterForm } from "./register-form";
