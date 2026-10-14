@@ -14,11 +14,6 @@ import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 import type { AuthMode, AuthModalProps, AuthViewConfig } from "./types";
 
-/**
- * Open/Closed Principle (OCP):
- * New auth views (e.g. forgot-password, sso) can be registered here
- * without modifying the modal container shell.
- */
 const AUTH_VIEWS: Record<AuthMode, AuthViewConfig> = {
   login: {
     title: "Welcome back",
@@ -91,7 +86,6 @@ export function AuthModal({
           </button>
         </div>
 
-        {/* Active Form Component (LSP & DIP) */}
         <ActiveFormComponent
           onSuccess={() => onOpenChange(false)}
           onSwitchMode={setMode}
