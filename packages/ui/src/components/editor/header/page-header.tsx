@@ -21,6 +21,7 @@ import { CollabPresence } from "./collab-presence";
 import { PageHeaderCover } from "./cover/page-header-cover";
 import { PageIcon } from "./icon/page-icon";
 import { PageHeaderTags } from "./page-header-tags";
+import { SyncStatusIndicator } from "./sync-status-indicator";
 
 export function PageHeader() {
   const { t } = useTranslation(["common", "editor"]);
@@ -49,6 +50,7 @@ export function PageHeader() {
                 <span>{t("common:viewOnly", "View only")}</span>
               </div>
             )}
+            <SyncStatusIndicator />
             <CollabPresence />
             <Button
               type="button"

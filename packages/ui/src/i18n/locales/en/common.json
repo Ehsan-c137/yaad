@@ -76,5 +76,12 @@
   "offline": "Offline",
   "userIsEditing": "{{name}} is editing",
   "viewOnly": "View only",
-  "viewOnlyDesc": "You have read-only access to this workspace."
+  "viewOnlyDesc": "You have read-only access to this workspace.",
+  "saved": "Saved",
+  "syncing": "Saving...",
+  "savedOffline": "Saved offline",
+  "savedOfflineWithCount": "{{count}} pending sync",
+  "syncError": "Sync issue",
+  "retrySync": "Retry sync",
+  "allChangesSaved": "All changes saved to cloud"
 }
