@@ -1,11 +1,20 @@
 import type { StorageAdapter } from "./types";
 
 import { getStorageAdapter } from "./storage-factory";
+import { SyncOutboxStorageAdapter } from "../sync/sync-outbox-storage-adapter";
+import { SyncWorker } from "../sync/sync-worker";
 
-let currentAdapter: StorageAdapter = getStorageAdapter();
+let rawAdapter: StorageAdapter = getStorageAdapter();
+let currentAdapter: StorageAdapter = new SyncOutboxStorageAdapter(rawAdapter);
+
+export const syncWorker = new SyncWorker(() => currentAdapter);
 
 export function setStorageAdapter(adapter: StorageAdapter): void {
-  currentAdapter = adapter;
+  rawAdapter = adapter;
+  currentAdapter =
+    adapter instanceof SyncOutboxStorageAdapter
+      ? adapter
+      : new SyncOutboxStorageAdapter(adapter);
 }
 
 export function getCurrentStorageAdapter(): StorageAdapter {
@@ -16,6 +25,9 @@ export async function initStorage(): Promise<void> {
   if (currentAdapter.init) {
     await currentAdapter.init();
   }
+
+  // Start background sync worker
+  syncWorker.start();
 }
 
 export const storage: StorageAdapter = new Proxy({} as StorageAdapter, {
