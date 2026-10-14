@@ -29,19 +29,32 @@ The UI component library, block editor canvas, knowledge graph, and design syste
   - `PageBlock` (Subpage navigation cards)
   - `SeparatorBlock` (Horizontal dividing lines)
 
-### 2. Slash Menu (`src/components/editor/slash-menu`)
+### 2. Real-Time Collaboration & Overlays (`src/components/editor/collab` & `src/components/editor/header`)
+
+- **`RemoteCursorOverlay`**: Renders live remote cursor flags and selection ranges across contenteditable blocks for active room collaborators.
+- **`CollabPresence`**: Visual peer presence avatars in the page header with tooltips and connection rings.
+- **`SyncStatusIndicator`**: Real-time visual badge communicating persistence status (`synced`, `syncing`, `offline`, `error`).
+- **`useCollab`**: Custom hook binding `CollabClient` lifecycle, Yjs text synchronizations, and presence telemetry to the active document.
+
+### 3. Slash Menu (`src/components/editor/slash-menu`)
 
 - Triggered by typing `/` in any editable block.
 - Searchable command palette offering quick block type conversion or new block insertion.
 
-### 3. Knowledge Graph (`src/components/graph` & `src/components/pages/graph-page.tsx`)
+### 4. Workspace Sharing & Permissions (`src/components/workspace` & `src/hooks/workspace`)
+
+- **`ShareModal`**: Multi-section modal for managing collaborators, changing roles (`OWNER`, `EDITOR`, `VIEWER`), copying invite links, and revoking memberships.
+- **`JoinWorkspacePrompt`**: Streamlined modal allowing users to preview and accept workspace collaboration invites.
+- **`useWorkspacePermissions`**: Capability hook exposing permission flags (`canEdit`, `isOwner`, `isViewer`, `role`) and enforcing read-only lockdowns across editor blocks, slash commands, and tree manipulation.
+
+### 5. Knowledge Graph (`src/components/graph` & `src/components/pages/graph-page.tsx`)
 
 - Interactive force-directed node-link visualization powered by `@xyflow/react` and `d3-force`.
 - Supports workspace-level exploration and localized page-centric neighborhoods.
 
-### 4. Layout & Navigation (`src/components/layout`)
+### 6. Layout & Navigation (`src/components/layout`)
 
-- **`MainLayout`**: Hosts the resizable sidebar, top navigation tab bar, and global search modal (`Cmd/Ctrl + K`).
+- **`MainLayout`**: Hosts the resizable sidebar, top navigation tab bar, share modal trigger, and global search modal (`Cmd/Ctrl + K`).
 - **Sidebar**: Tree view with expandable nodes, drag-and-drop reordering, bookmarks, and trash view.
 
 ## Scripts

@@ -25,7 +25,23 @@ The headless business logic and state management layer for Yaad.
 - **`useTagStore`**: Tags taxonomy and indexing.
 - **`useDocumentStore(pageId)`**: Factory producing isolated, per-page stores for block edits and autosaving.
 
-### 3. Identity & ID Generator (`src/lib/id.ts`)
+### 3. CRDT & Collaboration (`src/lib/crdt`)
+
+- **`CollabClient`**: Manages real-time WebSocket connections to `/collab`, Yjs state-vector synchronization handshakes, live binary delta exchange, awareness states (cursors and selections), real-time tree sync, and permission revocation events.
+- **`yjs-converter.ts`**: Bi-directional conversion utilities translating between canonical `DocumentJSON` (blocks, root children, metadata) and Yjs CRDT shared data structures (`Y.Doc`, `Y.Map`, `Y.Array`, `Y.Text`).
+
+### 4. Offline Delta Sync Engine (`src/lib/sync`)
+
+- **`OutboxQueue`**: Local FIFO mutation queue buffering offline mutations with unique `clientMutationId`s for idempotent server execution.
+- **`SyncWorker`**: Background worker orchestrating atomic batch pushes (`POST /sync/push`) and delta pulls (`POST /sync/pull`) against the NestJS sync engine.
+- **`SyncOutboxStorageAdapter`**: Transparent decorator wrapping `StorageAdapter` to record mutations upon local storage writes.
+
+### 5. Workspace Permissions & Sharing (`src/lib/workspace` & `src/services`)
+
+- **`WorkspacePermissions`**: Role hierarchy definitions (`OWNER`, `EDITOR`, `VIEWER`) and permission evaluation logic (`canEdit`, `isOwner`, `isViewer`).
+- **`WorkspaceMemberService`**: REST client for retrieving members, updating roles, inviting collaborators, and leaving workspaces.
+
+### 6. Identity & ID Generator (`src/lib/id.ts`)
 
 Centralized typed nanoid generators:
 
@@ -34,10 +50,11 @@ Centralized typed nanoid generators:
 - `generateWorkspaceId()` -> `ws_<id>`
 - `generateCardId()` -> `card_<id>`
 
-### 4. Services (`src/services`)
+### 7. Services (`src/services`)
 
 - **`DocumentService`**: High-level CRUD, cloning, and document export/import.
 - **`WorkspaceService`**: Workspace initialization and defaults seeding.
+- **`WorkspaceMemberService`**: Workspace collaborator access control and invitation management.
 - **`LinkPreviewService`**: Metadata extraction for URL cards.
 - **`SearchService`**: In-memory full-text search indexing across titles and blocks.
 

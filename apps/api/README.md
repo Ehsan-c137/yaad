@@ -220,6 +220,84 @@ Query parameter equivalent for delta pull.
 
 ---
 
+### Workspace Members API (`/workspaces`)
+
+All member management routes require `Authorization: Bearer <accessToken>`.
+
+#### `GET /workspaces/:workspaceId/members`
+Retrieves all members, emails, names, and assigned roles (`owner`, `editor`, `viewer`) for the specified workspace. Requires workspace membership.
+
+- **Response `200 OK`**:
+```json
+[
+  {
+    "id": "mem_1a2b3c4d",
+    "workspaceId": "ws_1a2b3c4d",
+    "userId": "usr_alice",
+    "role": "owner",
+    "name": "Alice",
+    "email": "alice@yaad.app",
+    "joinedAt": "2026-10-14T00:00:00.000Z"
+  },
+  {
+    "id": "mem_5e6f7a8b",
+    "workspaceId": "ws_1a2b3c4d",
+    "userId": "usr_bob",
+    "role": "editor",
+    "name": "Bob",
+    "email": "bob@yaad.app",
+    "joinedAt": "2026-10-14T01:00:00.000Z"
+  }
+]
+```
+
+---
+
+#### `POST /workspaces/:workspaceId/members`
+Adds a new collaborator by email or updates an existing member's role (`owner`, `editor`, `viewer`). Requires workspace membership. When a role changes, active client sessions for the user are immediately notified via WebSockets (`member-role-updated`).
+
+- **Request Body**:
+```json
+{
+  "email": "charlie@yaad.app",
+  "role": "editor"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "id": "mem_9c0d1e2f",
+  "workspaceId": "ws_1a2b3c4d",
+  "userId": "usr_charlie",
+  "role": "editor",
+  "email": "charlie@yaad.app"
+}
+```
+
+---
+
+#### `DELETE /workspaces/:workspaceId/members/:memberUserId`
+Removes a collaborator's access from the workspace. Automatically notifies their active sessions via WebSocket (`member-kicked`) and terminates open connections.
+
+- **Response `204 No Content`**
+
+---
+
+#### `POST /workspaces/:workspaceId/join`
+Allows an authenticated user to join a shared workspace using their current session (e.g. from a shareable workspace link).
+
+- **Response `200 OK`**:
+```json
+{
+  "id": "mem_new",
+  "workspaceId": "ws_1a2b3c4d",
+  "userId": "usr_current",
+  "role": "editor"
+}
+```
+
+---
+
 ## 4. Real-Time Collaborative WebSocket API
 
 - **Protocol**: Standard WebSocket (`ws://` / `wss://`)
@@ -305,6 +383,60 @@ Transmits live collaborator cursors and active block selections without database
 - **Server Broadcast**: Relayed immediately to all other collaborators in the room.
 
 ---
+
+### 4. Real-Time Page Tree Synchronization (`tree-update`)
+Broadcasts sidebar hierarchy adjustments (creating, renaming, moving pages) to all clients in the workspace.
+
+- **Client Message**:
+```json
+{
+  "event": "tree-update",
+  "data": {
+    "workspaceId": "ws_1a2b3c4d",
+    "tree": [
+      { "id": "page_1", "title": "Index", "parentId": null, "children": [] }
+    ]
+  }
+}
+```
+- **Server Broadcast**: Relayed to all active workspace clients (`{ event: "tree-update", workspaceId, tree }`).
+
+---
+
+### 5. Permission & Membership Real-Time Events
+
+#### Role Updated (`member-role-updated`)
+Broadcast to all active sockets of a target user when their role is altered by an owner:
+```json
+{
+  "event": "member-role-updated",
+  "workspaceId": "ws_1a2b3c4d",
+  "userId": "usr_bob",
+  "role": "viewer"
+}
+```
+*Client Action*: Automatically transitions editor UI into read-only mode without reloading.
+
+#### Member Removed (`member-kicked`)
+Sent immediately to a user when their membership is revoked, following which the socket is closed (code `4003`):
+```json
+{
+  "event": "member-kicked",
+  "workspaceId": "ws_1a2b3c4d",
+  "userId": "usr_bob"
+}
+```
+*Client Action*: Redirects the removed user to workspace selection and clears cached credentials.
+
+#### Peer Departure (`peer-leave`)
+Broadcast to room subscribers when a collaborator disconnects:
+```json
+{
+  "event": "peer-leave",
+  "documentId": "page_9b1deb4d",
+  "userId": "usr_alice"
+}
+```
 
 ## 5. PostgreSQL Database Schema
 

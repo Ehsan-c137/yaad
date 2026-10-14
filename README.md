@@ -8,7 +8,13 @@ A modern, fast, local-first personal knowledge management and block-based worksp
 
 ## Features
 
-- **Local-First Architecture**: Your data stays on your device. Zero cloud lock-in. Uses SQLite on desktop and IndexedDB on web with an unified, transparent storage adapter abstraction.
+- **Local-First Architecture**: Your data stays on your device. Zero cloud lock-in. Uses SQLite on desktop and IndexedDB on web with a unified, transparent storage adapter abstraction.
+- **Real-Time Multiplayer Collaboration**: Character- and block-level concurrent editing powered by CRDTs (Yjs) over WebSockets (`/collab`) with sub-20ms broadcast latency.
+- **Live Presence & Remote Cursors**: Collaborator avatars, live cursor pointers, and block selection highlights with custom user colors.
+- **Local-First Delta Sync Engine**: Offline FIFO mutation queue (`outbox`) with idempotent push/pull synchronization, monotonic versioning, and immutable sync logs.
+- **Live Sync Status & Feedback**: Real-time visual feedback indicating synced, syncing, offline, or error persistence states.
+- **Granular Workspace Roles & Sharing**: Role-based access control (`OWNER`, `EDITOR`, `VIEWER`), instant shareable invite links, quick join prompt, and real-time permission revocation via WebSockets.
+- **Real-Time Page Tree Synchronization**: Instant hierarchical sidebar tree synchronization across all workspace collaborators.
 - **Block-Based Editor**: Notion-style modular canvas supporting rich blocks:
   - Paragraphs, Headings (H1, H2, H3), Bullet Lists, Todo Lists with checkboxes, Blockquotes
   - Code Blocks with syntax highlighting, Callouts with custom icons/accents
@@ -19,25 +25,28 @@ A modern, fast, local-first personal knowledge management and block-based worksp
 - **Hierarchical Sidebar & Workspaces**: Nested drag-and-drop page tree, quick bookmarks, tags, and a trash bin with soft-delete and restore capabilities.
 - **Multi-Tab Workflow**: Fast tab navigation with automatic memory management and store eviction for closed documents.
 - **Global Command Search**: Fast full-text workspace search across page titles, block content, and tags.
-- **Dual Target Distribution**:
+- **Multi-Target Distribution**:
   - **Desktop**: Lightweight native binary powered by Tauri v2 with native SQLite storage.
   - **Web & PWA**: Installable progressive web app with offline persistence and instant load.
+  - **Cloud Backend**: Scalable NestJS server providing delta sync, Yjs CRDT relay, and PostgreSQL persistence.
 
 ---
 
 ## Monorepo Architecture
 
-Yaad is structured as a pnpm monorepo separating business logic, UI components, and application wrappers:
+Yaad is structured as a pnpm monorepo separating business logic, UI components, application wrappers, and the backend service:
 
 ```
 yaad/
 ├── apps/
+│   ├── api/                 # Backend API (NestJS + PostgreSQL + Drizzle ORM + Yjs WebSockets)
 │   ├── desktop/             # Native desktop app (Tauri v2 + React 19 + Tailwind v4)
 │   └── web/                 # Web & PWA app (Vite + React 19 + Tailwind v4)
 ├── packages/
-│   ├── core/                # Business logic, stores, storage adapters, services, types
-│   ├── ui/                  # Block editor, graph viewer, design system, components
+│   ├── core/                # Business logic, stores, storage adapters, CRDT client, sync engine
+│   ├── ui/                  # Block editor, graph viewer, design system, collaboration overlays
 │   └── config/              # Shared TypeScript configurations
+├── docs/                    # Architecture documentation & ADRs
 └── public/                  # Static assets & favicons
 ```
 
@@ -45,11 +54,12 @@ yaad/
 
 | Package             | Path                                   | Description                                                                                                                                  |
 | ------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`@yaad/core`**    | [`packages/core`](./packages/core)     | Pure domain logic, Zustand stores (document, sidebar, tabs, tags, workspace), storage engine, and typed ID generators. Zero UI dependencies. |
-| **`@yaad/ui`**      | [`packages/ui`](./packages/ui)         | Block canvas, block element renderers, slash menu, interactive graph, Base UI components, and Tailwind v4 design tokens.                     |
-| **`@yaad/config`**  | [`packages/config`](./packages/config) | Shared tsconfig presets (`base.json`, `react-app.json`).                                                                                     |
+| **`@yaad/core`**    | [`packages/core`](./packages/core)     | Pure domain logic, Zustand stores, storage engine, CRDT Yjs client, offline sync outbox queue, and typed ID generators. Zero UI dependencies. |
+| **`@yaad/ui`**      | [`packages/ui`](./packages/ui)         | Block canvas, element renderers, slash menu, interactive graph, remote cursor overlays, presence avatars, Base UI components, and Tailwind v4. |
+| **`@yaad/api`**     | [`apps/api`](./apps/api)               | Production NestJS backend providing delta sync (`/sync`), real-time CRDT WebSocket relay (`/collab`), workspace member management, and auth.   |
 | **`@yaad/desktop`** | [`apps/desktop`](./apps/desktop)       | Tauri v2 desktop application bundling `@yaad/core` and `@yaad/ui` with native SQLite database persistence.                                   |
 | **`@yaad/web`**     | [`apps/web`](./apps/web)               | Browser and PWA application bundling `@yaad/core` and `@yaad/ui` with IndexedDB persistence.                                                 |
+| **`@yaad/config`**  | [`packages/config`](./packages/config) | Shared tsconfig presets (`base.json`, `react-app.json`).                                                                                     |
 
 ---
 
@@ -77,19 +87,21 @@ pnpm install
 
 Run scripts from the workspace root:
 
-| Command            | Action                                                                       |
-| ------------------ | ---------------------------------------------------------------------------- |
-| `pnpm dev:web`     | Start the Web application Vite dev server (runs on `http://localhost:5173`)  |
-| `pnpm dev:desktop` | Launch the native desktop application in Tauri development mode              |
-| `pnpm test`        | Run Vitest test suites across all packages                                   |
-| `pnpm build`       | Compile TypeScript and build production bundles across all packages and apps |
-| `pnpm tauri`       | Pass CLI commands directly to Tauri (e.g. `pnpm tauri info`)                 |
+| Command            | Action                                                                         |
+| ------------------ | ------------------------------------------------------------------------------ |
+| `pnpm dev:web`     | Start the Web application Vite dev server (runs on `http://localhost:5173`)    |
+| `pnpm dev:api`     | Start the NestJS backend API dev server with hot reload (`http://localhost:3000`) |
+| `pnpm dev:desktop` | Launch the native desktop application in Tauri development mode                |
+| `pnpm test`        | Run Vitest test suites across all packages and applications                    |
+| `pnpm build`       | Compile TypeScript and build production bundles across all packages and apps   |
+| `pnpm check`       | Run linters, format check, and TypeScript type-checking across workspace       |
+| `pnpm tauri`       | Pass CLI commands directly to Tauri (e.g. `pnpm tauri info`)                   |
 
 ---
 
 ## Testing
 
-Yaad maintains a comprehensive test suite covering core domain models, ID generation, storage providers, Zustand stores, and UI block elements:
+Yaad maintains a comprehensive test suite covering core domain models, CRDT collaboration clients, offline sync queues, Zustand stores, backend API services, and UI block elements:
 
 ```bash
 # Run all tests across the monorepo
@@ -100,6 +112,9 @@ pnpm --filter @yaad/core test
 
 # Run tests specifically in UI
 pnpm --filter @yaad/ui test
+
+# Run tests specifically in backend API
+pnpm --filter @yaad/api test
 ```
 
 ---

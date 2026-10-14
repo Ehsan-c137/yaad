@@ -62,6 +62,60 @@ _Avoid_: Desktop DB, local SQLite
 The IndexedDB-backed storage adapter implementation used when running in browser and PWA environments.
 _Avoid_: Web storage, browser cache, local storage
 
+### Sync & Replication
+
+**Outbox Queue**:
+The local FIFO queue buffering offline mutations (`clientMutationId`, entity, operation, payload) before replication to the backend.
+_Avoid_: Pending changes buffer, offline cache
+
+**Delta Sync**:
+The asymmetric push/pull synchronization protocol exchanging incremental mutations and version high-water marks between clients and server.
+_Avoid_: Full sync, backup sync
+
+**Sync Log**:
+The server-side append-only log in PostgreSQL tracking all entity changes ordered by monotonic workspace version.
+_Avoid_: Event journal, history table
+
+**Sync Status**:
+The observable client persistence state communicating whether changes are `synced`, `syncing`, `offline`, or in `error`.
+_Avoid_: Save status, network status
+
+### Multiplayer & Collaboration
+
+**Collab Client**:
+The client-side WebSocket manager coordinating room subscription, Yjs state-vector synchronization, and awareness.
+_Avoid_: Socket manager, collab engine
+
+**Y.Doc**:
+The in-memory Conflict-free Replicated Data Type (CRDT) document managing deterministic, mergeable block hierarchies and metadata.
+_Avoid_: Shared document, collab buffer
+
+**Awareness**:
+The ephemeral real-time channel broadcasting collaborator cursor positions, active block focus, and presence avatars without persistence overhead.
+_Avoid_: Presence telemetry, peer tracking
+
+**Remote Cursor**:
+The visual representation of a remote collaborator's caret and text selection range overlaid atop an active block.
+_Avoid_: Ghost cursor, peer pointer
+
+### Access Control & Sharing
+
+**Workspace Role**:
+The authorization tier granted to a collaborator within a workspace (`OWNER`, `EDITOR`, `VIEWER`).
+_Avoid_: Account tier, user group
+
+**Read-Only Mode**:
+The restricted presentation state enforced when a user holds the `VIEWER` role, disabling contenteditable inputs, slash menus, and tree restructuring.
+_Avoid_: View mode, locked document
+
+**Share Modal**:
+The dedicated dialog for managing workspace collaborators, updating roles, copying invite links, and revoking memberships.
+_Avoid_: Invite popup, access manager
+
+**Quick Join**:
+The streamlined onboarding flow allowing invited users to preview workspace details and immediately join a shared workspace.
+_Avoid_: Invite acceptance, workspace joiner
+
 ### Knowledge & Exploration
 
 **Knowledge Graph**:
@@ -71,3 +125,4 @@ _Avoid_: Mind map, network diagram, relation graph
 **Tag**:
 A categorized label with a color that can be attached to pages or individual blocks to facilitate cross-cutting discovery.
 _Avoid_: Label, hashtag, category
+
