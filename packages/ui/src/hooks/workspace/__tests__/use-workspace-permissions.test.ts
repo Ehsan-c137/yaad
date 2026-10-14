@@ -2,7 +2,10 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import type { IWorkspaceMemberService } from "@yaad/core/services/workspace-member-service";
-import { useWorkspacePermissions } from "../use-workspace-permissions";
+import {
+  emitLiveWorkspaceRoleChange,
+  useWorkspacePermissions,
+} from "../use-workspace-permissions";
 
 describe("useWorkspacePermissions (Unit Test)", () => {
   beforeEach(() => {
@@ -97,6 +100,45 @@ describe("useWorkspacePermissions (Unit Test)", () => {
       expect(result.current.canEdit).toBe(true);
       expect(result.current.canManage).toBe(false);
       expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  it("updates permissions dynamically when emitLiveWorkspaceRoleChange is invoked", async () => {
+    useUserStore.setState({
+      userId: "user_editor",
+      token: "jwt_token",
+    });
+
+    const mockMemberService: IWorkspaceMemberService = {
+      getMembers: vi.fn().mockResolvedValue([
+        {
+          id: "m_2",
+          userId: "user_editor",
+          email: "editor@example.com",
+          role: "member",
+          createdAt: new Date(),
+        },
+      ]),
+      addMember: vi.fn(),
+      removeMember: vi.fn(),
+    };
+
+    const { result } = renderHook(() =>
+      useWorkspacePermissions("ws_collab", { memberService: mockMemberService }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.role).toBe("member");
+      expect(result.current.isReadOnly).toBe(false);
+    });
+
+    // Dynamically emit live role downgrade from 'member' to 'viewer'
+    emitLiveWorkspaceRoleChange("ws_collab", "viewer");
+
+    await waitFor(() => {
+      expect(result.current.role).toBe("viewer");
+      expect(result.current.isReadOnly).toBe(true);
+      expect(result.current.canEdit).toBe(false);
     });
   });
 });

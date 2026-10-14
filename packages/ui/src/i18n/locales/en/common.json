@@ -91,5 +91,7 @@
   "joiningWorkspace": "Joining workspace...",
   "joinedWorkspaceSuccess": "Successfully joined workspace!",
   "failedJoinWorkspace": "Failed to join workspace",
-  "signInToJoin": "Sign In to Join"
+  "signInToJoin": "Sign In to Join",
+  "roleChangedNotice": "Your workspace permissions were updated to {{role}}.",
+  "memberKickedNotice": "You have been removed from this workspace."
 }

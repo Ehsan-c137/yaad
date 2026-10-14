@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { CollabClient } from '@yaad/core/lib/crdt/collab-client';
 import {
   Y,
@@ -11,6 +13,7 @@ import {
   useSidebarStore,
 } from '@yaad/core/store/use-sidebar-store';
 import { useUserStore } from '@yaad/core/store/use-user-store';
+import { emitLiveWorkspaceRoleChange } from '../workspace/use-workspace-permissions';
 
 export interface CollabCursor {
   offset: number;
@@ -32,6 +35,7 @@ export function useCollab(
   workspaceId: string | undefined,
   pageId: string | undefined,
 ) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected');
   const [peers, setPeers] = useState<Map<string, CollabPeer>>(new Map());
 
@@ -134,6 +138,21 @@ export function useCollab(
           next.delete(leavingUserId);
           return next;
         });
+      },
+      userId,
+      onMemberRoleUpdated: (newRole) => {
+        if (workspaceId) {
+          emitLiveWorkspaceRoleChange(workspaceId, newRole as any);
+          const roleLabel = newRole === 'viewer' ? t('viewer') : t('editor');
+          toast.warning(t('roleChangedNotice', { role: roleLabel }));
+        }
+      },
+      onMemberKicked: () => {
+        toast.error(t('memberKickedNotice'));
+        client.disconnect();
+        if (typeof window !== 'undefined') {
+          window.location.replace('/workspace/ws_personal');
+        }
       },
       onTreeUpdate: () => {
         if (workspaceId) {

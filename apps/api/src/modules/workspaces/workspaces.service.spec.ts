@@ -5,6 +5,7 @@ import { WorkspacesService } from './workspaces.service.js';
 describe('WorkspacesService', () => {
   let service: WorkspacesService;
   let mockDb: any;
+  let mockCollabGateway: any;
 
   beforeEach(() => {
     mockDb = {
@@ -21,7 +22,12 @@ describe('WorkspacesService', () => {
       delete: vi.fn(),
     };
 
-    service = new WorkspacesService(mockDb);
+    mockCollabGateway = {
+      notifyMemberRoleUpdated: vi.fn(),
+      notifyMemberRemoved: vi.fn(),
+    };
+
+    service = new WorkspacesService(mockDb, mockCollabGateway);
   });
 
   describe('getMembers', () => {
@@ -85,6 +91,38 @@ describe('WorkspacesService', () => {
       expect(result.email).toBe('bob@test.com');
       expect(result.role).toBe('member');
     });
+
+    it('updates role and notifies CollabGateway when user is already a member', async () => {
+      // 1. User lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'user_2', email: 'bob@test.com' }]);
+
+      // 2. Existing check
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ id: 'mem_existing' }]);
+
+      // 3. Update
+      mockDb.update.mockReturnValue(mockDb);
+      mockDb.set.mockReturnValue(mockDb);
+      mockDb.where.mockResolvedValue({});
+
+      const result = await service.addMember(
+        'ws_1',
+        { email: 'bob@test.com', role: 'viewer' },
+        'user_1',
+      );
+
+      expect(result.role).toBe('viewer');
+      expect(mockCollabGateway.notifyMemberRoleUpdated).toHaveBeenCalledWith(
+        'ws_1',
+        'user_2',
+        'viewer',
+      );
+    });
   });
 
   describe('removeMember', () => {
@@ -99,7 +137,7 @@ describe('WorkspacesService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
-    it('deletes membership for non-owner members', async () => {
+    it('deletes membership for non-owner members and notifies CollabGateway', async () => {
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
@@ -110,6 +148,10 @@ describe('WorkspacesService', () => {
 
       await service.removeMember('ws_1', 'user_member', 'user_owner');
       expect(mockDb.delete).toHaveBeenCalled();
+      expect(mockCollabGateway.notifyMemberRemoved).toHaveBeenCalledWith(
+        'ws_1',
+        'user_member',
+      );
     });
   });
 

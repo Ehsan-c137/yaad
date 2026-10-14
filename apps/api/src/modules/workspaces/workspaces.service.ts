@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, eq } from 'drizzle-orm';
@@ -12,6 +13,7 @@ import {
   workspaceMembers,
   workspaces,
 } from '../../database/schema.js';
+import { CollabGateway } from '../collab/collab.gateway.js';
 import type {
   AddMemberDto,
   WorkspaceMemberResponseDto,
@@ -19,7 +21,10 @@ import type {
 
 @Injectable()
 export class WorkspacesService {
-  constructor(@InjectDrizzle() private readonly db: Database) {}
+  constructor(
+    @InjectDrizzle() private readonly db: Database,
+    @Optional() private readonly collabGateway?: CollabGateway,
+  ) {}
 
   /**
    * Returns all active members of the specified workspace.
@@ -85,6 +90,8 @@ export class WorkspacesService {
         .update(workspaceMembers)
         .set({ role })
         .where(eq(workspaceMembers.id, existing.id));
+
+      this.collabGateway?.notifyMemberRoleUpdated(workspaceId, targetUser.id, role);
     } else {
       await this.db.insert(workspaceMembers).values({
         id: memberId,
@@ -131,6 +138,8 @@ export class WorkspacesService {
           eq(workspaceMembers.userId, targetUserId),
         ),
       );
+
+    this.collabGateway?.notifyMemberRemoved(workspaceId, targetUserId);
   }
 
   /**

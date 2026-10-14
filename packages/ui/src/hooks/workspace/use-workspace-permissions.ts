@@ -17,6 +17,26 @@ const DEFAULT_OWNER_PERMISSIONS: WorkspacePermissionsState = {
   isLoading: false,
 };
 
+type LiveRoleListener = (workspaceId: string, role: WorkspaceRole) => void;
+const liveRoleListeners = new Set<LiveRoleListener>();
+
+export function emitLiveWorkspaceRoleChange(workspaceId: string, role: WorkspaceRole): void {
+  liveRoleListeners.forEach((fn) => {
+    try {
+      fn(workspaceId, role);
+    } catch (err) {
+      console.error("Error in live role change listener:", err);
+    }
+  });
+}
+
+export function onLiveWorkspaceRoleChange(listener: LiveRoleListener): () => void {
+  liveRoleListeners.add(listener);
+  return () => {
+    liveRoleListeners.delete(listener);
+  };
+}
+
 export function useWorkspacePermissions(
   workspaceId?: string | null,
   options?: UseWorkspacePermissionsOptions,
@@ -60,6 +80,20 @@ export function useWorkspacePermissions(
       isMounted = false;
     };
   }, [workspaceId, currentUserId, token, memberService]);
+
+  // Listen for live role updates emitted via WebSockets
+  useEffect(() => {
+    if (!workspaceId) return;
+
+    return onLiveWorkspaceRoleChange((wsId, newRole) => {
+      if (wsId === workspaceId) {
+        setPermissionsState({
+          ...evaluateWorkspacePermissions(newRole),
+          isLoading: false,
+        });
+      }
+    });
+  }, [workspaceId]);
 
   return permissionsState;
 }

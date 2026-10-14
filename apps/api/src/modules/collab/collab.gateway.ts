@@ -27,7 +27,7 @@ interface ClientContext {
 })
 export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(CollabGateway.name);
-  private readonly clientContexts = new WeakMap<WebSocket, ClientContext>();
+  private readonly clientContexts = new Map<WebSocket, ClientContext>();
 
   // Gateway manages its own WebSocket room subscribers (SRP & Law of Demeter compliant)
   private readonly roomSubscribers = new Map<string, Set<WebSocket>>();
@@ -348,6 +348,66 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     for (const [peer, ctx] of this.clientContexts.entries()) {
       if (peer !== excludeClient && ctx.workspaceId === workspaceId && peer.readyState === 1) {
         peer.send(payload);
+      }
+    }
+  }
+
+  /**
+   * Broadcasts a real-time role change event to all active sessions of a user in a workspace.
+   */
+  notifyMemberRoleUpdated(
+    workspaceId: string,
+    userId: string,
+    newRole: string,
+  ): void {
+    const payload = JSON.stringify({
+      event: 'member-role-updated',
+      workspaceId,
+      userId,
+      role: newRole,
+      data: {
+        event: 'member-role-updated',
+        workspaceId,
+        userId,
+        role: newRole,
+      },
+    });
+
+    for (const [peer, ctx] of this.clientContexts.entries()) {
+      const peerUserId = ctx.userId ?? ctx.awarenessData?.user?.id;
+      if (ctx.workspaceId === workspaceId && peerUserId === userId && peer.readyState === 1) {
+        peer.send(payload);
+      }
+    }
+  }
+
+  /**
+   * Notifies and disconnects a kicked member from the workspace sessions in real-time.
+   */
+  notifyMemberRemoved(
+    workspaceId: string,
+    userId: string,
+  ): void {
+    const payload = JSON.stringify({
+      event: 'member-kicked',
+      workspaceId,
+      userId,
+      data: {
+        event: 'member-kicked',
+        workspaceId,
+        userId,
+      },
+    });
+
+    for (const [peer, ctx] of this.clientContexts.entries()) {
+      const peerUserId = ctx.userId ?? ctx.awarenessData?.user?.id;
+      if (ctx.workspaceId === workspaceId && peerUserId === userId && peer.readyState === 1) {
+        peer.send(payload);
+        try {
+          peer.close(4003, 'Removed from workspace');
+        } catch {
+          // Ignore socket close error if already terminating
+        }
       }
     }
   }

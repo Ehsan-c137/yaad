@@ -83,4 +83,59 @@ describe('CollabClient', () => {
     expect(onTreeUpdate).toHaveBeenCalledWith(incomingTree);
     client.disconnect();
   });
+
+  it('triggers onMemberRoleUpdated when receiving member-role-updated event for this user', async () => {
+    const onMemberRoleUpdated = vi.fn();
+    const client = new CollabClient({
+      serverUrl: 'ws://localhost:3000/collab',
+      workspaceId: 'ws_test',
+      documentId: 'doc_1',
+      ydoc,
+      userId: 'user_123',
+      onMemberRoleUpdated,
+      WebSocketClass: MockWebSocket as any,
+    });
+    client.connect();
+
+    const mockWs = (client as any).ws as MockWebSocket;
+
+    mockWs.onmessage?.({
+      data: JSON.stringify({
+        event: 'member-role-updated',
+        workspaceId: 'ws_test',
+        userId: 'user_123',
+        role: 'viewer',
+      }),
+    });
+
+    expect(onMemberRoleUpdated).toHaveBeenCalledWith('viewer');
+    client.disconnect();
+  });
+
+  it('triggers onMemberKicked when receiving member-kicked event for this user', async () => {
+    const onMemberKicked = vi.fn();
+    const client = new CollabClient({
+      serverUrl: 'ws://localhost:3000/collab',
+      workspaceId: 'ws_test',
+      documentId: 'doc_1',
+      ydoc,
+      userId: 'user_123',
+      onMemberKicked,
+      WebSocketClass: MockWebSocket as any,
+    });
+    client.connect();
+
+    const mockWs = (client as any).ws as MockWebSocket;
+
+    mockWs.onmessage?.({
+      data: JSON.stringify({
+        event: 'member-kicked',
+        workspaceId: 'ws_test',
+        userId: 'user_123',
+      }),
+    });
+
+    expect(onMemberKicked).toHaveBeenCalled();
+    client.disconnect();
+  });
 });

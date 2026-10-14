@@ -103,4 +103,44 @@ describe('CollabGateway', () => {
       expect.stringContaining('"event":"peer-leave"'),
     );
   });
+
+  it('notifies client when their workspace role is updated in real time', async () => {
+    const mockSocket: any = { send: vi.fn(), readyState: 1 };
+    gateway.handleConnection(mockSocket);
+
+    await gateway.handleJoinRoom(mockSocket, {
+      workspaceId: 'ws_live',
+      documentId: 'doc_1',
+    });
+    // Associate user context
+    (gateway as any).clientContexts.get(mockSocket).userId = 'user_target';
+
+    gateway.notifyMemberRoleUpdated('ws_live', 'user_target', 'viewer');
+
+    expect(mockSocket.send).toHaveBeenCalledWith(
+      expect.stringContaining('"event":"member-role-updated"'),
+    );
+    expect(mockSocket.send).toHaveBeenCalledWith(
+      expect.stringContaining('"role":"viewer"'),
+    );
+  });
+
+  it('notifies and disconnects client when they are removed from workspace', async () => {
+    const mockSocket: any = { send: vi.fn(), close: vi.fn(), readyState: 1 };
+    gateway.handleConnection(mockSocket);
+
+    await gateway.handleJoinRoom(mockSocket, {
+      workspaceId: 'ws_live',
+      documentId: 'doc_1',
+    });
+    // Associate user context
+    (gateway as any).clientContexts.get(mockSocket).userId = 'user_kicked';
+
+    gateway.notifyMemberRemoved('ws_live', 'user_kicked');
+
+    expect(mockSocket.send).toHaveBeenCalledWith(
+      expect.stringContaining('"event":"member-kicked"'),
+    );
+    expect(mockSocket.close).toHaveBeenCalledWith(4003, 'Removed from workspace');
+  });
 });

@@ -9,6 +9,9 @@ export interface CollabClientOptions {
   onAwareness?: (awarenessData: any) => void;
   onPeerLeave?: (userId: string) => void;
   onTreeUpdate?: (tree: any) => void;
+  userId?: string;
+  onMemberRoleUpdated?: (role: string) => void;
+  onMemberKicked?: () => void;
   onStatusChange?: (status: 'connecting' | 'connected' | 'disconnected') => void;
   WebSocketClass?: typeof WebSocket;
 }
@@ -23,6 +26,9 @@ export class CollabClient {
   private readonly onAwareness?: (awarenessData: any) => void;
   private readonly onPeerLeave?: (userId: string) => void;
   private readonly onTreeUpdate?: (tree: any) => void;
+  private readonly userId?: string;
+  private readonly onMemberRoleUpdated?: (role: string) => void;
+  private readonly onMemberKicked?: () => void;
   private readonly onStatusChange?: (status: 'connecting' | 'connected' | 'disconnected') => void;
   private readonly WebSocketClass: typeof WebSocket;
   private pendingAwareness: any = null;
@@ -36,9 +42,12 @@ export class CollabClient {
     this.documentId = options.documentId;
     this.ydoc = options.ydoc;
     this.token = options.token;
+    this.userId = options.userId;
     this.onAwareness = options.onAwareness;
     this.onPeerLeave = options.onPeerLeave;
     this.onTreeUpdate = options.onTreeUpdate;
+    this.onMemberRoleUpdated = options.onMemberRoleUpdated;
+    this.onMemberKicked = options.onMemberKicked;
     this.onStatusChange = options.onStatusChange;
     this.WebSocketClass =
       options.WebSocketClass ?? (typeof WebSocket !== 'undefined' ? WebSocket : (null as any));
@@ -147,6 +156,17 @@ export class CollabClient {
       const tree = payload.tree ?? data.tree;
       if (tree) {
         this.onTreeUpdate?.(tree);
+      }
+    } else if (event === 'member-role-updated') {
+      const targetUserId = payload.userId ?? data.userId;
+      const role = payload.role ?? data.role;
+      if ((!this.userId || this.userId === targetUserId) && role) {
+        this.onMemberRoleUpdated?.(role);
+      }
+    } else if (event === 'member-kicked') {
+      const targetUserId = payload.userId ?? data.userId;
+      if (!this.userId || this.userId === targetUserId) {
+        this.onMemberKicked?.();
       }
     }
   }

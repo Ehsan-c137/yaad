@@ -91,5 +91,7 @@
   "joiningWorkspace": "در حال پیوستن به فضای کاری...",
   "joinedWorkspaceSuccess": "با موفقیت به فضای کاری ملحق شدید!",
   "failedJoinWorkspace": "پیوستن به فضای کاری با شکست مواجه شد",
-  "signInToJoin": "برای پیوستن وارد شوید"
+  "signInToJoin": "برای پیوستن وارد شوید",
+  "roleChangedNotice": "سطح دسترسی شما در این فضای کاری به «{{role}}» تغییر یافت.",
+  "memberKickedNotice": "دسترسی شما از این فضای کاری حذف شد."
 }
