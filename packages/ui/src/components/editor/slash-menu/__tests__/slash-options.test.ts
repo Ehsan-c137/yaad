@@ -21,7 +21,6 @@ const VALID_BLOCK_TYPES: DocumentBlockType[] = [
   "separator",
   "table",
   "todo",
-  // "toggle_list",
 ];
 
 describe("SLASH_OPTIONS (Unit Test)", () => {

@@ -1,6 +1,4 @@
 {
-  "toggleHeading": "Toggle heading",
-  "emptyToggle": "Empty toggle. Click to add content.",
   "emptyQuote": "Empty quote",
   "collapseToggle": "Collapse toggle",
   "expandToggle": "Expand toggle",
@@ -20,8 +18,6 @@
   "slashH3Desc": "Small section heading.",
   "slashBulletList": "Bulleted list",
   "slashBulletListDesc": "Create a simple bulleted list.",
-  "slashToggleList": "Toggle list",
-  "slashToggleListDesc": "Collapsible content with a heading.",
   "slashTodo": "To-do list",
   "slashTodoDesc": "Track tasks with a checkable list.",
   "slashKanban": "Kanban Board",

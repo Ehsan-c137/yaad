@@ -1,6 +1,4 @@
 {
-  "toggleHeading": "عنوان بازشونده",
-  "emptyToggle": "بازشونده خالی. برای افزودن محتوا کلیک کنید.",
   "emptyQuote": "نقل‌قول خالی",
   "collapseToggle": "بستن بازشونده",
   "expandToggle": "باز کردن بازشونده",
@@ -20,8 +18,6 @@
   "slashH3Desc": "سرتیتر کوچک بخش.",
   "slashBulletList": "فهرست نقطه‌ای",
   "slashBulletListDesc": "یک فهرست ساده نقطه‌ای بسازید.",
-  "slashToggleList": "فهرست بازشونده",
-  "slashToggleListDesc": "محتوای قابل بسته شدن با سرتیتر.",
   "slashTodo": "فهرست وظایف",
   "slashTodoDesc": "وظایف را با فهرست قابل تیک‌زدن دنبال کنید.",
   "slashKanban": "تخته کانبان",
