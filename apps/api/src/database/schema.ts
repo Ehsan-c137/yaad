@@ -14,7 +14,7 @@ import type { WorkspacePageMeta } from '@yaad/core/types/workspace.js';
 
 // --- Users & Auth ---
 export const users = pgTable('users', {
-  id: varchar('id', { length: 36 }).primaryKey(),
+  id: varchar('id', { length: 64 }).primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -23,9 +23,9 @@ export const users = pgTable('users', {
 
 // --- Workspaces ---
 export const workspaces = pgTable('workspaces', {
-  id: varchar('id', { length: 36 }).primaryKey(),
+  id: varchar('id', { length: 64 }).primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
-  ownerId: varchar('owner_id', { length: 36 }).references(() => users.id).notNull(),
+  ownerId: varchar('owner_id', { length: 64 }).references(() => users.id).notNull(),
   currentVersion: bigint('current_version', { mode: 'number' }).default(0).notNull(),
   isDeleted: boolean('is_deleted').default(false).notNull(),
   deletedAt: timestamp('deleted_at'),
@@ -35,11 +35,11 @@ export const workspaces = pgTable('workspaces', {
 
 // --- Workspace Members (Multi-device / Collaboration) ---
 export const workspaceMembers = pgTable('workspace_members', {
-  id: varchar('id', { length: 36 }).primaryKey(),
-  workspaceId: varchar('workspace_id', { length: 36 })
+  id: varchar('id', { length: 64 }).primaryKey(),
+  workspaceId: varchar('workspace_id', { length: 64 })
     .references(() => workspaces.id, { onDelete: 'cascade' })
     .notNull(),
-  userId: varchar('user_id', { length: 36 })
+  userId: varchar('user_id', { length: 64 })
     .references(() => users.id, { onDelete: 'cascade' })
     .notNull(),
   role: varchar('role', { length: 32 }).default('member').notNull(), // 'owner' | 'member' | 'viewer'
@@ -50,7 +50,7 @@ export const workspaceMembers = pgTable('workspace_members', {
 
 // --- Workspace Page Trees (Sidebar hierarchy) ---
 export const workspaceTrees = pgTable('workspace_trees', {
-  workspaceId: varchar('workspace_id', { length: 36 })
+  workspaceId: varchar('workspace_id', { length: 64 })
     .primaryKey()
     .references(() => workspaces.id, { onDelete: 'cascade' }),
   version: bigint('version', { mode: 'number' }).default(0).notNull(),
@@ -60,11 +60,11 @@ export const workspaceTrees = pgTable('workspace_trees', {
 
 // --- Pages (Sidebar tree hierarchy nodes) ---
 export const pages = pgTable('pages', {
-  id: varchar('id', { length: 36 }).primaryKey(), // e.g. "page_xxxx"
-  workspaceId: varchar('workspace_id', { length: 36 })
+  id: varchar('id', { length: 64 }).primaryKey(), // e.g. "page_xxxx"
+  workspaceId: varchar('workspace_id', { length: 64 })
     .references(() => workspaces.id, { onDelete: 'cascade' })
     .notNull(),
-  parentId: varchar('parent_id', { length: 36 }),
+  parentId: varchar('parent_id', { length: 64 }),
   title: varchar('title', { length: 255 }).default('Untitled').notNull(),
   icon: varchar('icon', { length: 64 }),
   isBookmarked: boolean('is_bookmarked').default(false).notNull(),
@@ -78,10 +78,10 @@ export const pages = pgTable('pages', {
 
 // --- Document JSON Content ---
 export const documents = pgTable('documents', {
-  id: varchar('id', { length: 36 })
+  id: varchar('id', { length: 64 })
     .primaryKey()
     .references(() => pages.id, { onDelete: 'cascade' }),
-  workspaceId: varchar('workspace_id', { length: 36 })
+  workspaceId: varchar('workspace_id', { length: 64 })
     .references(() => workspaces.id, { onDelete: 'cascade' })
     .notNull(),
   version: bigint('version', { mode: 'number' }).default(1).notNull(),
@@ -93,13 +93,13 @@ export const documents = pgTable('documents', {
 
 // --- Append-Only Sync Log (The heart of local-first delta replication) ---
 export const syncLog = pgTable('sync_log', {
-  id: varchar('id', { length: 36 }).primaryKey(),
-  workspaceId: varchar('workspace_id', { length: 36 })
+  id: varchar('id', { length: 64 }).primaryKey(),
+  workspaceId: varchar('workspace_id', { length: 64 })
     .references(() => workspaces.id, { onDelete: 'cascade' })
     .notNull(),
   version: bigint('version', { mode: 'number' }).notNull(), // Monotonic sequence per workspace
   entityType: varchar('entity_type', { length: 32 }).notNull(), // 'workspace' | 'workspace_tree' | 'page' | 'document' | 'tag'
-  entityId: varchar('entity_id', { length: 36 }).notNull(),
+  entityId: varchar('entity_id', { length: 64 }).notNull(),
   operation: varchar('operation', { length: 16 }).notNull(), // 'upsert' | 'delete'
   patch: jsonb('patch').notNull(), // The serialized entity delta or full representation
   clientMutationId: varchar('client_mutation_id', { length: 64 }), // Deduplication / Idempotency key
@@ -111,11 +111,11 @@ export const syncLog = pgTable('sync_log', {
 
 // --- CRDT Document Updates (Yjs Binary Delta Updates) ---
 export const documentCrdtUpdates = pgTable('document_crdt_updates', {
-  id: varchar('id', { length: 36 }).primaryKey(),
-  workspaceId: varchar('workspace_id', { length: 36 })
+  id: varchar('id', { length: 64 }).primaryKey(),
+  workspaceId: varchar('workspace_id', { length: 64 })
     .references(() => workspaces.id, { onDelete: 'cascade' })
     .notNull(),
-  documentId: varchar('document_id', { length: 36 })
+  documentId: varchar('document_id', { length: 64 })
     .references(() => pages.id, { onDelete: 'cascade' })
     .notNull(),
   updateData: text('update_data').notNull(), // Base64 encoded binary Yjs update
@@ -124,4 +124,3 @@ export const documentCrdtUpdates = pgTable('document_crdt_updates', {
   index('crdt_updates_doc_idx').on(table.documentId),
   index('crdt_updates_ws_idx').on(table.workspaceId),
 ]);
-

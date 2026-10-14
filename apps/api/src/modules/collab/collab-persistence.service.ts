@@ -4,7 +4,7 @@ import { asc, eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import * as Y from 'yjs';
 import type { Database } from '../../database/database.module.js';
-import { documentCrdtUpdates, documents } from '../../database/schema.js';
+import { documentCrdtUpdates, documents, pages } from '../../database/schema.js';
 import type { ICollabPersistence } from './interfaces/collab-persistence.interface.js';
 
 @Injectable()
@@ -54,6 +54,18 @@ export class CollabPersistenceService implements ICollabPersistence {
     update: Uint8Array,
   ): Promise<void> {
     try {
+      // Ensure page row exists so foreign key constraint is satisfied
+      await this.db
+        .insert(pages)
+        .values({
+          id: documentId,
+          workspaceId,
+          title: 'Untitled',
+          version: 1,
+          updatedAt: new Date(),
+        })
+        .onConflictDoNothing();
+
       const base64Data = Buffer.from(update).toString('base64');
       await this.db.insert(documentCrdtUpdates).values({
         id: randomUUID(),
@@ -101,6 +113,19 @@ export class CollabPersistenceService implements ICollabPersistence {
         blocks: blocksObj,
         updatedAt: Date.now(),
       };
+
+      // Ensure page row exists before inserting document snapshot
+      await this.db
+        .insert(pages)
+        .values({
+          id: documentId,
+          workspaceId,
+          title: (metaMap.get('title') as string) ?? 'Untitled',
+          icon: (metaMap.get('icon') as string) ?? null,
+          version: 1,
+          updatedAt: new Date(),
+        })
+        .onConflictDoNothing();
 
       await this.db
         .insert(documents)
