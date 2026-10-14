@@ -25,11 +25,31 @@ export class SyncService {
    * Applies a batch of local mutations atomically and appends them to the sync log.
    */
   async push(dto: PushSyncDto): Promise<PushResultDto> {
-    const [workspace] = await this.db
+    let [workspace] = await this.db
       .select()
       .from(workspaces)
       .where(eq(workspaces.id, dto.workspaceId))
       .limit(1);
+
+    if (!workspace && dto.workspaceId === 'ws_personal') {
+      await this.db
+        .insert(workspaces)
+        .values({
+          id: dto.workspaceId,
+          name: 'Personal Workspace',
+          ownerId: 'default',
+          currentVersion: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .onConflictDoNothing();
+
+      [workspace] = await this.db
+        .select()
+        .from(workspaces)
+        .where(eq(workspaces.id, dto.workspaceId))
+        .limit(1);
+    }
 
     if (!workspace) {
       throw new NotFoundException(`Workspace ${dto.workspaceId} not found`);
@@ -89,11 +109,31 @@ export class SyncService {
    * Retrieves all delta changes since the client's last known version checkpoint.
    */
   async pull(dto: PullSyncDto): Promise<PullResultDto> {
-    const [workspace] = await this.db
+    let [workspace] = await this.db
       .select({ currentVersion: workspaces.currentVersion })
       .from(workspaces)
       .where(eq(workspaces.id, dto.workspaceId))
       .limit(1);
+
+    if (!workspace && dto.workspaceId === 'ws_personal') {
+      await this.db
+        .insert(workspaces)
+        .values({
+          id: dto.workspaceId,
+          name: 'Personal Workspace',
+          ownerId: 'default',
+          currentVersion: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .onConflictDoNothing();
+
+      [workspace] = await this.db
+        .select({ currentVersion: workspaces.currentVersion })
+        .from(workspaces)
+        .where(eq(workspaces.id, dto.workspaceId))
+        .limit(1);
+    }
 
     if (!workspace) {
       throw new NotFoundException(`Workspace ${dto.workspaceId} not found`);

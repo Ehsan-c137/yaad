@@ -51,7 +51,7 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const userId = randomUUID();
-    const defaultWorkspaceId = `ws_${randomUUID()}`;
+    const defaultWorkspaceId = randomUUID();
 
     // Atomically create user, default workspace, and owner membership
     await this.db.transaction(async (tx) => {
@@ -156,6 +156,40 @@ export class AuthService {
       )
       .limit(1);
 
-    return Boolean(membership);
+    if (membership) return true;
+
+    // Auto-provision and join for personal/local development workspace
+    if (workspaceId === 'ws_personal') {
+      try {
+        await this.db
+          .insert(workspaces)
+          .values({
+            id: workspaceId,
+            name: 'Personal Workspace',
+            ownerId: userId,
+            currentVersion: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .onConflictDoNothing();
+
+        await this.db
+          .insert(workspaceMembers)
+          .values({
+            id: randomUUID(),
+            workspaceId,
+            userId,
+            role: 'member',
+            createdAt: new Date(),
+          })
+          .onConflictDoNothing();
+
+        return true;
+      } catch {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

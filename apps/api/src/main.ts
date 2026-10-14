@@ -8,6 +8,11 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
 
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
+
   app.useWebSocketAdapter(new WsAdapter(app));
 
   app.useGlobalPipes(

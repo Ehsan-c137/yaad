@@ -53,14 +53,20 @@ export class CollabPersistenceService implements ICollabPersistence {
     documentId: string,
     update: Uint8Array,
   ): Promise<void> {
-    const base64Data = Buffer.from(update).toString('base64');
-    await this.db.insert(documentCrdtUpdates).values({
-      id: randomUUID(),
-      workspaceId,
-      documentId,
-      updateData: base64Data,
-      createdAt: new Date(),
-    });
+    try {
+      const base64Data = Buffer.from(update).toString('base64');
+      await this.db.insert(documentCrdtUpdates).values({
+        id: randomUUID(),
+        workspaceId,
+        documentId,
+        updateData: base64Data,
+        createdAt: new Date(),
+      });
+    } catch (err: any) {
+      this.logger.warn(
+        `Failed to persist CRDT update for doc ${documentId} (may be uncommitted to pages table yet): ${err.message}`,
+      );
+    }
   }
 
   /**

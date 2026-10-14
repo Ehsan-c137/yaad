@@ -19,6 +19,7 @@ interface ClientContext {
   workspaceId?: string;
   documentId?: string;
   userId?: string;
+  awarenessData?: any;
 }
 
 @WebSocketGateway({
@@ -72,6 +73,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
         {
           event: 'peer-leave',
           documentId: ctx.documentId,
+          userId: ctx.userId ?? ctx.awarenessData?.user?.id,
         },
         client,
       );
@@ -88,14 +90,20 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleJoinRoom(
     @ConnectedSocket() client: WebSocket,
     @MessageBody()
-    data: {
-      workspaceId: string;
-      documentId: string;
-      token?: string; // JWT authentication token
-      stateVector?: string; // Base64 encoded client state vector
-    },
+    rawData: any,
   ): Promise<void> {
-    const { workspaceId, documentId, token, stateVector } = data;
+    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
+      ? rawData.data
+      : (rawData ?? {});
+    const workspaceId = data.workspaceId ?? rawData?.workspaceId;
+    const documentId = data.documentId ?? rawData?.documentId;
+    const token = data.token ?? rawData?.token;
+    const stateVector = data.stateVector ?? rawData?.stateVector;
+
+    if (!workspaceId || !documentId) {
+      this.logger.warn(`join-room received without workspaceId or documentId: ${JSON.stringify(rawData)}`);
+      return;
+    }
 
     // Verify token and membership if authService and token are present
     let authenticatedUserId = 'anonymous';
@@ -161,13 +169,40 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
 
     // 5. Send missing updates back to joining client
+    const diffUpdateBase64 = Buffer.from(diffUpdate).toString('base64');
     client.send(
       JSON.stringify({
         event: 'sync-step-2',
         documentId,
-        update: Buffer.from(diffUpdate).toString('base64'),
+        update: diffUpdateBase64,
+        data: {
+          documentId,
+          update: diffUpdateBase64,
+        },
       }),
     );
+
+    // 6. Send existing peers' awareness to joining client
+    if (subscribers) {
+      for (const peer of subscribers) {
+        if (peer !== client && peer.readyState === 1) {
+          const peerCtx = this.clientContexts.get(peer);
+          if (peerCtx?.awarenessData) {
+            client.send(
+              JSON.stringify({
+                event: 'awareness-update',
+                documentId,
+                awarenessData: peerCtx.awarenessData,
+                data: {
+                  documentId,
+                  awarenessData: peerCtx.awarenessData,
+                },
+              }),
+            );
+          }
+        }
+      }
+    }
 
     this.logger.debug(`Client joined room ${roomKey}`);
   }
@@ -179,19 +214,18 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleSyncUpdate(
     @ConnectedSocket() client: WebSocket,
     @MessageBody()
-    data: {
-      workspaceId: string;
-      documentId: string;
-      update: string; // Base64 encoded binary Yjs delta
-    },
+    rawData: any,
   ): Promise<void> {
-    const { workspaceId, documentId, update } = data;
-    const binaryUpdate = Buffer.from(update, 'base64');
+    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
+      ? rawData.data
+      : (rawData ?? {});
+    const workspaceId = data.workspaceId ?? rawData?.workspaceId;
+    const documentId = data.documentId ?? rawData?.documentId;
+    const update = data.update ?? rawData?.update;
 
-    // 1. Apply to CRDT engine and queue persistence
-    await this.roomManager.applyUpdate(workspaceId, documentId, binaryUpdate);
+    if (!workspaceId || !documentId || !update) return;
 
-    // 2. Broadcast the update to all OTHER collaborators in the room
+    // 1. Broadcast immediately to all other collaborators in the room
     this.broadcastToRoom(
       workspaceId,
       documentId,
@@ -202,6 +236,14 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       },
       client,
     );
+
+    // 2. Apply to CRDT engine and persist in background
+    try {
+      const binaryUpdate = Buffer.from(update, 'base64');
+      await this.roomManager.applyUpdate(workspaceId, documentId, binaryUpdate);
+    } catch (err: any) {
+      this.logger.warn(`Could not persist CRDT update for ${documentId}: ${err.message}`);
+    }
   }
 
   /**
@@ -211,13 +253,21 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleAwarenessUpdate(
     @ConnectedSocket() client: WebSocket,
     @MessageBody()
-    data: {
-      workspaceId: string;
-      documentId: string;
-      awarenessData: any; // Cursor coordinates, active block ID, user avatar/name
-    },
+    rawData: any,
   ): void {
-    const { workspaceId, documentId, awarenessData } = data;
+    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
+      ? rawData.data
+      : (rawData ?? {});
+    const workspaceId = data.workspaceId ?? rawData?.workspaceId;
+    const documentId = data.documentId ?? rawData?.documentId;
+    const awarenessData = data.awarenessData ?? rawData?.awarenessData;
+
+    if (!workspaceId || !documentId) return;
+
+    const ctx = this.clientContexts.get(client);
+    if (ctx) {
+      ctx.awarenessData = awarenessData;
+    }
 
     this.broadcastToRoom(
       workspaceId,
@@ -244,7 +294,10 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const subscribers = this.roomSubscribers.get(roomKey);
     if (!subscribers) return;
 
-    const payload = JSON.stringify(message);
+    const payload = JSON.stringify({
+      ...message,
+      data: message,
+    });
     for (const peer of subscribers) {
       if (peer !== excludeClient && peer.readyState === 1) {
         peer.send(payload);

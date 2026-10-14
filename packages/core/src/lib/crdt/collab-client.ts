@@ -5,7 +5,9 @@ export interface CollabClientOptions {
   workspaceId: string;
   documentId: string;
   ydoc: Y.Doc;
+  token?: string;
   onAwareness?: (awarenessData: any) => void;
+  onPeerLeave?: (userId: string) => void;
   onStatusChange?: (status: 'connecting' | 'connected' | 'disconnected') => void;
   WebSocketClass?: typeof WebSocket;
 }
@@ -16,9 +18,12 @@ export class CollabClient {
   private readonly workspaceId: string;
   private readonly documentId: string;
   private readonly serverUrl: string;
+  private readonly token?: string;
   private readonly onAwareness?: (awarenessData: any) => void;
+  private readonly onPeerLeave?: (userId: string) => void;
   private readonly onStatusChange?: (status: 'connecting' | 'connected' | 'disconnected') => void;
   private readonly WebSocketClass: typeof WebSocket;
+  private pendingAwareness: any = null;
   private isDestroyed = false;
 
   private readonly updateHandler: (update: Uint8Array, origin: any) => void;
@@ -28,7 +33,9 @@ export class CollabClient {
     this.workspaceId = options.workspaceId;
     this.documentId = options.documentId;
     this.ydoc = options.ydoc;
+    this.token = options.token;
     this.onAwareness = options.onAwareness;
+    this.onPeerLeave = options.onPeerLeave;
     this.onStatusChange = options.onStatusChange;
     this.WebSocketClass =
       options.WebSocketClass ?? (typeof WebSocket !== 'undefined' ? WebSocket : (null as any));
@@ -38,6 +45,7 @@ export class CollabClient {
       if (origin === 'server' || !this.isConnected()) return;
 
       const base64Update = this.uint8ArrayToBase64(update);
+      console.log('[CollabClient] Sending sync-update to server');
       this.send({
         event: 'sync-update',
         workspaceId: this.workspaceId,
@@ -66,8 +74,30 @@ export class CollabClient {
         event: 'join-room',
         workspaceId: this.workspaceId,
         documentId: this.documentId,
+        token: this.token,
         stateVector: base64Vector,
       });
+
+      // 2. If client has local document state, send initial sync update so server has the doc
+      const localUpdate = Y.encodeStateAsUpdate(this.ydoc);
+      if (localUpdate.length > 2) {
+        this.send({
+          event: 'sync-update',
+          workspaceId: this.workspaceId,
+          documentId: this.documentId,
+          update: this.uint8ArrayToBase64(localUpdate),
+        });
+      }
+
+      // 3. Send initial presence if set
+      if (this.pendingAwareness) {
+        this.send({
+          event: 'awareness-update',
+          workspaceId: this.workspaceId,
+          documentId: this.documentId,
+          awarenessData: this.pendingAwareness,
+        });
+      }
     };
 
     this.ws.onmessage = (event) => {
@@ -89,18 +119,32 @@ export class CollabClient {
   }
 
   private handleMessage(data: any): void {
-    if (data.event === 'sync-step-2' || data.event === 'sync-update') {
-      if (data.update) {
-        const binaryUpdate = this.base64ToUint8Array(data.update);
+    const event = data.event;
+    const payload = data.data ?? data;
+
+    if (event === 'sync-step-2' || event === 'sync-update') {
+      const update = payload.update ?? data.update;
+      if (update) {
+        console.log(`[CollabClient] Applying ${event} from server`);
+        const binaryUpdate = this.base64ToUint8Array(update);
         // Apply update marking origin as 'server' to avoid circular relay
         Y.applyUpdate(this.ydoc, binaryUpdate, 'server');
       }
-    } else if (data.event === 'awareness-update') {
-      this.onAwareness?.(data.awarenessData);
+    } else if (event === 'awareness-update') {
+      const awarenessData = payload.awarenessData ?? data.awarenessData;
+      if (awarenessData) {
+        this.onAwareness?.(awarenessData);
+      }
+    } else if (event === 'peer-leave') {
+      const userId = payload.userId ?? data.userId;
+      if (userId) {
+        this.onPeerLeave?.(userId);
+      }
     }
   }
 
   sendAwareness(awarenessData: any): void {
+    this.pendingAwareness = awarenessData;
     if (!this.isConnected()) return;
 
     this.send({
@@ -127,7 +171,11 @@ export class CollabClient {
 
   private send(payload: Record<string, any>): void {
     if (this.isConnected()) {
-      this.ws?.send(JSON.stringify(payload));
+      const envelope = {
+        ...payload,
+        data: payload,
+      };
+      this.ws?.send(JSON.stringify(envelope));
     }
   }
 

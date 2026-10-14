@@ -62,6 +62,81 @@ describe('CRDT Yjs Converter', () => {
     expect(roundtrip.blocks.blk_1.properties).toEqual(sampleDoc.blocks.blk_1.properties);
     expect(roundtrip.blocks.blk_2.properties).toEqual(sampleDoc.blocks.blk_2.properties);
   });
+
+  it('synchronizes updates between two clients', () => {
+    const ydocA = new Y.Doc();
+    const ydocB = new Y.Doc();
+
+    // Wire up two-way sync
+    ydocA.on('update', (update, origin) => {
+      if (origin !== 'remote') Y.applyUpdate(ydocB, update, 'remote');
+    });
+    ydocB.on('update', (update, origin) => {
+      if (origin !== 'remote') Y.applyUpdate(ydocA, update, 'remote');
+    });
+
+    // 1. Initial doc on client A
+    documentJsonToYDoc(sampleDoc, ydocA);
+
+    // Initial sync to B
+    const updateFromA = Y.encodeStateAsUpdate(ydocA);
+    Y.applyUpdate(ydocB, updateFromA, 'remote');
+
+    let docOnB = yDocToDocumentJson(ydocB);
+    expect(docOnB.blocks.blk_1?.properties?.text).toBe('Hello from client A');
+
+    // 2. Client A updates blk_1 text
+    const updatedDocA: DocumentJSON = {
+      ...sampleDoc,
+      blocks: {
+        ...sampleDoc.blocks,
+        blk_1: {
+          ...sampleDoc.blocks.blk_1,
+          properties: { text: 'Alice edited this!' },
+        },
+      },
+    };
+    documentJsonToYDoc(updatedDocA, ydocA);
+
+    docOnB = yDocToDocumentJson(ydocB);
+    expect(docOnB.blocks.blk_1?.properties?.text).toBe('Alice edited this!');
+
+    // 3. Client B adds a new block
+    const updatedDocB: DocumentJSON = {
+      ...docOnB,
+      blocks: {
+        ...docOnB.blocks,
+        blk_3: {
+          id: 'blk_3',
+          type: 'paragraph',
+          parentId: null,
+          childrenIds: [],
+          properties: { text: 'Bob added block 3' },
+          createdAt: 3000,
+          updatedAt: 3000,
+        },
+      },
+    };
+    documentJsonToYDoc(updatedDocB, ydocB);
+
+    const docOnA = yDocToDocumentJson(ydocA);
+    expect(docOnA.blocks.blk_3?.properties?.text).toBe('Bob added block 3');
+
+    // 4. Client A deletes blk_2
+    const docWithDeletedBlk2: DocumentJSON = {
+      ...docOnA,
+      blocks: {
+        blk_1: docOnA.blocks.blk_1,
+        blk_3: docOnA.blocks.blk_3,
+      },
+    };
+    documentJsonToYDoc(docWithDeletedBlk2, ydocA);
+
+    const docOnBAfterDelete = yDocToDocumentJson(ydocB);
+    expect(docOnBAfterDelete.blocks.blk_2).toBeUndefined();
+    expect(docOnBAfterDelete.blocks.blk_1).toBeDefined();
+    expect(docOnBAfterDelete.blocks.blk_3).toBeDefined();
+  });
 });
 
 describe('CollabClient', () => {

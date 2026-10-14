@@ -12,6 +12,7 @@ import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
 import { BookmarkButton } from "./bookmark-button";
+import { CollabPresence } from "./collab-presence";
 import { PageHeaderCover } from "./cover/page-header-cover";
 import { PageIcon } from "./icon/page-icon";
 import { PageHeaderTags } from "./page-header-tags";
@@ -24,7 +25,10 @@ export function PageHeader() {
       <div className="mx-auto w-full max-w-3xl px-6 pt-4">
         <div className="flex items-center justify-between">
           <PageIcon />
-          <BookmarkButton />
+          <div className="flex items-center gap-2">
+            <CollabPresence />
+            <BookmarkButton />
+          </div>
         </div>
         <PageHeaderTitle />
         <PageHeaderTags />

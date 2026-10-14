@@ -1,6 +1,8 @@
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useEffect } from "react";
+import { useParams } from "react-router";
 
+import { CollabProvider } from "@/context/collab-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { styles } from "@/lib/design-token";
 import { EditorPageIdProvider } from "@/providers/document-provider";
@@ -15,6 +17,7 @@ interface EditorShellProps {
 }
 
 export function EditorShell({ pageId }: EditorShellProps) {
+  const { workspaceId = "ws_personal" } = useParams<{ workspaceId: string }>();
   const loadDocument = useDocumentStore((state) => state.loadDocument, pageId);
   const isDeleted = useSidebarStore((s) => s.pages[pageId]?.isDeleted);
   const hasHydrated = useDocumentStore((state) => state._hasHydrated, pageId);
@@ -35,16 +38,18 @@ export function EditorShell({ pageId }: EditorShellProps) {
 
   return (
     <EditorPageIdProvider pageId={pageId}>
-      <div className={styles.editorSurface}>
-        {isDeleted && <PageTrashBar pageId={pageId} />}
-        <PageHeader />
-        <div
-          key={pageId}
-          className="mx-auto pb-32 sm:px-4 md:px-12 animate-page-body"
-        >
-          {hasHydrated ? <BlockCanvas /> : <BlockCanvasSkeleton />}
+      <CollabProvider workspaceId={workspaceId} pageId={pageId}>
+        <div className={styles.editorSurface}>
+          {isDeleted && <PageTrashBar pageId={pageId} />}
+          <PageHeader />
+          <div
+            key={pageId}
+            className="mx-auto pb-32 sm:px-4 md:px-12 animate-page-body"
+          >
+            {hasHydrated ? <BlockCanvas /> : <BlockCanvasSkeleton />}
+          </div>
         </div>
-      </div>
+      </CollabProvider>
     </EditorPageIdProvider>
   );
 }

@@ -1,6 +1,8 @@
 import * as Y from 'yjs';
 import type { DocumentBlock, DocumentJSON } from '../../types/document';
 
+export { Y };
+
 /**
  * Converts a standard Yaad DocumentJSON into a collaborative Y.Doc structure.
  */
@@ -25,8 +27,14 @@ export function documentJsonToYDoc(
     // 2. Blocks map (blockId -> Y.Map representing block)
     const blocksMap = ydoc.getMap('blocks');
     if (doc.blocks && typeof doc.blocks === 'object') {
+      const incomingBlockIds = new Set(Object.keys(doc.blocks));
+
       for (const [blockId, block] of Object.entries(doc.blocks)) {
-        const blockMap = new Y.Map();
+        let blockMap = blocksMap.get(blockId) as Y.Map<any>;
+        if (!blockMap || !(blockMap instanceof Y.Map)) {
+          blockMap = new Y.Map();
+          blocksMap.set(blockId, blockMap);
+        }
         blockMap.set('id', block.id);
         blockMap.set('type', block.type);
         blockMap.set('parentId', block.parentId);
@@ -36,9 +44,14 @@ export function documentJsonToYDoc(
         if (block.tags) blockMap.set('tags', block.tags);
         blockMap.set('createdAt', block.createdAt ?? Date.now());
         blockMap.set('updatedAt', block.updatedAt ?? Date.now());
-
-        blocksMap.set(blockId, blockMap);
       }
+
+      // Delete blocks that were removed from the document
+      blocksMap.forEach((_, key) => {
+        if (!incomingBlockIds.has(key)) {
+          blocksMap.delete(key);
+        }
+      });
     }
   });
 
@@ -78,7 +91,7 @@ export function yDocToDocumentJson(ydoc: Y.Doc): DocumentJSON {
     title: (metaMap.get('title') as string) ?? '',
     icon: metaMap.get('icon') as string | undefined,
     coverImage: metaMap.get('coverImage') as string | undefined,
-    rootBlockId: (metaMap.get('rootBlockId') as string) ?? '',
+    rootBlockId: (metaMap.get('rootBlockId') as string) || 'root',
     blocks: blocksObj,
     createdAt: (metaMap.get('createdAt') as number) ?? Date.now(),
     updatedAt: (metaMap.get('updatedAt') as number) ?? Date.now(),

@@ -11,6 +11,7 @@ import {
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
+import { useCollabContext } from "@/context/collab-context";
 import { BlockActionMenu } from "../menu/block-action-menu";
 import { COLOR_OPTIONS } from "../menu/menu-constants";
 import { BlockRenderer } from "./block-renderer";
@@ -27,8 +28,11 @@ export function BlockRow({ blockId }: BlockRowProps) {
   );
   const addBlock = useDocumentStore((state) => state.addBlock);
   const setActiveBlockId = useDocumentStore((state) => state.setActiveBlockId);
+  const { peers, broadcastFocus } = useCollabContext();
 
   if (!block) return null;
+
+  const activePeersOnBlock = peers.filter((p) => p.activeBlockId === block.id);
 
   const bgColor = block.properties?.bgColor;
   const backgroundStyle = COLOR_OPTIONS.find(
@@ -38,14 +42,36 @@ export function BlockRow({ blockId }: BlockRowProps) {
   return (
     <div
       id={block.id}
-      onFocus={() => setActiveBlockId(block.id)}
-      onClick={() => setActiveBlockId(block.id)}
+      onFocus={() => {
+        setActiveBlockId(block.id);
+        broadcastFocus(block.id);
+      }}
+      onClick={() => {
+        setActiveBlockId(block.id);
+        broadcastFocus(block.id);
+      }}
+      style={{
+        borderLeftColor: activePeersOnBlock[0]?.color,
+        borderLeftWidth: activePeersOnBlock.length > 0 ? "2.5px" : undefined,
+      }}
       className={cn(
         "group relative flex min-h-8 w-full items-start rounded-lg px-2 transition-colors md:px-1 mx-auto max-w-3xl",
         backgroundStyle?.bgClass,
         backgroundStyle?.bgClass ? "hover:saturate-200" : "hover:bg-accent/40",
+        activePeersOnBlock.length > 0 && "ring-1 ring-black/5 dark:ring-white/10",
       )}
     >
+      {/* Collaborator Focus Indicators */}
+      {activePeersOnBlock.map((peer) => (
+        <div
+          key={peer.id}
+          className="absolute -top-3 right-3 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm pointer-events-none transition-all z-20"
+          style={{ backgroundColor: peer.color }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span>{peer.name}</span>
+        </div>
+      ))}
       <div
         contentEditable={false}
         className="hidden md:flex absolute bottom-0 ltr:md:-left-15 rtl:md:-right-15 items-center gap-0.5 opacity-0 spring transition-opacity select-none group-focus-within:opacity-100 group-hover:opacity-100 focus-within:opacity-100"
