@@ -84,4 +84,24 @@ describe("useLocalStorage (Unit Test)", () => {
 
     expect(result.current[0]).toBe("dark");
   });
+
+  it("handles unquoted string values for theme", () => {
+    localStorage.setItem("theme", "dark");
+
+    const { result } = renderHook(() => useLocalStorage("theme", "light"));
+
+    expect(result.current[0]).toBe("dark");
+  });
+
+  it("preserves individual initial values across hooks when nothing is stored", () => {
+    const hook1 = renderHook(() =>
+      useLocalStorage<string | null>("theme", null),
+    );
+    const hook2 = renderHook(() =>
+      useLocalStorage<string | null>("theme", "light"),
+    );
+
+    expect(hook1.result.current[0]).toBe(null);
+    expect(hook2.result.current[0]).toBe("light");
+  });
 });

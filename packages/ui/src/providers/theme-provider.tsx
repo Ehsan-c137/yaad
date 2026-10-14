@@ -21,13 +21,33 @@ export function ThemeProvider() {
   }, []);
 
   useEffect(() => {
-    if (theme === null) {
-      hasMountedRef.current = true;
+    hasMountedRef.current = true;
+
+    if (theme === "dark") {
+      handleTheme(true);
       return;
     }
 
-    hasMountedRef.current = true;
-    handleTheme(theme === "dark");
+    if (theme === "light") {
+      handleTheme(false);
+      return;
+    }
+
+    if (typeof window === "undefined" || !("matchMedia" in window)) {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    handleTheme(mediaQuery.matches);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      handleTheme(e.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
   }, [theme, handleTheme]);
 
   return null;

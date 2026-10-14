@@ -35,20 +35,23 @@ function getSnapshot<T>(key: string, initialValue: T): T {
 
   try {
     const raw = window.localStorage.getItem(key);
-    const cached = snapshotCache.get(key);
+    if (raw === null) {
+      return initialValue;
+    }
 
+    const cached = snapshotCache.get(key);
     if (cached?.raw === raw) {
       return cached.parsed as T;
     }
 
     let parsed: T;
 
-    if (raw === null) {
-      parsed = initialValue;
-    } else {
-      try {
-        parsed = JSON.parse(raw) as T;
-      } catch {
+    try {
+      parsed = JSON.parse(raw) as T;
+    } catch {
+      if (raw === "dark" || raw === "light") {
+        parsed = raw as unknown as T;
+      } else {
         parsed = initialValue;
       }
     }

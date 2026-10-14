@@ -6,7 +6,11 @@ import { useEffect, useState } from "react";
  * @returns {boolean} if dark mode is enabled
  */
 export function useTheme(): boolean {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() =>
+    typeof document !== "undefined"
+      ? document.documentElement.classList.contains("dark")
+      : false,
+  );
   useEffect(() => {
     const observer = new MutationObserver(() => {
       setIsDark(document.documentElement.classList.contains("dark"));
