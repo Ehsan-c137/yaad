@@ -1,23 +1,36 @@
-import { useSidebarStore } from "@yaad/core/store/sidebar/use-sidebar-store";
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import { syncService, type SyncService } from "@yaad/core/services/sync-service";
 import type { StorageAdapter } from "../storage/types";
 import { outboxQueue, type OutboxQueue } from "./outbox-queue";
-import type { SyncOutboxStorageAdapter } from "./sync-outbox-storage-adapter";
+import type { SyncOutboxAdapter } from "./sync-outbox-storage-adapter";
 import type { ISyncWorker, SyncStatus } from "./types";
+
+export interface SyncWorkerOptions {
+  queue?: OutboxQueue;
+  client?: SyncService;
+  intervalMs?: number;
+  onTreeUpdated?: (workspaceId: string) => Promise<void> | void;
+}
 
 export class SyncWorker implements ISyncWorker {
   private status: SyncStatus = "idle";
   private timer: any = null;
   private isSyncing = false;
   private listeners: Set<(status: SyncStatus) => void> = new Set();
+  private readonly queue: OutboxQueue;
+  private readonly client: SyncService;
+  private readonly intervalMs: number;
+  private readonly onTreeUpdated?: (workspaceId: string) => Promise<void> | void;
 
   constructor(
     private readonly getAdapter: () => StorageAdapter,
-    private readonly queue: OutboxQueue = outboxQueue,
-    private readonly client: SyncService = syncService,
-    private readonly intervalMs = 15000,
-  ) {}
+    options: SyncWorkerOptions = {},
+  ) {
+    this.queue = options.queue ?? outboxQueue;
+    this.client = options.client ?? syncService;
+    this.intervalMs = options.intervalMs ?? 15000;
+    this.onTreeUpdated = options.onTreeUpdated;
+  }
 
   subscribeStatus(listener: (status: SyncStatus) => void): () => void {
     this.listeners.add(listener);
@@ -180,10 +193,12 @@ export class SyncWorker implements ISyncWorker {
       }
 
       if (treeUpdated) {
-        try {
-          await useSidebarStore.getState().loadWorkspacePages(workspaceId);
-        } catch {
-          // Store reload fallback
+        if (this.onTreeUpdated) {
+          try {
+            await this.onTreeUpdated(workspaceId);
+          } catch {
+            // Callback execution error caught
+          }
         }
 
         if (typeof window !== "undefined") {
@@ -198,7 +213,7 @@ export class SyncWorker implements ISyncWorker {
 
     // If adapter is SyncOutboxStorageAdapter, execute in remote context so changes don't re-enqueue
     if ("withRemoteContext" in adapter) {
-      await (adapter as SyncOutboxStorageAdapter).withRemoteContext(applyFn);
+      await (adapter as SyncOutboxAdapter).withRemoteContext(applyFn);
     } else {
       await applyFn();
     }

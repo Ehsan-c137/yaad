@@ -33,7 +33,11 @@ describe("SyncWorker (Background Sync Engine)", () => {
       pull: vi.fn().mockResolvedValue({ changes: [], latestVersion: 1 }),
     };
 
-    worker = new SyncWorker(() => mockAdapter, queue, mockSyncClient, 60000);
+    worker = new SyncWorker(() => mockAdapter, {
+      queue,
+      client: mockSyncClient,
+      intervalMs: 60000,
+    });
   });
 
   it("skips sync if user is not authenticated", async () => {

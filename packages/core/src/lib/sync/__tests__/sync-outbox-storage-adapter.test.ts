@@ -1,12 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { StorageAdapter } from "../../storage/types";
 import { OutboxQueue } from "../outbox-queue";
-import { SyncOutboxStorageAdapter } from "../sync-outbox-storage-adapter";
+import {
+  createSyncOutboxAdapter,
+  type SyncOutboxAdapter,
+} from "../sync-outbox-storage-adapter";
 
-describe("SyncOutboxStorageAdapter (Decorator Pattern)", () => {
+describe("createSyncOutboxAdapter (Functional Decorator)", () => {
   let mockInner: StorageAdapter;
   let queue: OutboxQueue;
-  let adapter: SyncOutboxStorageAdapter;
+  let adapter: SyncOutboxAdapter;
 
   beforeEach(() => {
     mockInner = {
@@ -23,7 +26,7 @@ describe("SyncOutboxStorageAdapter (Decorator Pattern)", () => {
       removeBlob: vi.fn().mockResolvedValue(undefined),
     };
     queue = new OutboxQueue();
-    adapter = new SyncOutboxStorageAdapter(mockInner, queue);
+    adapter = createSyncOutboxAdapter(mockInner, { queue });
   });
 
   it("delegates read operations directly with zero latency without modifying outbox", async () => {

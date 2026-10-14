@@ -1,190 +1,105 @@
-import type { DocumentJSON, Tag } from "@yaad/core/types/document";
-import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
-import type { StorageAdapter, TagIndexRecord } from "../storage/types";
+import type { StorageAdapter } from "../storage/types";
 import { outboxQueue, type OutboxQueue } from "./outbox-queue";
+import type { SyncEntityType, SyncOperation } from "./types";
+
+export interface SyncOutboxAdapterOptions {
+  queue?: OutboxQueue;
+}
+
+export interface SyncOutboxAdapter extends StorageAdapter {
+  withRemoteContext<T>(fn: () => Promise<T>): Promise<T>;
+  getInnerAdapter(): StorageAdapter;
+}
 
 /**
- * Decorator implementing StorageAdapter that intercepts writes and
- * enqueues mutations into the local Outbox for background server sync (ADR 0001).
+ * Functional Proxy decorator creating a storage adapter that transparently enqueues
+ * local mutations into the Outbox for background server synchronization (ADR 0001).
  *
- * Local reads and writes remain 100% immediate and offline-first.
+ * Local reads and writes remain 100% immediate, zero-latency, and offline-capable.
+ * Supports both class instances (with prototype methods) and plain objects.
  */
-export class SyncOutboxStorageAdapter implements StorageAdapter {
-  private isApplyingRemote = false;
+export function createSyncOutboxAdapter(
+  inner: StorageAdapter,
+  options: SyncOutboxAdapterOptions = {},
+): SyncOutboxAdapter {
+  const queue = options.queue ?? outboxQueue;
+  let isApplyingRemote = false;
 
-  constructor(
-    private readonly inner: StorageAdapter,
-    private readonly queue: OutboxQueue = outboxQueue,
-  ) {}
-
-  getInnerAdapter(): StorageAdapter {
-    return this.inner;
-  }
-
-  /**
-   * Executes a callback without enqueuing mutations to the outbox.
-   * Used by SyncWorker when applying remote delta changes from the server.
-   */
-  async withRemoteContext<T>(fn: () => Promise<T>): Promise<T> {
-    this.isApplyingRemote = true;
+  const withRemoteContext = async <T>(fn: () => Promise<T>): Promise<T> => {
+    isApplyingRemote = true;
     try {
       return await fn();
     } finally {
-      this.isApplyingRemote = false;
+      isApplyingRemote = false;
     }
-  }
+  };
 
-  async init(): Promise<void> {
-    if (this.inner.init) {
-      await this.inner.init();
-    }
-  }
-
-  // Workspaces
-  async getWorkspaces(): Promise<Workspace[]> {
-    return this.inner.getWorkspaces();
-  }
-
-  async saveWorkspace(workspace: Workspace): Promise<void> {
-    await this.inner.saveWorkspace(workspace);
-
-    if (!this.isApplyingRemote) {
-      await this.queue.enqueue({
-        workspaceId: workspace.id,
-        entityType: "workspace",
-        entityId: workspace.id,
-        operation: "upsert",
-        payload: workspace,
-      });
-    }
-  }
-
-  async deleteWorkspace(id: string): Promise<void> {
-    await this.inner.deleteWorkspace(id);
-
-    if (!this.isApplyingRemote) {
-      await this.queue.enqueue({
-        workspaceId: id,
-        entityType: "workspace",
-        entityId: id,
-        operation: "delete",
-        payload: { id },
-      });
-    }
-  }
-
-  // Workspace Tree
-  async getWorkspaceTree(workspaceId: string): Promise<WorkspacePageMeta[]> {
-    return this.inner.getWorkspaceTree(workspaceId);
-  }
-
-  async saveWorkspaceTree(
+  const enqueue = async (
     workspaceId: string,
-    tree: WorkspacePageMeta[],
-  ): Promise<void> {
-    await this.inner.saveWorkspaceTree(workspaceId, tree);
+    entityType: SyncEntityType,
+    entityId: string,
+    operation: SyncOperation,
+    payload: any,
+  ): Promise<void> => {
+    if (isApplyingRemote) return;
+    await queue.enqueue({
+      workspaceId,
+      entityType,
+      entityId,
+      operation,
+      payload,
+    });
+  };
 
-    if (!this.isApplyingRemote) {
-      await this.queue.enqueue({
-        workspaceId,
-        entityType: "workspace_tree",
-        entityId: workspaceId,
-        operation: "upsert",
-        payload: tree,
-      });
-    }
-  }
+  const overrides: Record<string | symbol, any> = {
+    getInnerAdapter: () => inner,
+    withRemoteContext,
 
-  // Documents
-  async getDocument(id: string): Promise<DocumentJSON | null> {
-    return this.inner.getDocument(id);
-  }
+    saveWorkspace: async (workspace: any) => {
+      await inner.saveWorkspace(workspace);
+      await enqueue(
+        workspace.id,
+        "workspace",
+        workspace.id,
+        "upsert",
+        workspace,
+      );
+    },
 
-  async saveDocument(doc: DocumentJSON): Promise<void> {
-    await this.inner.saveDocument(doc);
+    deleteWorkspace: async (id: string) => {
+      await inner.deleteWorkspace(id);
+      await enqueue(id, "workspace", id, "delete", { id });
+    },
 
-    if (!this.isApplyingRemote) {
-      await this.queue.enqueue({
-        workspaceId: "ws_personal",
-        entityType: "document",
-        entityId: doc.id,
-        operation: "upsert",
-        payload: doc,
-      });
-    }
-  }
+    saveWorkspaceTree: async (workspaceId: string, tree: any) => {
+      await inner.saveWorkspaceTree(workspaceId, tree);
+      await enqueue(workspaceId, "workspace_tree", workspaceId, "upsert", tree);
+    },
 
-  async deleteDocument(id: string): Promise<void> {
-    await this.inner.deleteDocument(id);
+    saveDocument: async (doc: any) => {
+      await inner.saveDocument(doc);
+      await enqueue("ws_personal", "document", doc.id, "upsert", doc);
+    },
 
-    if (!this.isApplyingRemote) {
-      await this.queue.enqueue({
-        workspaceId: "ws_personal",
-        entityType: "document",
-        entityId: id,
-        operation: "delete",
-        payload: { id },
-      });
-    }
-  }
+    deleteDocument: async (id: string) => {
+      await inner.deleteDocument(id);
+      await enqueue("ws_personal", "document", id, "delete", { id });
+    },
+  };
 
-  async getAllDocuments(): Promise<DocumentJSON[]> {
-    if (this.inner.getAllDocuments) {
-      return this.inner.getAllDocuments();
-    }
-    return [];
-  }
-
-  // Tags
-  async getTags(): Promise<Tag[]> {
-    if (this.inner.getTags) {
-      return this.inner.getTags();
-    }
-    return [];
-  }
-
-  async saveTags(tags: Tag[]): Promise<void> {
-    if (this.inner.saveTags) {
-      await this.inner.saveTags(tags);
-    }
-  }
-
-  async saveDocTags(pageId: string, records: TagIndexRecord[]): Promise<void> {
-    if (this.inner.saveDocTags) {
-      await this.inner.saveDocTags(pageId, records);
-    }
-  }
-
-  async deleteDocTags(pageId: string): Promise<void> {
-    if (this.inner.deleteDocTags) {
-      await this.inner.deleteDocTags(pageId);
-    }
-  }
-
-  async getTagsIndex(tagId?: string): Promise<TagIndexRecord[]> {
-    if (this.inner.getTagsIndex) {
-      return this.inner.getTagsIndex(tagId);
-    }
-    return [];
-  }
-
-  // Blobs
-  async getBlob(id: string): Promise<Blob | undefined> {
-    return this.inner.getBlob(id);
-  }
-
-  async saveBlob(id: string, blob: Blob): Promise<void> {
-    return this.inner.saveBlob(id, blob);
-  }
-
-  async removeBlob(id: string): Promise<void> {
-    return this.inner.removeBlob(id);
-  }
-
-  async getAllBlobs(): Promise<{ id: string; blob: Blob }[]> {
-    if (this.inner.getAllBlobs) {
-      return this.inner.getAllBlobs();
-    }
-    return [];
-  }
+  return new Proxy(inner as SyncOutboxAdapter, {
+    get(target, prop, receiver) {
+      if (prop in overrides) {
+        return overrides[prop];
+      }
+      const val = Reflect.get(target, prop, receiver);
+      if (typeof val === "function") {
+        return val.bind(target);
+      }
+      return val;
+    },
+  });
 }
+
+// Backward-compatible alias for type compatibility
+export type SyncOutboxStorageAdapter = SyncOutboxAdapter;

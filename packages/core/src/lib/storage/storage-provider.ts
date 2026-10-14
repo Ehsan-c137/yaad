@@ -1,20 +1,20 @@
 import type { StorageAdapter } from "./types";
 
 import { getStorageAdapter } from "./storage-factory";
-import { SyncOutboxStorageAdapter } from "../sync/sync-outbox-storage-adapter";
+import { createSyncOutboxAdapter, type SyncOutboxAdapter } from "../sync/sync-outbox-storage-adapter";
 import { SyncWorker } from "../sync/sync-worker";
 
 let rawAdapter: StorageAdapter = getStorageAdapter();
-let currentAdapter: StorageAdapter = new SyncOutboxStorageAdapter(rawAdapter);
+let currentAdapter: SyncOutboxAdapter = createSyncOutboxAdapter(rawAdapter);
 
 export const syncWorker = new SyncWorker(() => currentAdapter);
 
 export function setStorageAdapter(adapter: StorageAdapter): void {
   rawAdapter = adapter;
   currentAdapter =
-    adapter instanceof SyncOutboxStorageAdapter
-      ? adapter
-      : new SyncOutboxStorageAdapter(adapter);
+    "withRemoteContext" in adapter
+      ? (adapter as SyncOutboxAdapter)
+      : createSyncOutboxAdapter(adapter);
 }
 
 export function getCurrentStorageAdapter(): StorageAdapter {
