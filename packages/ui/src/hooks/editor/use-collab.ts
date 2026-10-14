@@ -8,11 +8,20 @@ import {
 import { getDocumentStore } from '@yaad/core/store/document/use-document-store';
 import { useUserStore } from '@yaad/core/store/use-user-store';
 
+export interface CollabCursor {
+  offset: number;
+  selection?: {
+    start: number;
+    end: number;
+  };
+}
+
 export interface CollabPeer {
   id: string;
   name: string;
   color: string;
   activeBlockId?: string;
+  cursor?: CollabCursor;
 }
 
 export function useCollab(
@@ -110,6 +119,7 @@ export function useCollab(
             name: data.user.name ?? 'Collaborator',
             color: data.user.color ?? '#8B5CF6',
             activeBlockId: data.activeBlockId,
+            cursor: data.cursor,
           });
           return next;
         });
@@ -148,9 +158,29 @@ export function useCollab(
     });
   };
 
+  const broadcastCursor = (
+    cursor: {
+      blockId: string;
+      offset: number;
+      selection?: { start: number; end: number };
+    } | null,
+  ) => {
+    clientRef.current?.sendAwareness({
+      user: { id: userId, name: userName, color: userColor },
+      activeBlockId: cursor?.blockId ?? undefined,
+      cursor: cursor
+        ? {
+            offset: cursor.offset,
+            selection: cursor.selection,
+          }
+        : undefined,
+    });
+  };
+
   return {
     status,
     peers: Array.from(peers.values()),
     broadcastFocus,
+    broadcastCursor,
   };
 }

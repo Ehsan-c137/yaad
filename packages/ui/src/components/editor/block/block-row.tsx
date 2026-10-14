@@ -64,16 +64,18 @@ export function BlockRow({ blockId }: BlockRowProps) {
       )}
     >
       {/* Collaborator Focus Indicators */}
-      {activePeersOnBlock.map((peer) => (
-        <div
-          key={peer.id}
-          className="absolute -top-3 right-3 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm pointer-events-none transition-all z-20"
-          style={{ backgroundColor: peer.color }}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-          <span>{peer.name}</span>
-        </div>
-      ))}
+      {activePeersOnBlock
+        .filter((peer) => !peer.cursor)
+        .map((peer) => (
+          <div
+            key={peer.id}
+            className="absolute -top-3 right-3 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white shadow-sm pointer-events-none transition-all z-20"
+            style={{ backgroundColor: peer.color }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <span>{peer.name}</span>
+          </div>
+        ))}
       {!isReadOnly && (
         <div
           contentEditable={false}

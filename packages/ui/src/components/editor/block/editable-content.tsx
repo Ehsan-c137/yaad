@@ -9,8 +9,10 @@ import {
 } from "@yaad/core/lib/editor/selection";
 import { useEffect, useRef, useState } from "react";
 
+import { useCollabContext } from "@/context/collab-context";
+import { getCurrentSelectionOffsets } from "@/lib/cursor-coordinates";
+import { RemoteCursorOverlay } from "../collab/remote-cursor-overlay";
 import type { SlashOption } from "../slash-menu/slash-options";
-
 import { SlashMenu } from "../slash-menu/slash-menu";
 
 interface EditableContentProps {
@@ -69,8 +71,21 @@ export function EditableContent({
   const [slashMenuState, setSlashMenuState] = useState<SlashMenuState>(
     INITIAL_SLASH_MENU_STATE,
   );
+  const { peers, broadcastCursor } = useCollabContext();
 
   useAutoFocus(contentRef, readOnly ? false : autoFocus, onFocusHandled);
+
+  const emitLocalCursor = () => {
+    if (readOnly || !blockId) return;
+    const offsets = getCurrentSelectionOffsets(contentRef.current);
+    if (!offsets) return;
+
+    broadcastCursor({
+      blockId,
+      offset: offsets.offset,
+      selection: offsets.selection,
+    });
+  };
 
   useEffect(() => {
     if (contentRef.current && contentRef.current.innerText !== html) {
@@ -121,6 +136,7 @@ export function EditableContent({
     caretOffsetRef.current = offset;
     updateSlashMenu(text, offset, direction);
     onChange(text);
+    emitLocalCursor();
   };
 
   const handleSelectOption = (option: SlashOption) => {
@@ -166,7 +182,7 @@ export function EditableContent({
   };
 
   return (
-    <>
+    <div className="relative w-full">
       <div
         role="textbox"
         aria-multiline="true"
@@ -179,10 +195,20 @@ export function EditableContent({
         style={{ direction: "ltr" }}
         onInput={handleInput}
         onKeyDown={handleKeyDown}
+        onKeyUp={emitLocalCursor}
+        onMouseUp={emitLocalCursor}
+        onFocus={emitLocalCursor}
         data-placeholder={readOnly ? undefined : placeholder}
         data-block-id={blockId}
         className={`w-full text-start wrap-break-word whitespace-pre-wrap outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)] ${readOnly ? "cursor-default select-text" : ""} ${className}`}
       />
+      {blockId && (
+        <RemoteCursorOverlay
+          containerRef={contentRef}
+          peers={peers}
+          blockId={blockId}
+        />
+      )}
       {!readOnly && slashMenuState.isOpen && (
         <SlashMenu
           position={slashMenuState.position}
@@ -191,7 +217,7 @@ export function EditableContent({
           onClose={closeSlashMenu}
         />
       )}
-    </>
+    </div>
   );
 }
 
