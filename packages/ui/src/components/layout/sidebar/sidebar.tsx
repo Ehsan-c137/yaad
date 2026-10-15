@@ -192,7 +192,7 @@ export function Sidebar() {
         }
         className={cn(
           styles.sidebar,
-          "fixed top-2 start-2 z-50 flex h-[calc(100vh-1rem)] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/95 shadow-2xl origin-left rtl:origin-right will-change-[width,transform]",
+          "fixed top-2 start-2 z-50 flex h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/95 shadow-2xl origin-left rtl:origin-right will-change-[width,transform]",
           "md:relative md:z-20 md:top-auto md:start-auto md:h-full md:border-border/70 dark:md:border-white/[0.08] md:bg-card/75 dark:md:bg-sidebar/80 md:shadow-xs",
           getSidebarClasses({
             isClosed,

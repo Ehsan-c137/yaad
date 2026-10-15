@@ -40,11 +40,14 @@ export function PageHeader() {
       <div className="mx-auto w-full max-w-3xl px-6 pt-4">
         <div className="flex items-center justify-between">
           <PageIcon />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap justify-end items-center gap-2">
             {isReadOnly && (
               <div
                 className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-600 dark:text-amber-400 select-none"
-                title={t("common:viewOnlyDesc", "You have read-only access to this workspace.")}
+                title={t(
+                  "common:viewOnlyDesc",
+                  "You have read-only access to this workspace.",
+                )}
               >
                 <Eye className="size-3.5" />
                 <span>{t("common:viewOnly", "View only")}</span>
