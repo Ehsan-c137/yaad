@@ -28,3 +28,36 @@ export const useSidebarStore = create<SidebarState>()(
     },
   ),
 );
+
+// Cross-tab and sync listener: reloads workspace pages whenever remote sync or another tab updates the tree
+if (typeof window !== "undefined") {
+  const reloadPagesForWorkspace = async (workspaceId?: string) => {
+    try {
+      const { useWorkspaceStore } = await import("../use-workspace-store");
+      const activeWs = useWorkspaceStore.getState().activeWorkspaceId;
+      const target = workspaceId || activeWs || "ws_personal";
+      if (!workspaceId || !activeWs || workspaceId === activeWs) {
+        await useSidebarStore.getState().loadWorkspacePages(target);
+      }
+    } catch {
+      await useSidebarStore.getState().loadWorkspacePages(workspaceId || "ws_personal");
+    }
+  };
+
+  window.addEventListener("yaad:sync:tree-updated", ((event: CustomEvent<{ workspaceId: string }>) => {
+    void reloadPagesForWorkspace(event.detail?.workspaceId);
+  }) as EventListener);
+
+  if (typeof BroadcastChannel !== "undefined") {
+    try {
+      const channel = new BroadcastChannel("yaad-sync-channel");
+      channel.onmessage = (event) => {
+        if (event.data?.type === "tree-updated" || event.data?.type === "tree-persisted") {
+          void reloadPagesForWorkspace(event.data.workspaceId);
+        }
+      };
+    } catch {
+      // BroadcastChannel unsupported fallback
+    }
+  }
+}

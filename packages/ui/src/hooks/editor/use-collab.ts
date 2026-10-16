@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { CollabClient } from '@yaad/core/lib/crdt/collab-client';
+import { getDefaultWsUrl } from '@yaad/core/constants/endpoints';
 import {
   Y,
   documentJsonToYDoc,
@@ -12,6 +13,7 @@ import {
   onWorkspaceTreePersisted,
   useSidebarStore,
 } from '@yaad/core/store/use-sidebar-store';
+import { workspaceService } from '@yaad/core/services/workspace-service';
 import { useUserStore } from '@yaad/core/store/use-user-store';
 import { emitLiveWorkspaceRoleChange } from '../workspace/use-workspace-permissions';
 
@@ -104,7 +106,7 @@ export function useCollab(
 
     // 4. Connect CollabClient
     const client = new CollabClient({
-      serverUrl: 'ws://localhost:3000/collab',
+      serverUrl: getDefaultWsUrl(),
       workspaceId,
       documentId: pageId,
       ydoc,
@@ -154,9 +156,16 @@ export function useCollab(
           window.location.replace('/workspace/ws_personal');
         }
       },
-      onTreeUpdate: () => {
-        if (workspaceId) {
-          void useSidebarStore.getState().loadWorkspacePages(workspaceId);
+      onTreeUpdate: (tree: any) => {
+        if (workspaceId && tree) {
+          void (async () => {
+            try {
+              await workspaceService.saveWorkspaceTree(workspaceId, tree);
+            } catch (e) {
+              console.error("Failed to save remote tree:", e);
+            }
+            await useSidebarStore.getState().loadWorkspacePages(workspaceId);
+          })();
         }
       },
     });

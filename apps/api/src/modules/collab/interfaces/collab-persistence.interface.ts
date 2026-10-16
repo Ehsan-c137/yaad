@@ -9,7 +9,7 @@ export interface ICollabPersistence {
   /**
    * Loads the existing baseline JSON document if available.
    */
-  loadBaselineJson(workspaceId: string, documentId: string): Promise<any | null>;
+  loadBaselineJson(workspaceId: string, documentId: string): Promise<any>;
 
   /**
    * Persists an incremental binary update.

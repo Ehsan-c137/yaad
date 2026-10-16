@@ -23,9 +23,24 @@ export function onWorkspaceTreePersisted(cb: TreeChangeCallback): () => void {
 export function persistWorkspaceTree(
   pages: SidebarPageMap,
   workspaceId?: string | null,
+  rootPageIds?: string[],
 ) {
-  const wsId = workspaceId ?? currentWorkspaceId;
-  if (!wsId) return;
+  let wsId = workspaceId ?? currentWorkspaceId;
+  if (!wsId) {
+    try {
+      const activeStorage =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("active-workspace-storage")
+          : null;
+      if (activeStorage) {
+        const parsed = JSON.parse(activeStorage);
+        wsId = parsed?.state?.activeWorkspaceId;
+      }
+    } catch {}
+  }
+  if (!wsId) {
+    wsId = "ws_personal";
+  }
 
   const existingTimer = saveTreeTimersMap.get(wsId);
 
@@ -36,20 +51,31 @@ export function persistWorkspaceTree(
   const timer = setTimeout(() => {
     void (async () => {
       try {
-        const treeNodes: WorkspacePageMeta[] = Object.values(pages)
-          .filter((p): p is SidebarPageItem => Boolean(p))
-          .map((p) => ({
-            id: p.id,
-            workspaceId: wsId,
-            title: p.title || "Untitled",
-            icon: p.icon,
-            parentId: p.parentId,
-            childrenIds: [...p.childrenIds],
-            isDeleted: p.isDeleted,
-            deletedAt: p.deletedAt,
-            updatedAt: p.updatedAt ?? Date.now(),
-            isBookmarked: p.isBookmarked,
-          }));
+        const nodes = Object.values(pages).filter((p): p is SidebarPageItem => Boolean(p));
+        if (rootPageIds && rootPageIds.length > 0) {
+          const rootOrderMap = new Map(rootPageIds.map((id, idx) => [id, idx]));
+          nodes.sort((a, b) => {
+            if (!a.parentId && !b.parentId) {
+              const orderA = rootOrderMap.get(a.id) ?? 9999;
+              const orderB = rootOrderMap.get(b.id) ?? 9999;
+              return orderA - orderB;
+            }
+            return 0;
+          });
+        }
+
+        const treeNodes: WorkspacePageMeta[] = nodes.map((p) => ({
+          id: p.id,
+          workspaceId: wsId,
+          title: p.title || "Untitled",
+          icon: p.icon,
+          parentId: p.parentId,
+          childrenIds: [...p.childrenIds],
+          isDeleted: p.isDeleted,
+          deletedAt: p.deletedAt,
+          updatedAt: p.updatedAt ?? Date.now(),
+          isBookmarked: p.isBookmarked,
+        }));
 
         await workspaceService.saveWorkspaceTree(wsId, treeNodes);
         treeChangeListeners.forEach((fn) => {
@@ -59,6 +85,14 @@ export function persistWorkspaceTree(
             console.error("Error in tree change listener:", err);
           }
         });
+
+        if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined") {
+          try {
+            const channel = new BroadcastChannel("yaad-sync-channel");
+            channel.postMessage({ type: "tree-persisted", workspaceId: wsId });
+            channel.close();
+          } catch {}
+        }
       } catch (e) {
         console.error("Error saving workspace tree to storage:", e);
       } finally {

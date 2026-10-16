@@ -38,7 +38,7 @@ export const createPagesSlice: StateCreator<
       const next = typeof updater === "function" ? updater(state) : updater;
 
       if (next?.pages && next.pages !== state.pages) {
-        persistWorkspaceTree(next.pages);
+        persistWorkspaceTree(next.pages, undefined, next.rootPageIds ?? state.rootPageIds);
       }
 
       return next;

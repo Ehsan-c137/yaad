@@ -35,7 +35,7 @@ export class CollabPersistenceService implements ICollabPersistence {
   async loadBaselineJson(
     workspaceId: string,
     documentId: string,
-  ): Promise<any | null> {
+  ): Promise<any> {
     const [doc] = await this.db
       .select({ content: documents.content })
       .from(documents)
