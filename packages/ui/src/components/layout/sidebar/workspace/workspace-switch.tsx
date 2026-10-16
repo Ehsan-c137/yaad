@@ -3,6 +3,7 @@ import type { Workspace } from "@yaad/core/types/workspace";
 
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
+import { useUserStore } from "@yaad/core/store/use-user-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Check, ChevronsUpDown, Settings2, Share2, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -25,6 +26,8 @@ import { WorkspaceForm } from "./workspace-form";
 export function WorkspaceSwitcher() {
   const { t } = useTranslation(["sidebar", "common"]);
   const navigate = useNavigate();
+  const token = useUserStore((state) => state.token);
+  const isLoggedIn = Boolean(token);
   const workspaces = useWorkspaceStore((state) => state.workspaces);
   const activeWorkspaceId = useWorkspaceStore(
     (state) => state.activeWorkspaceId,
@@ -135,17 +138,19 @@ export function WorkspaceSwitcher() {
 
             <div className="my-1 h-px bg-white/8" />
 
-            <button
-              type="button"
-              onClick={() => {
-                setIsOpen(false);
-                setIsShareOpen(true);
-              }}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
-            >
-              <Share2 className="size-3.5" />
-              <span>{t("sidebar:shareWorkspace")}</span>
-            </button>
+            {isLoggedIn && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsShareOpen(true);
+                }}
+                className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-white/[0.07] hover:text-foreground"
+              >
+                <Share2 className="size-3.5" />
+                <span>{t("sidebar:shareWorkspace")}</span>
+              </button>
+            )}
 
             <button
               type="button"

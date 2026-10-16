@@ -5,6 +5,7 @@ import {
   removeDocumentStore,
 } from "@yaad/core/store/document/use-document-store";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
+import { useUserStore } from "@yaad/core/store/use-user-store";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EditorPageIdProvider } from "@/providers/document-provider";
@@ -27,11 +28,13 @@ describe("PageHeader", () => {
       currentDocument: doc,
       _hasHydrated: true,
     });
+    useUserStore.getState().clearAuth();
   });
 
   afterEach(() => {
     removeDocumentStore("page-1");
     useSidebarStore.setState({ pages: {} });
+    useUserStore.getState().clearAuth();
   });
 
   it("renders", () => {
@@ -195,5 +198,54 @@ describe("PageHeader", () => {
     expect(container.querySelector(".animate-page-title-outro")).toBeNull();
 
     removeDocumentStore("page-2");
+  });
+
+  it("does not render sync status, collab presence, or share button when user is not logged in", () => {
+    useUserStore.getState().clearAuth();
+
+    render(
+      <EditorPageIdProvider pageId="page-1">
+        <PageHeader />
+      </EditorPageIdProvider>,
+    );
+
+    // Sync status indicators (saved, offline, syncing) should not be rendered
+    expect(screen.queryByTestId("sync-status-saved")).toBeNull();
+    expect(screen.queryByTestId("sync-status-offline")).toBeNull();
+    expect(screen.queryByTestId("sync-status-syncing")).toBeNull();
+
+    // Collab presence should not be rendered
+    expect(screen.queryByText(/offline/i)).toBeNull();
+
+    // Share button should not be rendered
+    expect(screen.queryByRole("button", { name: /share/i })).toBeNull();
+
+    // Bookmark button remains available
+    expect(
+      screen.getByLabelText(/add to bookmarks|addtobookmarks/i),
+    ).toBeDefined();
+  });
+
+  it("renders sync status, collab presence, and share button when user is logged in", () => {
+    useUserStore.setState({
+      token: "mock-jwt-token",
+      userId: "user-123",
+      userName: "Tester",
+      email: "test@example.com",
+    });
+
+    render(
+      <EditorPageIdProvider pageId="page-1">
+        <PageHeader />
+      </EditorPageIdProvider>,
+    );
+
+    // Share button should be rendered
+    expect(screen.getByRole("button", { name: /share/i })).toBeDefined();
+
+    // Bookmark button remains rendered
+    expect(
+      screen.getByLabelText(/add to bookmarks|addtobookmarks/i),
+    ).toBeDefined();
   });
 });

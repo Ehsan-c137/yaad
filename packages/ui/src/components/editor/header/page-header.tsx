@@ -12,6 +12,7 @@ import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@ui/button";
+import { useUserStore } from "@yaad/core/store/use-user-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { Eye, Network, Share2 } from "lucide-react";
 import { ShareModal } from "@/components/workspace/share-modal";
@@ -31,6 +32,8 @@ export function PageHeader() {
     pageId: string;
   }>();
   const workspace = useWorkspaceStore((state) => state.workspaces[workspaceId]);
+  const token = useUserStore((state) => state.token);
+  const isLoggedIn = Boolean(token);
   const [isShareOpen, setIsShareOpen] = useState(false);
 
   return (
@@ -53,18 +56,22 @@ export function PageHeader() {
                 <span>{t("common:viewOnly", "View only")}</span>
               </div>
             )}
-            <SyncStatusIndicator />
-            <CollabPresence />
-            <Button
-              type="button"
-              variant="outline"
-              size="xs"
-              onClick={() => setIsShareOpen(true)}
-              className="gap-1.5 rounded-full border-border/40 text-xs font-medium text-foreground hover:bg-foreground/5 shadow-2xs"
-            >
-              <Share2 className="size-3.5 text-muted-foreground" />
-              <span>{t("common:share")}</span>
-            </Button>
+            {isLoggedIn && (
+              <>
+                <SyncStatusIndicator />
+                <CollabPresence />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="xs"
+                  onClick={() => setIsShareOpen(true)}
+                  className="gap-1.5 rounded-full border-border/40 text-xs font-medium text-foreground hover:bg-foreground/5 shadow-2xs"
+                >
+                  <Share2 className="size-3.5 text-muted-foreground" />
+                  <span>{t("common:share")}</span>
+                </Button>
+              </>
+            )}
             <BookmarkButton />
           </div>
         </div>
@@ -72,14 +79,16 @@ export function PageHeader() {
         <PageHeaderTags />
       </div>
 
-      <ShareModal
-        open={isShareOpen}
-        onOpenChange={setIsShareOpen}
-        workspaceId={workspaceId}
-        workspaceName={workspace?.name}
-        workspaceIcon={workspace?.icon}
-        pageId={pageId}
-      />
+      {isLoggedIn && (
+        <ShareModal
+          open={isShareOpen}
+          onOpenChange={setIsShareOpen}
+          workspaceId={workspaceId}
+          workspaceName={workspace?.name}
+          workspaceIcon={workspace?.icon}
+          pageId={pageId}
+        />
+      )}
     </div>
   );
 }

@@ -6,6 +6,11 @@ export function CollabPresence() {
   const { t } = useTranslation();
   const { status, peers } = useCollabContext();
   const currentUser = useUserStore((s) => s.userName);
+  const token = useUserStore((s) => s.token);
+
+  if (!token) {
+    return null;
+  }
 
   const statusColor =
     status === 'connected'
