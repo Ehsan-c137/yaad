@@ -163,4 +163,56 @@ describe("SyncWorker (Background Sync Engine)", () => {
 
     window.removeEventListener("yaad:sync:tree-updated", eventHandler);
   });
+
+  it("updates active in-memory document store when remote document changes are pulled", async () => {
+    const { getDocumentStore, removeDocumentStore } = await import(
+      "@yaad/core/store/document/use-document-store"
+    );
+
+    useUserStore.setState({ token: "valid-jwt-token" });
+    const store = getDocumentStore("doc_open_1");
+    store.setState({
+      currentDocument: {
+        version: 1,
+        id: "doc_open_1",
+        title: "Local Title",
+        rootBlockId: "root",
+        blocks: {},
+        createdAt: 1000,
+        updatedAt: 1000,
+      },
+    });
+
+    const remoteDoc = {
+      version: 2,
+      id: "doc_open_1",
+      title: "Remote Updated Title",
+      rootBlockId: "root",
+      blocks: {},
+      createdAt: 1000,
+      updatedAt: 2000,
+    };
+
+    mockSyncClient.pull.mockResolvedValueOnce({
+      changes: [
+        {
+          id: "log_doc_1",
+          workspaceId: "ws_1",
+          version: 5,
+          entityType: "document",
+          entityId: "doc_open_1",
+          operation: "upsert",
+          patch: remoteDoc,
+          clientMutationId: "other_peer",
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      latestVersion: 5,
+    });
+
+    await worker.syncNow("ws_1");
+
+    expect(store.getState().currentDocument?.title).toBe("Remote Updated Title");
+    removeDocumentStore("doc_open_1", false);
+  });
 });

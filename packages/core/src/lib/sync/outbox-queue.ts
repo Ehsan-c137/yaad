@@ -9,9 +9,24 @@ export class OutboxQueue {
   private inMemoryQueue: OutboxItem[] = [];
   private inMemoryVersions: Map<string, number> = new Map();
   private clientId: string | null = null;
+  private lock: Promise<void> = Promise.resolve();
 
   constructor() {
     this.initClientId();
+  }
+
+  private async withLock<T>(fn: () => Promise<T>): Promise<T> {
+    const prev = this.lock;
+    let resolveNext!: () => void;
+    this.lock = new Promise<void>((resolve) => {
+      resolveNext = resolve;
+    });
+    try {
+      await prev;
+      return await fn();
+    } finally {
+      resolveNext();
+    }
   }
 
   private initClientId(): void {
@@ -50,16 +65,17 @@ export class OutboxQueue {
       timestamp: item.timestamp || Date.now(),
     };
 
-    try {
-      const queue = await this.readQueue();
-      queue.push(fullItem);
-      await set(OUTBOX_KEY, queue);
-      this.inMemoryQueue = queue;
-    } catch {
-      this.inMemoryQueue.push(fullItem);
-    }
-
-    return fullItem;
+    return this.withLock(async () => {
+      try {
+        const queue = await this.readQueue();
+        queue.push(fullItem);
+        await set(OUTBOX_KEY, queue);
+        this.inMemoryQueue = queue;
+      } catch {
+        this.inMemoryQueue.push(fullItem);
+      }
+      return fullItem;
+    });
   }
 
   async peek(limit = 50): Promise<OutboxItem[]> {
@@ -75,16 +91,18 @@ export class OutboxQueue {
     if (!ids.length) return;
     const idSet = new Set(ids);
 
-    try {
-      const queue = await this.readQueue();
-      const filtered = queue.filter((item) => !idSet.has(item.id));
-      await set(OUTBOX_KEY, filtered);
-      this.inMemoryQueue = filtered;
-    } catch {
-      this.inMemoryQueue = this.inMemoryQueue.filter(
-        (item) => !idSet.has(item.id),
-      );
-    }
+    return this.withLock(async () => {
+      try {
+        const queue = await this.readQueue();
+        const filtered = queue.filter((item) => !idSet.has(item.id));
+        await set(OUTBOX_KEY, filtered);
+        this.inMemoryQueue = filtered;
+      } catch {
+        this.inMemoryQueue = this.inMemoryQueue.filter(
+          (item) => !idSet.has(item.id),
+        );
+      }
+    });
   }
 
   async size(): Promise<number> {
@@ -97,12 +115,14 @@ export class OutboxQueue {
   }
 
   async clear(): Promise<void> {
-    try {
-      await del(OUTBOX_KEY);
-      this.inMemoryQueue = [];
-    } catch {
-      this.inMemoryQueue = [];
-    }
+    return this.withLock(async () => {
+      try {
+        await del(OUTBOX_KEY);
+        this.inMemoryQueue = [];
+      } catch {
+        this.inMemoryQueue = [];
+      }
+    });
   }
 
   async getLastSyncedVersion(workspaceId: string): Promise<number> {

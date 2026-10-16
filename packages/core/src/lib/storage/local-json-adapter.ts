@@ -115,8 +115,18 @@ export class LocalJsonAdapter implements StorageAdapter {
       const docKeys = allKeys.filter(
         (k): k is string => typeof k === "string" && k.startsWith("doc_"),
       );
-      const docs = await Promise.all(docKeys.map((k) => get<DocumentJSON>(k)));
-      return docs.filter((d): d is DocumentJSON => Boolean(d));
+      const docs: DocumentJSON[] = [];
+      const CHUNK_SIZE = 25;
+      for (let i = 0; i < docKeys.length; i += CHUNK_SIZE) {
+        const chunk = docKeys.slice(i, i + CHUNK_SIZE);
+        const chunkDocs = await Promise.all(
+          chunk.map((k) => get<DocumentJSON>(k)),
+        );
+        for (const doc of chunkDocs) {
+          if (doc) docs.push(doc);
+        }
+      }
+      return docs;
     } catch (error) {
       console.error("[LocalJsonAdapter] Error fetching all documents:", error);
       return [];
@@ -203,16 +213,22 @@ export class LocalJsonAdapter implements StorageAdapter {
       const blobKeys = allKeys.filter(
         (k): k is string => typeof k === "string" && k.startsWith("blob_"),
       );
-      const results = await Promise.all(
-        blobKeys.map(async (key) => {
-          const id = key.replace("blob_", "");
-          const blob = await blobStorage.get(id);
-          return blob ? { id, blob } : null;
-        }),
-      );
-      return results.filter((item): item is { id: string; blob: Blob } =>
-        Boolean(item),
-      );
+      const results: { id: string; blob: Blob }[] = [];
+      const CHUNK_SIZE = 10;
+      for (let i = 0; i < blobKeys.length; i += CHUNK_SIZE) {
+        const chunk = blobKeys.slice(i, i + CHUNK_SIZE);
+        const chunkBlobs = await Promise.all(
+          chunk.map(async (key) => {
+            const id = key.replace("blob_", "");
+            const blob = await blobStorage.get(id);
+            return blob ? { id, blob } : null;
+          }),
+        );
+        for (const item of chunkBlobs) {
+          if (item) results.push(item);
+        }
+      }
+      return results;
     } catch (error) {
       console.error("[LocalJsonAdapter] Error fetching all blobs:", error);
       return [];

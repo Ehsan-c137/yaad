@@ -9,46 +9,55 @@ import { defineConfig } from "vite";
 import viteCompression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
 
-function atAliasPlugin(baseDirs: string[]) {
+function atAliasPlugin(appSrc: string, uiSrc: string, coreSrc: string): Plugin {
+  const cache = new Map<string, string | null>();
+  const exts = ["", ".tsx", ".ts", ".jsx", ".js", ".json", ".css"];
+  const indexFiles = ["index.tsx", "index.ts", "index.jsx", "index.js"];
+
+  function tryResolveFile(baseDir: string, subPath: string): string | null {
+    const target = path.resolve(baseDir, subPath);
+    for (const ext of exts) {
+      const file = target + ext;
+      if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+        return file;
+      }
+    }
+    for (const idx of indexFiles) {
+      const file = path.join(target, idx);
+      if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+        return file;
+      }
+    }
+    return null;
+  }
+
   return {
     name: "vite-plugin-at-alias",
     enforce: "pre" as const,
-    resolveId(source: string) {
+    resolveId(source: string, importer?: string) {
       if (!source.startsWith("@/")) return null;
       const subPath = source.slice(2);
+      const cacheKey = `${importer ?? ""}:${source}`;
+      if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-      for (const baseDir of baseDirs) {
-        const target = path.resolve(baseDir, subPath);
+      const preferredDirs: string[] = [];
+      if (importer?.includes("/packages/ui/")) {
+        preferredDirs.push(uiSrc, appSrc, coreSrc);
+      } else if (importer?.includes("/packages/core/")) {
+        preferredDirs.push(coreSrc, appSrc, uiSrc);
+      } else {
+        preferredDirs.push(appSrc, uiSrc, coreSrc);
+      }
 
-        if (fs.existsSync(target) && fs.statSync(target).isFile()) {
-          return target;
-        }
-
-        const exts = [".tsx", ".ts", ".jsx", ".js", ".json", ".css"];
-
-        for (const ext of exts) {
-          if (
-            fs.existsSync(target + ext) &&
-            fs.statSync(target + ext).isFile()
-          ) {
-            return target + ext;
-          }
-        }
-
-        const indexPaths = [
-          path.join(target, "index.tsx"),
-          path.join(target, "index.ts"),
-          path.join(target, "index.jsx"),
-          path.join(target, "index.js"),
-        ];
-
-        for (const indexPath of indexPaths) {
-          if (fs.existsSync(indexPath) && fs.statSync(indexPath).isFile()) {
-            return indexPath;
-          }
+      for (const dir of preferredDirs) {
+        const resolved = tryResolveFile(dir, subPath);
+        if (resolved) {
+          cache.set(cacheKey, resolved);
+          return resolved;
         }
       }
 
+      cache.set(cacheKey, null);
       return null;
     },
   };
@@ -94,11 +103,11 @@ function mpaDevPlugin(): Plugin {
 
 export default defineConfig(() => ({
   plugins: [
-    atAliasPlugin([
+    atAliasPlugin(
       path.resolve(import.meta.dirname, "src"),
       path.resolve(import.meta.dirname, "../../packages/ui/src"),
       path.resolve(import.meta.dirname, "../../packages/core/src"),
-    ]),
+    ),
     viteCompression({ algorithm: "brotliCompress" }),
     react(),
     tailwindcss(),

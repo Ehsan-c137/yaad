@@ -1,4 +1,5 @@
 import { useUserStore } from "../../store/use-user-store";
+import { getExistingDocumentStore } from "../../store/document/store-registry";
 import { syncService, type SyncService } from "../../services/sync-service";
 import type { StorageAdapter } from "../storage/types";
 import { outboxQueue, type OutboxQueue } from "./outbox-queue";
@@ -20,7 +21,9 @@ export class SyncWorker implements ISyncWorker {
   private readonly queue: OutboxQueue;
   private readonly client: SyncService;
   private readonly intervalMs: number;
-  private readonly onTreeUpdated?: (workspaceId: string) => Promise<void> | void;
+  private readonly onTreeUpdated?: (
+    workspaceId: string,
+  ) => Promise<void> | void;
 
   constructor(
     private readonly getAdapter: () => StorageAdapter,
@@ -124,8 +127,10 @@ export class SyncWorker implements ISyncWorker {
     let targetWorkspaceId = workspaceId;
     if (!targetWorkspaceId) {
       try {
-        const { useWorkspaceStore } = await import("../../store/use-workspace-store");
-        targetWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+        const { useWorkspaceStore } =
+          await import("../../store/use-workspace-store");
+        targetWorkspaceId =
+          useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
       } catch {
         targetWorkspaceId = "ws_personal";
       }
@@ -138,10 +143,7 @@ export class SyncWorker implements ISyncWorker {
       return;
     }
 
-    if (
-      typeof navigator !== "undefined" &&
-      navigator.onLine === false
-    ) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
       this.setStatus("offline");
       return;
     }
@@ -224,7 +226,10 @@ export class SyncWorker implements ISyncWorker {
 
       for (const change of result.changes) {
         // Skip changes originated by this device
-        if (change.clientMutationId && change.clientMutationId.startsWith(myClientId)) {
+        if (
+          change.clientMutationId &&
+          change.clientMutationId.startsWith(myClientId)
+        ) {
           continue;
         }
 
@@ -234,8 +239,34 @@ export class SyncWorker implements ISyncWorker {
         } else if (change.entityType === "document" && change.patch) {
           if (change.operation === "delete") {
             await adapter.deleteDocument(change.entityId);
+            const existingStore = getExistingDocumentStore(change.entityId);
+            if (existingStore) {
+              existingStore.setState({
+                currentDocument: null,
+                _hasHydrated: true,
+              });
+            }
           } else {
             await adapter.saveDocument(change.patch);
+            const existingStore = getExistingDocumentStore(change.entityId);
+            if (existingStore) {
+              existingStore.setState({
+                currentDocument: change.patch,
+                _hasHydrated: true,
+              });
+            }
+          }
+
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("yaad:sync:document-updated", {
+                detail: {
+                  pageId: change.entityId,
+                  patch: change.patch,
+                  operation: change.operation,
+                },
+              }),
+            );
           }
         }
       }

@@ -106,9 +106,16 @@ function PageHeaderTitle() {
   const sidebarTitle = useSidebarStore((state) =>
     pageId ? state.pages[pageId]?.title : undefined,
   );
-  const documentTitle = useDocumentStore(
-    (state) => state.currentDocument?.blocks.root.properties?.title?.[0]?.text,
-  );
+  const documentTitle = useDocumentStore((state) => {
+    const doc = state.currentDocument;
+    if (!doc) return undefined;
+    const rootId = doc.rootBlockId || "root";
+    return (
+      doc.blocks?.[rootId]?.properties?.title?.[0]?.text ??
+      doc.blocks?.root?.properties?.title?.[0]?.text ??
+      doc.title
+    );
+  });
   const updateTitle = useDocumentStore((state) => state.updateTitle);
 
   const titleText = documentTitle ?? sidebarTitle ?? "";

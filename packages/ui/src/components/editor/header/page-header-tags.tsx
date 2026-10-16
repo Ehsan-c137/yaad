@@ -5,9 +5,12 @@ import { TagList } from "../tags/tag-list";
 
 export function PageHeaderTags() {
   const { isReadOnly } = useEditorPermissions();
-  const rootBlock = useDocumentStore(
-    (state) => state.currentDocument?.blocks.root,
-  );
+  const rootBlock = useDocumentStore((state) => {
+    const doc = state.currentDocument;
+    if (!doc?.blocks) return undefined;
+    const rootId = doc.rootBlockId || "root";
+    return doc.blocks[rootId] ?? doc.blocks.root;
+  });
   const currentDocId = useDocumentStore(
     (state) => state.currentDocument?.id ?? "",
   );

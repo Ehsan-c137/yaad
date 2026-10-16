@@ -8,8 +8,16 @@ async function bootstrap() {
     instrument: ObserveInstrument,
   });
 
+  const corsOrigin = process.env.CORS_ORIGIN;
+  const isProduction = process.env.NODE_ENV === 'production';
+  const allowedOrigins = corsOrigin
+    ? corsOrigin.split(',').map((o) => o.trim())
+    : isProduction
+      ? false
+      : true;
+
   app.enableCors({
-    origin: true,
+    origin: allowedOrigins,
     credentials: true,
   });
 

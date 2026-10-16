@@ -9,35 +9,32 @@ import { createCoreSlice } from "./core-slice";
 import { cancelAutoSave, flushAutoSave } from "./helpers";
 import { createMetaSlice } from "./meta-slice";
 
+import {
+  deleteDocumentStoreFromRegistry,
+  getExistingDocumentStore,
+  hasDocumentStore,
+  registerDocumentStore,
+} from "./store-registry";
+
 export type { DocumentState };
-
-const documentStoresMap = new Map<string, StoreApi<DocumentState>>();
-
-export function hasDocumentStore(pageId: string): boolean {
-  return documentStoresMap.has(pageId);
-}
-
-export function getExistingDocumentStore(
-  pageId: string,
-): StoreApi<DocumentState> | undefined {
-  return documentStoresMap.get(pageId);
-}
+export { getExistingDocumentStore, hasDocumentStore };
 
 export function getDocumentStore(pageId: string): StoreApi<DocumentState> {
-  if (!documentStoresMap.has(pageId)) {
-    const store = createStore<DocumentState>()((...args) => ({
+  let store = getExistingDocumentStore(pageId);
+  if (!store) {
+    store = createStore<DocumentState>()((...args) => ({
       ...createCoreSlice(...args),
       ...createBlockSlice(...args),
       ...createMetaSlice(...args),
     }));
-    documentStoresMap.set(pageId, store);
+    registerDocumentStore(pageId, store);
   }
 
-  return documentStoresMap.get(pageId)!;
+  return store;
 }
 
 export function removeDocumentStore(pageId: string, shouldFlush = true) {
-  const store = documentStoresMap.get(pageId);
+  const store = getExistingDocumentStore(pageId);
 
   if (store) {
     if (shouldFlush) {
@@ -49,7 +46,7 @@ export function removeDocumentStore(pageId: string, shouldFlush = true) {
       cancelAutoSave(pageId);
     }
 
-    documentStoresMap.delete(pageId);
+    deleteDocumentStoreFromRegistry(pageId);
   }
 }
 

@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  root: import.meta.dirname,
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
@@ -9,8 +10,9 @@ export default defineConfig({
     },
   },
   test: {
+    name: "ui",
     environment: "happy-dom",
-    setupFiles: ["./src/test-setup.ts"],
+    setupFiles: [path.resolve(import.meta.dirname, "./src/test-setup.ts")],
     testTimeout: 20000,
   },
 });
