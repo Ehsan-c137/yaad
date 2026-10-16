@@ -185,8 +185,19 @@ export class AuthService {
     userId: string,
     workspaceId: string,
   ): Promise<boolean> {
+    const role = await this.getUserRole(userId, workspaceId);
+    return role !== null;
+  }
+
+  /**
+   * Retrieves the role of a user in a given workspace ('owner' | 'member' | 'viewer' | null).
+   */
+  async getUserRole(
+    userId: string,
+    workspaceId: string,
+  ): Promise<string | null> {
     const [membership] = await this.db
-      .select({ id: workspaceMembers.id })
+      .select({ role: workspaceMembers.role })
       .from(workspaceMembers)
       .where(
         and(
@@ -196,7 +207,15 @@ export class AuthService {
       )
       .limit(1);
 
-    if (membership) return true;
+    if (membership) return membership.role;
+
+    const [ws] = await this.db
+      .select({ ownerId: workspaces.ownerId })
+      .from(workspaces)
+      .where(eq(workspaces.id, workspaceId))
+      .limit(1);
+
+    if (ws && ws.ownerId === userId) return 'owner';
 
     // Auto-provision and join for personal/local development workspace
     if (workspaceId === 'ws_personal') {
@@ -219,17 +238,17 @@ export class AuthService {
             id: randomUUID(),
             workspaceId,
             userId,
-            role: 'member',
+            role: 'owner',
             createdAt: new Date(),
           })
           .onConflictDoNothing();
 
-        return true;
+        return 'owner';
       } catch {
-        return true;
+        return 'owner';
       }
     }
 
-    return false;
+    return null;
   }
 }

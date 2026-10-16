@@ -104,14 +104,38 @@ export class CollabPersistenceService implements ICollabPersistence {
         }
       });
 
+      const title = (metaMap.get('title') as string) || 'Untitled';
+      const icon = (metaMap.get('icon') as string) || undefined;
+      const coverImage =
+        (metaMap.get('coverImage') as string) ||
+        (metaMap.get('coverUrl') as string) ||
+        undefined;
+      const rootBlockId = (metaMap.get('rootBlockId') as string) || 'root';
+      const version = (metaMap.get('version') as number) || 1;
+      const createdAt = (metaMap.get('createdAt') as number) || Date.now();
+      const updatedAt = Date.now();
+
+      const rawRootArray = rootBlockIdsArray.toArray() as string[];
+      const rootBlock = blocksObj[rootBlockId];
+      if (
+        rootBlock &&
+        rawRootArray.length > 0 &&
+        (!rootBlock.childrenIds || rootBlock.childrenIds.length === 0)
+      ) {
+        rootBlock.childrenIds = rawRootArray;
+      }
+
       const materializedJson = {
         id: documentId,
-        title: metaMap.get('title') ?? 'Untitled',
-        icon: metaMap.get('icon') ?? null,
-        coverUrl: metaMap.get('coverUrl') ?? null,
-        rootBlockIds: rootBlockIdsArray.toArray() as string[],
+        version,
+        title,
+        icon,
+        coverImage,
+        rootBlockId,
+        rootBlockIds: rawRootArray.length > 0 ? rawRootArray : (rootBlock?.childrenIds ?? []),
         blocks: blocksObj,
-        updatedAt: Date.now(),
+        createdAt,
+        updatedAt,
       };
 
       // Ensure page row exists before inserting document snapshot
@@ -120,27 +144,34 @@ export class CollabPersistenceService implements ICollabPersistence {
         .values({
           id: documentId,
           workspaceId,
-          title: (metaMap.get('title') as string) ?? 'Untitled',
-          icon: (metaMap.get('icon') as string) ?? null,
-          version: 1,
-          updatedAt: new Date(),
+          title,
+          icon: icon ?? null,
+          version,
+          updatedAt: new Date(updatedAt),
         })
-        .onConflictDoNothing();
+        .onConflictDoUpdate({
+          target: pages.id,
+          set: {
+            title,
+            icon: icon ?? null,
+            updatedAt: new Date(updatedAt),
+          },
+        });
 
       await this.db
         .insert(documents)
         .values({
           id: documentId,
           workspaceId,
-          version: 1,
+          version,
           content: materializedJson as any,
-          updatedAt: new Date(),
+          updatedAt: new Date(updatedAt),
         })
         .onConflictDoUpdate({
           target: documents.id,
           set: {
             content: materializedJson as any,
-            updatedAt: new Date(),
+            updatedAt: new Date(updatedAt),
           },
         });
 

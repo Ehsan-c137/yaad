@@ -19,6 +19,7 @@ interface ClientContext {
   workspaceId?: string;
   documentId?: string;
   userId?: string;
+  role?: string;
   awarenessData?: any;
 }
 
@@ -105,35 +106,51 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
-    // Verify token and membership if authService and token are present
+    // Verify token and membership
     let authenticatedUserId = 'anonymous';
-    if (this.authService && token) {
-      try {
-        const payload = await this.authService.verifyToken(token);
-        const isMember = await this.authService.isUserMemberOfWorkspace(
-          payload.sub,
-          workspaceId,
-        );
-        if (!isMember) {
+    let userRole = 'member';
+
+    if (this.authService) {
+      if (!token) {
+        if (workspaceId !== 'ws_personal') {
           client.send(
             JSON.stringify({
               event: 'error',
-              message: `Forbidden: not an authorized member of workspace ${workspaceId}`,
+              message: `Unauthorized: authentication token required for workspace ${workspaceId}`,
             }),
           );
-          client.close();
+          client.close(4001, 'Unauthorized');
           return;
         }
-        authenticatedUserId = payload.sub;
-      } catch {
-        client.send(
-          JSON.stringify({
-            event: 'error',
-            message: 'Unauthorized: invalid or expired authentication token',
-          }),
-        );
-        client.close();
-        return;
+      } else {
+        try {
+          const payload = await this.authService.verifyToken(token);
+          const isMember = await this.authService.isUserMemberOfWorkspace(
+            payload.sub,
+            workspaceId,
+          );
+          if (!isMember) {
+            client.send(
+              JSON.stringify({
+                event: 'error',
+                message: `Forbidden: not an authorized member of workspace ${workspaceId}`,
+              }),
+            );
+            client.close(4003, 'Forbidden');
+            return;
+          }
+          authenticatedUserId = payload.sub;
+          userRole = (await this.authService.getUserRole(payload.sub, workspaceId)) ?? 'member';
+        } catch {
+          client.send(
+            JSON.stringify({
+              event: 'error',
+              message: 'Unauthorized: invalid or expired authentication token',
+            }),
+          );
+          client.close(4001, 'Unauthorized');
+          return;
+        }
       }
     }
 
@@ -143,6 +160,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ctx.workspaceId = workspaceId;
     ctx.documentId = documentId;
     ctx.userId = authenticatedUserId;
+    ctx.role = userRole;
     this.clientContexts.set(client, ctx);
 
     // 1. Manage WebSocket subscriber registration in Gateway
@@ -225,6 +243,18 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (!workspaceId || !documentId || !update) return;
 
+    // Enforce read-only restriction: viewers cannot broadcast or persist edits
+    const ctx = this.clientContexts.get(client);
+    if (ctx?.role === 'viewer') {
+      client.send(
+        JSON.stringify({
+          event: 'error',
+          message: 'Forbidden: read-only members (viewers) cannot send document edits',
+        }),
+      );
+      return;
+    }
+
     // 1. Broadcast immediately to all other collaborators in the room
     this.broadcastToRoom(
       workspaceId,
@@ -296,6 +326,18 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const tree = data.tree ?? rawData?.tree;
 
     if (!workspaceId || !tree) return;
+
+    // Enforce read-only restriction: viewers cannot reorganize workspace tree
+    const ctx = this.clientContexts.get(client);
+    if (ctx?.role === 'viewer') {
+      client.send(
+        JSON.stringify({
+          event: 'error',
+          message: 'Forbidden: read-only members (viewers) cannot reorganize workspace tree',
+        }),
+      );
+      return;
+    }
 
     this.broadcastToWorkspace(
       workspaceId,
@@ -375,8 +417,11 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     for (const [peer, ctx] of this.clientContexts.entries()) {
       const peerUserId = ctx.userId ?? ctx.awarenessData?.user?.id;
-      if (ctx.workspaceId === workspaceId && peerUserId === userId && peer.readyState === 1) {
-        peer.send(payload);
+      if (ctx.workspaceId === workspaceId && peerUserId === userId) {
+        ctx.role = newRole;
+        if (peer.readyState === 1) {
+          peer.send(payload);
+        }
       }
     }
   }

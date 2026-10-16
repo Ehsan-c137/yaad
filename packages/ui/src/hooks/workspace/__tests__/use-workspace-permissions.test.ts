@@ -55,6 +55,7 @@ describe("useWorkspacePermissions (Unit Test)", () => {
       ]),
       addMember: vi.fn(),
       removeMember: vi.fn(),
+      joinWorkspace: vi.fn(),
     };
 
     const { result } = renderHook(() =>
@@ -88,6 +89,7 @@ describe("useWorkspacePermissions (Unit Test)", () => {
       ]),
       addMember: vi.fn(),
       removeMember: vi.fn(),
+      joinWorkspace: vi.fn(),
     };
 
     const { result } = renderHook(() =>
@@ -121,6 +123,7 @@ describe("useWorkspacePermissions (Unit Test)", () => {
       ]),
       addMember: vi.fn(),
       removeMember: vi.fn(),
+      joinWorkspace: vi.fn(),
     };
 
     const { result } = renderHook(() =>

@@ -76,20 +76,34 @@ describe("Editor Read-Only Mode (Integration Tests)", () => {
       properties: {
         title: [{ text: "Hello paragraph" }],
       },
+      createdAt: 1000,
+      updatedAt: 1000,
     };
 
     beforeEach(() => {
       const store = getDocumentStore("page-1");
       store.setState({
         currentDocument: {
+          version: 1,
           id: "page-1",
-          workspaceId: "ws-1",
+          title: "Page 1",
           icon: "📄",
-          coverImage: null,
+          coverImage: undefined,
+          rootBlockId: "root",
           blocks: {
-            root: { id: "root", type: "page", childrenIds: ["b-1"], properties: {} },
+            root: {
+              id: "root",
+              type: "page",
+              parentId: null,
+              childrenIds: ["b-1"],
+              properties: {},
+              createdAt: 1000,
+              updatedAt: 1000,
+            },
             "b-1": mockBlock,
           },
+          createdAt: 1000,
+          updatedAt: 1000,
         },
         _hasHydrated: true,
       });
@@ -131,13 +145,25 @@ describe("Editor Read-Only Mode (Integration Tests)", () => {
       const store = getDocumentStore("page-1");
       store.setState({
         currentDocument: {
+          version: 1,
           id: "page-1",
-          workspaceId: "ws-1",
+          title: "Page 1",
           icon: "📄",
-          coverImage: null,
+          coverImage: undefined,
+          rootBlockId: "root",
           blocks: {
-            root: { id: "root", type: "page", childrenIds: [], properties: {} },
+            root: {
+              id: "root",
+              type: "page",
+              parentId: null,
+              childrenIds: [],
+              properties: {},
+              createdAt: 1000,
+              updatedAt: 1000,
+            },
           },
+          createdAt: 1000,
+          updatedAt: 1000,
         },
         _hasHydrated: true,
       });

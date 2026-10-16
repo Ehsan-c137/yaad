@@ -143,4 +143,50 @@ describe('CollabGateway', () => {
     );
     expect(mockSocket.close).toHaveBeenCalledWith(4003, 'Removed from workspace');
   });
+
+  it('rejects connection without token when authService is present for shared workspace', async () => {
+    const mockAuthService: any = {
+      verifyToken: vi.fn(),
+      isUserMemberOfWorkspace: vi.fn(),
+      getUserRole: vi.fn(),
+    };
+    const secureGateway = new CollabGateway(mockRoomManager, mockAuthService);
+    const mockSocket: any = { send: vi.fn(), close: vi.fn(), readyState: 1 };
+
+    secureGateway.handleConnection(mockSocket);
+
+    await secureGateway.handleJoinRoom(mockSocket, {
+      workspaceId: 'ws_shared_team',
+      documentId: 'doc_1',
+    });
+
+    expect(mockSocket.send).toHaveBeenCalledWith(
+      expect.stringContaining('Unauthorized: authentication token required'),
+    );
+    expect(mockSocket.close).toHaveBeenCalledWith(4001, 'Unauthorized');
+  });
+
+  it('blocks viewers from broadcasting sync-update edits', async () => {
+    const mockSocket: any = { send: vi.fn(), readyState: 1 };
+    gateway.handleConnection(mockSocket);
+
+    await gateway.handleJoinRoom(mockSocket, {
+      workspaceId: 'ws_1',
+      documentId: 'doc_1',
+    });
+
+    // Set role to viewer
+    (gateway as any).clientContexts.get(mockSocket).role = 'viewer';
+
+    await gateway.handleSyncUpdate(mockSocket, {
+      workspaceId: 'ws_1',
+      documentId: 'doc_1',
+      update: Buffer.from([10]).toString('base64'),
+    });
+
+    expect(mockSocket.send).toHaveBeenCalledWith(
+      expect.stringContaining('Forbidden: read-only members (viewers) cannot send document edits'),
+    );
+    expect(mockRoomManager.applyUpdate).not.toHaveBeenCalled();
+  });
 });

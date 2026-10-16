@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import React from "react";
 import { SyncStatusIndicator } from "../sync-status-indicator";
 import * as useSyncStatusModule from "@/hooks/editor/use-sync-status";
 

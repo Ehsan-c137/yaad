@@ -172,9 +172,15 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
   private seedYDocFromJson(ydoc: Y.Doc, json: any): void {
     ydoc.transact(() => {
       const meta = ydoc.getMap('meta');
+      if (json.id) meta.set('id', json.id);
+      meta.set('version', json.version ?? 1);
       if (json.title) meta.set('title', json.title);
       if (json.icon) meta.set('icon', json.icon);
-      if (json.coverUrl) meta.set('coverUrl', json.coverUrl);
+      const cover = json.coverImage || json.coverUrl;
+      if (cover) meta.set('coverImage', cover);
+      meta.set('rootBlockId', json.rootBlockId || 'root');
+      meta.set('createdAt', json.createdAt ?? Date.now());
+      meta.set('updatedAt', json.updatedAt ?? Date.now());
 
       const rootBlockIds = ydoc.getArray('rootBlockIds');
       if (Array.isArray(json.rootBlockIds)) {

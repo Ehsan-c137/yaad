@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
@@ -29,8 +30,11 @@ export class SyncController {
    */
   @Post('push')
   @HttpCode(HttpStatus.OK)
-  async push(@Body() dto: PushSyncDto): Promise<PushResultDto> {
-    return this.syncService.push(dto);
+  async push(
+    @Body() dto: PushSyncDto,
+    @Req() req: any,
+  ): Promise<PushResultDto> {
+    return this.syncService.push(dto, req.user?.id);
   }
 
   /**

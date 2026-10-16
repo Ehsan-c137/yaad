@@ -46,16 +46,53 @@ export class WorkspacesService {
   }
 
   /**
+   * Helper to retrieve caller's role in a workspace.
+   */
+  private async getCallerRole(
+    workspaceId: string,
+    userId: string,
+  ): Promise<string | null> {
+    const [ws] = await this.db
+      .select({ ownerId: workspaces.ownerId })
+      .from(workspaces)
+      .where(eq(workspaces.id, workspaceId))
+      .limit(1);
+
+    if (ws && ws.ownerId === userId) return 'owner';
+
+    const [member] = await this.db
+      .select({ role: workspaceMembers.role })
+      .from(workspaceMembers)
+      .where(
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId),
+        ),
+      )
+      .limit(1);
+
+    return member?.role ?? null;
+  }
+
+  /**
    * Adds or updates a user's membership in the specified workspace.
    */
   async addMember(
     workspaceId: string,
     dto: AddMemberDto,
-    _currentUserId: string,
+    currentUserId?: string,
   ): Promise<WorkspaceMemberResponseDto> {
+    // 1. Authorize caller if user ID provided
+    if (currentUserId && workspaceId !== 'ws_personal') {
+      const callerRole = await this.getCallerRole(workspaceId, currentUserId);
+      if (callerRole !== 'owner') {
+        throw new ForbiddenException('Only workspace owners can add or manage members.');
+      }
+    }
+
     const trimmedEmail = dto.email.toLowerCase().trim();
 
-    // 1. Locate user by email
+    // 2. Locate user by email
     const [targetUser] = await this.db
       .select({ id: users.id, email: users.email })
       .from(users)
@@ -70,7 +107,7 @@ export class WorkspacesService {
 
     const role = dto.role ?? 'member';
 
-    // 2. Check if already a member
+    // 3. Check if already a member
     const [existing] = await this.db
       .select({ id: workspaceMembers.id })
       .from(workspaceMembers)
@@ -117,7 +154,7 @@ export class WorkspacesService {
   async removeMember(
     workspaceId: string,
     targetUserId: string,
-    _currentUserId: string,
+    currentUserId?: string,
   ): Promise<void> {
     // Prevent removing the workspace owner
     const [ws] = await this.db
@@ -128,6 +165,27 @@ export class WorkspacesService {
 
     if (ws && ws.ownerId === targetUserId) {
       throw new ForbiddenException('Cannot remove the workspace owner.');
+    }
+
+    // Authorize caller: non-owners can only remove themselves (leave workspace)
+    if (currentUserId && currentUserId !== targetUserId && workspaceId !== 'ws_personal') {
+      const isOwner = ws?.ownerId === currentUserId;
+      if (!isOwner) {
+        const [callerMembership] = await this.db
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, workspaceId),
+              eq(workspaceMembers.userId, currentUserId),
+            ),
+          )
+          .limit(1);
+
+        if (callerMembership?.role !== 'owner') {
+          throw new ForbiddenException('Only workspace owners can remove other members.');
+        }
+      }
     }
 
     await this.db

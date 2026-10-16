@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SyncService } from './sync.service.js';
 
@@ -25,6 +25,33 @@ describe('SyncService', () => {
   });
 
   describe('push', () => {
+    it('throws ForbiddenException when caller holds the viewer role', async () => {
+      const mockAuthService: any = {
+        getUserRole: vi.fn().mockResolvedValue('viewer'),
+      };
+      const secureSyncService = new SyncService(
+        mockDb,
+        mockRegistry as any,
+        mockAuthService,
+      );
+
+      await expect(
+        secureSyncService.push(
+          {
+            workspaceId: 'ws_team',
+            clientId: 'client_1',
+            mutations: [],
+          },
+          'user_viewer',
+        ),
+      ).rejects.toThrow(ForbiddenException);
+
+      expect(mockAuthService.getUserRole).toHaveBeenCalledWith(
+        'user_viewer',
+        'ws_team',
+      );
+    });
+
     it('throws NotFoundException when workspace does not exist', async () => {
       mockDb.select.mockReturnValue({
         from: vi.fn().mockReturnValue({

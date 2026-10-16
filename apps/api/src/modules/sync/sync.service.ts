@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  Optional,
+} from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, asc, eq, gt } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Database } from '../../database/database.module.js';
 import { syncLog, users, workspaces } from '../../database/schema.js';
+import { AuthService } from '../auth/auth.service.js';
 import type {
   PullResultDto,
   PullSyncDto,
@@ -19,12 +25,23 @@ export class SyncService {
   constructor(
     @InjectDrizzle() private readonly db: Database,
     private readonly handlerRegistry: SyncHandlerRegistry,
+    @Optional() private readonly authService?: AuthService,
   ) {}
 
   /**
    * Applies a batch of local mutations atomically and appends them to the sync log.
    */
-  async push(dto: PushSyncDto): Promise<PushResultDto> {
+  async push(dto: PushSyncDto, userId?: string): Promise<PushResultDto> {
+    // Authorize caller: reject pushes if caller is a viewer
+    if (userId && this.authService && dto.workspaceId !== 'ws_personal') {
+      const role = await this.authService.getUserRole(userId, dto.workspaceId);
+      if (role === 'viewer') {
+        throw new ForbiddenException(
+          'Forbidden: read-only members (viewers) cannot push mutations to this workspace',
+        );
+      }
+    }
+
     let [workspace] = await this.db
       .select()
       .from(workspaces)

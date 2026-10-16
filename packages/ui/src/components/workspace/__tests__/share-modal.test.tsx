@@ -9,6 +9,7 @@ describe("ShareModal", () => {
     getMembers: vi.fn(),
     addMember: vi.fn(),
     removeMember: vi.fn(),
+    joinWorkspace: vi.fn(),
   };
 
   beforeEach(() => {

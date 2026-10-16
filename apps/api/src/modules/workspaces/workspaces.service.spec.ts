@@ -53,18 +53,48 @@ describe('WorkspacesService', () => {
   });
 
   describe('addMember', () => {
+    it('throws ForbiddenException if caller is not the workspace owner', async () => {
+      // Caller role check returns non-owner
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'other_owner' }]);
+
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ role: 'viewer' }]);
+
+      await expect(
+        service.addMember('ws_1', { email: 'unknown@test.com', role: 'member' }, 'user_viewer'),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
     it('throws NotFoundException if invited user email does not exist', async () => {
-      mockDb.select.mockReturnValue(mockDb);
-      mockDb.from.mockReturnValue(mockDb);
-      mockDb.where.mockReturnValue(mockDb);
-      mockDb.limit.mockResolvedValue([]);
+      // 0. Caller check: caller is owner
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'user_1' }]);
+
+      // 1. User lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([]);
 
       await expect(
         service.addMember('ws_1', { email: 'unknown@test.com', role: 'member' }, 'user_1'),
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('adds member when target user exists', async () => {
+    it('adds member when target user exists and caller is owner', async () => {
+      // 0. Caller check: caller is owner
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'user_1' }]);
+
       // 1. User lookup
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
@@ -93,6 +123,12 @@ describe('WorkspacesService', () => {
     });
 
     it('updates role and notifies CollabGateway when user is already a member', async () => {
+      // 0. Caller check: caller is owner
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'user_1' }]);
+
       // 1. User lookup
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
@@ -137,11 +173,29 @@ describe('WorkspacesService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
+    it('throws ForbiddenException if non-owner caller tries to remove another member', async () => {
+      // 1. Workspace owner lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'real_owner' }]);
+
+      // 2. Caller role lookup
+      mockDb.select.mockReturnValueOnce(mockDb);
+      mockDb.from.mockReturnValueOnce(mockDb);
+      mockDb.where.mockReturnValueOnce(mockDb);
+      mockDb.limit.mockResolvedValueOnce([{ role: 'member' }]);
+
+      await expect(
+        service.removeMember('ws_1', 'user_target', 'user_member'),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
     it('deletes membership for non-owner members and notifies CollabGateway', async () => {
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'other_owner' }]);
+      mockDb.limit.mockResolvedValueOnce([{ ownerId: 'user_owner' }]);
 
       mockDb.delete.mockReturnValueOnce(mockDb);
       mockDb.where.mockResolvedValueOnce({});
