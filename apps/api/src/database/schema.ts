@@ -102,7 +102,7 @@ export const syncLog = pgTable('sync_log', {
   entityId: varchar('entity_id', { length: 64 }).notNull(),
   operation: varchar('operation', { length: 16 }).notNull(), // 'upsert' | 'delete'
   patch: jsonb('patch').notNull(), // The serialized entity delta or full representation
-  clientMutationId: varchar('client_mutation_id', { length: 64 }), // Deduplication / Idempotency key
+  clientMutationId: varchar('client_mutation_id', { length: 255 }), // Deduplication / Idempotency key
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   index('sync_log_workspace_version_idx').on(table.workspaceId, table.version),

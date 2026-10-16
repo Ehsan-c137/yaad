@@ -3,7 +3,7 @@ import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, asc, eq, gt } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import type { Database } from '../../database/database.module.js';
-import { syncLog, workspaces } from '../../database/schema.js';
+import { syncLog, users, workspaces } from '../../database/schema.js';
 import type {
   PullResultDto,
   PullSyncDto,
@@ -32,23 +32,30 @@ export class SyncService {
       .limit(1);
 
     if (!workspace && dto.workspaceId === 'ws_personal') {
-      await this.db
-        .insert(workspaces)
-        .values({
-          id: dto.workspaceId,
-          name: 'Personal Workspace',
-          ownerId: 'default',
-          currentVersion: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .onConflictDoNothing();
-
-      [workspace] = await this.db
-        .select()
-        .from(workspaces)
-        .where(eq(workspaces.id, dto.workspaceId))
+      const [firstUser] = await this.db
+        .select({ id: users.id })
+        .from(users)
         .limit(1);
+
+      if (firstUser) {
+        await this.db
+          .insert(workspaces)
+          .values({
+            id: dto.workspaceId,
+            name: 'Personal Workspace',
+            ownerId: firstUser.id,
+            currentVersion: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .onConflictDoNothing();
+
+        [workspace] = await this.db
+          .select()
+          .from(workspaces)
+          .where(eq(workspaces.id, dto.workspaceId))
+          .limit(1);
+      }
     }
 
     if (!workspace) {
@@ -116,23 +123,30 @@ export class SyncService {
       .limit(1);
 
     if (!workspace && dto.workspaceId === 'ws_personal') {
-      await this.db
-        .insert(workspaces)
-        .values({
-          id: dto.workspaceId,
-          name: 'Personal Workspace',
-          ownerId: 'default',
-          currentVersion: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .onConflictDoNothing();
-
-      [workspace] = await this.db
-        .select({ currentVersion: workspaces.currentVersion })
-        .from(workspaces)
-        .where(eq(workspaces.id, dto.workspaceId))
+      const [firstUser] = await this.db
+        .select({ id: users.id })
+        .from(users)
         .limit(1);
+
+      if (firstUser) {
+        await this.db
+          .insert(workspaces)
+          .values({
+            id: dto.workspaceId,
+            name: 'Personal Workspace',
+            ownerId: firstUser.id,
+            currentVersion: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .onConflictDoNothing();
+
+        [workspace] = await this.db
+          .select({ currentVersion: workspaces.currentVersion })
+          .from(workspaces)
+          .where(eq(workspaces.id, dto.workspaceId))
+          .limit(1);
+      }
     }
 
     if (!workspace) {

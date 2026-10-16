@@ -1,5 +1,5 @@
-import { useUserStore } from "@yaad/core/store/use-user-store";
-import { syncService, type SyncService } from "@yaad/core/services/sync-service";
+import { useUserStore } from "../../store/use-user-store";
+import { syncService, type SyncService } from "../../services/sync-service";
 import type { StorageAdapter } from "../storage/types";
 import { outboxQueue, type OutboxQueue } from "./outbox-queue";
 import type { SyncOutboxAdapter } from "./sync-outbox-storage-adapter";
@@ -89,10 +89,48 @@ export class SyncWorker implements ISyncWorker {
     this.setStatus("offline");
   };
 
+  private reconciledWorkspaces = new Set<string>();
+
+  private async reconcileLocalTreeIfNeeded(workspaceId: string): Promise<void> {
+    if (this.reconciledWorkspaces.has(workspaceId)) return;
+
+    try {
+      const adapter = this.getAdapter();
+      const localTree = await adapter.getWorkspaceTree(workspaceId);
+      if (localTree && localTree.length > 0) {
+        const size = await this.queue.size();
+        if (size === 0) {
+          // Local has pages that may not have been pushed to the server yet.
+          // Enqueue tree and document snapshots to ensure remote backup.
+          await adapter.saveWorkspaceTree(workspaceId, localTree);
+          for (const node of localTree) {
+            const doc = await adapter.getDocument(node.id);
+            if (doc) {
+              await adapter.saveDocument(doc);
+            }
+          }
+        }
+      }
+      this.reconciledWorkspaces.add(workspaceId);
+    } catch (e) {
+      console.warn("[SyncWorker] Error reconciling local tree:", e);
+    }
+  }
+
   /**
    * Performs an immediate two-step sync cycle: flush local outbox (Push), then fetch remote changes (Pull).
    */
-  async syncNow(workspaceId = "ws_personal"): Promise<void> {
+  async syncNow(workspaceId?: string): Promise<void> {
+    let targetWorkspaceId = workspaceId;
+    if (!targetWorkspaceId) {
+      try {
+        const { useWorkspaceStore } = await import("../../store/use-workspace-store");
+        targetWorkspaceId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+      } catch {
+        targetWorkspaceId = "ws_personal";
+      }
+    }
+
     const token = useUserStore.getState().token;
     if (!token) {
       // Unauthenticated / local guest mode: no server sync needed
@@ -113,8 +151,9 @@ export class SyncWorker implements ISyncWorker {
     this.setStatus("syncing");
 
     try {
-      await this.pushPendingMutations(workspaceId);
-      await this.pullRemoteChanges(workspaceId);
+      await this.reconcileLocalTreeIfNeeded(targetWorkspaceId);
+      await this.pushPendingMutations();
+      await this.pullRemoteChanges(targetWorkspaceId);
       this.setStatus("idle");
     } catch (err: any) {
       console.warn("[SyncWorker] Sync error:", err);
@@ -124,38 +163,47 @@ export class SyncWorker implements ISyncWorker {
     }
   }
 
-  private async pushPendingMutations(workspaceId: string): Promise<void> {
-    const pending = await this.queue.peek(50);
+  private async pushPendingMutations(): Promise<void> {
+    const pending = await this.queue.peek(100);
     if (!pending.length) return;
 
-    // Filter mutations for target workspace
-    const workspaceMutations = pending.filter(
-      (item) => item.workspaceId === workspaceId,
-    );
-    if (!workspaceMutations.length) return;
-
-    const clientId = this.queue.getClientId();
-    const batch = workspaceMutations.map((item) => ({
-      clientMutationId: item.id,
-      entityType: item.entityType,
-      entityId: item.entityId,
-      operation: item.operation,
-      payload: item.payload,
-      timestamp: item.timestamp,
-    }));
-
-    const result = await this.client.push(workspaceId, clientId, batch);
-    if (result.acceptedMutationIds?.length) {
-      await this.queue.dequeue(result.acceptedMutationIds);
+    // Group mutations by workspaceId to avoid head-of-line blocking
+    const byWorkspace = new Map<string, typeof pending>();
+    for (const item of pending) {
+      const list = byWorkspace.get(item.workspaceId) ?? [];
+      list.push(item);
+      byWorkspace.set(item.workspaceId, list);
     }
 
-    if (typeof result.lastServerVersion === "number") {
-      const currentKnown = await this.queue.getLastSyncedVersion(workspaceId);
-      if (result.lastServerVersion > currentKnown) {
-        await this.queue.setLastSyncedVersion(
-          workspaceId,
-          result.lastServerVersion,
-        );
+    const clientId = this.queue.getClientId();
+
+    for (const [wsId, mutations] of byWorkspace.entries()) {
+      const batch = mutations.map((item) => ({
+        clientMutationId: item.id,
+        entityType: item.entityType,
+        entityId: item.entityId,
+        operation: item.operation,
+        payload: item.payload,
+        timestamp: item.timestamp,
+      }));
+
+      try {
+        const result = await this.client.push(wsId, clientId, batch);
+        if (result.acceptedMutationIds?.length) {
+          await this.queue.dequeue(result.acceptedMutationIds);
+        }
+
+        if (typeof result.lastServerVersion === "number") {
+          const currentKnown = await this.queue.getLastSyncedVersion(wsId);
+          if (result.lastServerVersion > currentKnown) {
+            await this.queue.setLastSyncedVersion(
+              wsId,
+              result.lastServerVersion,
+            );
+          }
+        }
+      } catch (err) {
+        console.warn(`[SyncWorker] Push failed for workspace ${wsId}:`, err);
       }
     }
   }
@@ -207,6 +255,13 @@ export class SyncWorker implements ISyncWorker {
               detail: { workspaceId },
             }),
           );
+          if (typeof BroadcastChannel !== "undefined") {
+            try {
+              const channel = new BroadcastChannel("yaad-sync-channel");
+              channel.postMessage({ type: "tree-updated", workspaceId });
+              channel.close();
+            } catch {}
+          }
         }
       }
     };

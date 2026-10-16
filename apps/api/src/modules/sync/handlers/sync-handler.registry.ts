@@ -3,6 +3,8 @@ import type { SyncEntityType } from '../dto/sync.dto.js';
 import { DocumentMutationHandler } from './document-mutation.handler.js';
 import type { MutationHandler } from './mutation-handler.interface.js';
 import { PageMutationHandler } from './page-mutation.handler.js';
+import { TagMutationHandler } from './tag-mutation.handler.js';
+import { WorkspaceMutationHandler } from './workspace-mutation.handler.js';
 import { WorkspaceTreeMutationHandler } from './workspace-tree-mutation.handler.js';
 
 @Injectable()
@@ -13,10 +15,14 @@ export class SyncHandlerRegistry {
     pageHandler: PageMutationHandler,
     documentHandler: DocumentMutationHandler,
     treeHandler: WorkspaceTreeMutationHandler,
+    workspaceHandler: WorkspaceMutationHandler,
+    tagHandler: TagMutationHandler,
   ) {
     this.register(pageHandler);
     this.register(documentHandler);
     this.register(treeHandler);
+    this.register(workspaceHandler);
+    this.register(tagHandler);
   }
 
   register(handler: MutationHandler): void {

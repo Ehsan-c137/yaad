@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { workspaceTrees } from '../../../database/schema.js';
+import { pages, workspaceTrees } from '../../../database/schema.js';
 import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
 import type {
   DbTransaction,
@@ -32,5 +32,38 @@ export class WorkspaceTreeMutationHandler implements MutationHandler {
           updatedAt: new Date(),
         },
       });
+
+    if (Array.isArray(mutation.payload)) {
+      for (const node of mutation.payload) {
+        if (!node?.id) continue;
+        await tx
+          .insert(pages)
+          .values({
+            id: node.id,
+            workspaceId,
+            parentId: node.parentId ?? null,
+            title: node.title ?? 'Untitled',
+            icon: node.icon ?? null,
+            isBookmarked: node.isBookmarked ?? false,
+            isDeleted: node.isDeleted ?? false,
+            deletedAt: node.deletedAt ? new Date(node.deletedAt) : null,
+            version,
+            updatedAt: new Date(),
+          })
+          .onConflictDoUpdate({
+            target: pages.id,
+            set: {
+              parentId: node.parentId ?? null,
+              title: node.title ?? 'Untitled',
+              icon: node.icon ?? null,
+              isBookmarked: node.isBookmarked ?? false,
+              isDeleted: node.isDeleted ?? false,
+              deletedAt: node.deletedAt ? new Date(node.deletedAt) : null,
+              version,
+              updatedAt: new Date(),
+            },
+          });
+      }
+    }
   }
 }

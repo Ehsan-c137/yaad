@@ -46,7 +46,7 @@ export class OutboxQueue {
   ): Promise<OutboxItem> {
     const fullItem: OutboxItem = {
       ...item,
-      id: item.id || crypto.randomUUID(),
+      id: item.id || `${this.getClientId()}_${crypto.randomUUID()}`,
       timestamp: item.timestamp || Date.now(),
     };
 

@@ -4,6 +4,7 @@ import type { SyncEntityType, SyncOperation } from "./types";
 
 export interface SyncOutboxAdapterOptions {
   queue?: OutboxQueue;
+  onEnqueue?: (workspaceId: string) => void;
 }
 
 export interface SyncOutboxAdapter extends StorageAdapter {
@@ -49,6 +50,7 @@ export function createSyncOutboxAdapter(
       operation,
       payload,
     });
+    options.onEnqueue?.(workspaceId);
   };
 
   const overrides: Record<string | symbol, any> = {
@@ -78,12 +80,22 @@ export function createSyncOutboxAdapter(
 
     saveDocument: async (doc: any) => {
       await inner.saveDocument(doc);
-      await enqueue("ws_personal", "document", doc.id, "upsert", doc);
+      let wsId = "ws_personal";
+      try {
+        const { useWorkspaceStore } = await import("../../store/use-workspace-store");
+        wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+      } catch {}
+      await enqueue(wsId, "document", doc.id, "upsert", doc);
     },
 
     deleteDocument: async (id: string) => {
       await inner.deleteDocument(id);
-      await enqueue("ws_personal", "document", id, "delete", { id });
+      let wsId = "ws_personal";
+      try {
+        const { useWorkspaceStore } = await import("../../store/use-workspace-store");
+        wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+      } catch {}
+      await enqueue(wsId, "document", id, "delete", { id });
     },
   };
 

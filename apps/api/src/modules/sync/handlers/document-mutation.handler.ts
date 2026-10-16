@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { documents } from '../../../database/schema.js';
+import { documents, pages } from '../../../database/schema.js';
 import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
 import type {
   DbTransaction,
@@ -16,6 +16,18 @@ export class DocumentMutationHandler implements MutationHandler {
     version: number,
     workspaceId: string,
   ): Promise<void> {
+    // Ensure parent page exists to satisfy documents_id_pages_id_fk
+    await tx
+      .insert(pages)
+      .values({
+        id: mutation.entityId,
+        workspaceId,
+        title: mutation.payload?.title || 'Untitled',
+        icon: mutation.payload?.icon ?? '📄',
+        updatedAt: new Date(mutation.payload?.updatedAt || Date.now()),
+      })
+      .onConflictDoNothing();
+
     await tx
       .insert(documents)
       .values({

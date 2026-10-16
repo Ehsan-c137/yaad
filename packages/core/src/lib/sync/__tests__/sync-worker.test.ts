@@ -125,4 +125,42 @@ describe("SyncWorker (Background Sync Engine)", () => {
     );
     expect(await queue.getLastSyncedVersion("ws_1")).toBe(3);
   });
+
+  it("calls onTreeUpdated and dispatches window event when workspace_tree is pulled", async () => {
+    useUserStore.setState({ token: "valid-jwt-token" });
+    const onTreeUpdated = vi.fn();
+    const eventHandler = vi.fn();
+
+    window.addEventListener("yaad:sync:tree-updated", eventHandler);
+
+    const testWorker = new SyncWorker(() => mockAdapter, {
+      queue,
+      client: mockSyncClient,
+      onTreeUpdated,
+    });
+
+    mockSyncClient.pull.mockResolvedValueOnce({
+      changes: [
+        {
+          id: "log_1",
+          workspaceId: "ws_1",
+          version: 2,
+          entityType: "workspace_tree",
+          entityId: "ws_1",
+          operation: "upsert",
+          patch: [{ id: "p1", title: "Remote Page" }],
+          clientMutationId: "other_client_1",
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      latestVersion: 2,
+    });
+
+    await testWorker.syncNow("ws_1");
+
+    expect(onTreeUpdated).toHaveBeenCalledWith("ws_1");
+    expect(eventHandler).toHaveBeenCalled();
+
+    window.removeEventListener("yaad:sync:tree-updated", eventHandler);
+  });
 });

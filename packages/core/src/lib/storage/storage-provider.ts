@@ -4,17 +4,37 @@ import { getStorageAdapter } from "./storage-factory";
 import { createSyncOutboxAdapter, type SyncOutboxAdapter } from "../sync/sync-outbox-storage-adapter";
 import { SyncWorker } from "../sync/sync-worker";
 
-let rawAdapter: StorageAdapter = getStorageAdapter();
-let currentAdapter: SyncOutboxAdapter = createSyncOutboxAdapter(rawAdapter);
+let enqueueDebounceTimer: any = null;
+function handleEnqueue(workspaceId: string) {
+  if (enqueueDebounceTimer) clearTimeout(enqueueDebounceTimer);
+  enqueueDebounceTimer = setTimeout(() => {
+    void syncWorker.syncNow(workspaceId);
+  }, 500);
+}
 
-export const syncWorker = new SyncWorker(() => currentAdapter);
+let rawAdapter: StorageAdapter = getStorageAdapter();
+let currentAdapter: SyncOutboxAdapter = createSyncOutboxAdapter(rawAdapter, {
+  onEnqueue: handleEnqueue,
+});
+
+export const syncWorker = new SyncWorker(() => currentAdapter, {
+  onTreeUpdated: async (workspaceId) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("yaad:sync:tree-updated", {
+          detail: { workspaceId },
+        }),
+      );
+    }
+  },
+});
 
 export function setStorageAdapter(adapter: StorageAdapter): void {
   rawAdapter = adapter;
   currentAdapter =
     "withRemoteContext" in adapter
       ? (adapter as SyncOutboxAdapter)
-      : createSyncOutboxAdapter(adapter);
+      : createSyncOutboxAdapter(adapter, { onEnqueue: handleEnqueue });
 }
 
 export function getCurrentStorageAdapter(): StorageAdapter {
