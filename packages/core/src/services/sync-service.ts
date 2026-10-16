@@ -1,4 +1,5 @@
 import { useUserStore } from '../store/use-user-store';
+import { getDefaultApiBaseUrl } from '../constants/endpoints.js';
 
 export interface SyncMutation {
   clientMutationId: string;
@@ -31,7 +32,7 @@ export interface PullResult {
 export class SyncService {
   private readonly baseUrl: string;
 
-  constructor(baseUrl = 'http://localhost:3000') {
+  constructor(baseUrl = getDefaultApiBaseUrl()) {
     this.baseUrl = baseUrl;
   }
 

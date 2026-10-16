@@ -1,4 +1,5 @@
 import { useUserStore } from '../store/use-user-store';
+import { getDefaultApiBaseUrl } from '../constants/endpoints.js';
 import type { WorkspaceMember, WorkspaceRole } from '../types/workspace';
 
 export interface AddMemberPayload {
@@ -14,7 +15,7 @@ export interface IWorkspaceMemberService {
 }
 
 export function createWorkspaceMemberService(
-  baseUrl = 'http://localhost:3000',
+  baseUrl = getDefaultApiBaseUrl(),
   getToken: () => string | null = () => useUserStore.getState().token,
   fetchFn: typeof fetch = globalThis.fetch,
 ): IWorkspaceMemberService {

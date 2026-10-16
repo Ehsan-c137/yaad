@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: yaad_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+      POSTGRES_DB: ${POSTGRES_DB:-yaad}
+    volumes:
+      - yaad_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-yaad}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - yaad_net
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: yaad_api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgres:5432/${POSTGRES_DB:-yaad}
+      JWT_SECRET: ${JWT_SECRET:-yaad_default_jwt_secret_please_change_in_production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - yaad_net
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: yaad_web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:80"
+    depends_on:
+      - api
+    networks:
+      - yaad_net
+
+volumes:
+  yaad_pgdata:
+    name: yaad_pgdata
+
+networks:
+  yaad_net:
+    name: yaad_net

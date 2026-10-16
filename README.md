@@ -142,6 +142,18 @@ Built binaries will be placed in `apps/desktop/src-tauri/target/release/bundle/`
 
 ---
 
+## 🐳 Self-Hosting with Docker
+
+Yaad can be deployed anywhere in 1 command using Docker Compose:
+
+```bash
+cp .env.example .env
+docker compose up -d
+```
+Visit `http://localhost:8080`. For full details and reverse proxy configuration, check the [Self-Hosting Guide](file:///run/media/ehsan/Local%20Disk/CODE/CODE/yaad/docs/self-hosting.md).
+
+---
+
 ## License
 
 Private / Proprietary. All rights reserved.

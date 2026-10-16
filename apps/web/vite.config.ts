@@ -206,5 +206,16 @@ export default defineConfig(() => ({
     host: "0.0.0.0",
     port: 5173,
     strictPort: true,
+    allowedHosts: true,
+    proxy: {
+      "/auth": "http://localhost:3000",
+      "/workspaces": "http://localhost:3000",
+      "/sync": "http://localhost:3000",
+      "/api": "http://localhost:3000",
+      "/collab": {
+        target: "ws://localhost:3000",
+        ws: true,
+      },
+    },
   },
 }));
