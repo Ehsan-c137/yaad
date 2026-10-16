@@ -31,4 +31,5 @@ export interface AuthResponseDto {
   user: AuthUserResponse;
   accessToken: string;
   defaultWorkspaceId?: string;
+  workspaces?: Array<{ id: string; name: string; role?: string }>;
 }

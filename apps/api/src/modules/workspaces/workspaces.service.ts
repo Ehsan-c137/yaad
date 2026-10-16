@@ -219,4 +219,41 @@ export class WorkspacesService {
       workspaceName: ws.name,
     };
   }
+
+  /**
+   * Retrieves all workspaces the user owns or is a member of.
+   */
+  async getUserWorkspaces(
+    userId: string,
+  ): Promise<Array<{ id: string; name: string; role: string }>> {
+    const ownedWorkspaces = await this.db
+      .select({
+        id: workspaces.id,
+        name: workspaces.name,
+      })
+      .from(workspaces)
+      .where(and(eq(workspaces.ownerId, userId), eq(workspaces.isDeleted, false)));
+
+    const memberWorkspaces = await this.db
+      .select({
+        id: workspaces.id,
+        name: workspaces.name,
+        role: workspaceMembers.role,
+      })
+      .from(workspaceMembers)
+      .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
+      .where(and(eq(workspaceMembers.userId, userId), eq(workspaces.isDeleted, false)));
+
+    const wsMap = new Map<string, { id: string; name: string; role: string }>();
+    for (const w of ownedWorkspaces) {
+      wsMap.set(w.id, { id: w.id, name: w.name, role: 'owner' });
+    }
+    for (const m of memberWorkspaces) {
+      if (!wsMap.has(m.id)) {
+        wsMap.set(m.id, { id: m.id, name: m.name, role: m.role });
+      }
+    }
+
+    return Array.from(wsMap.values());
+  }
 }

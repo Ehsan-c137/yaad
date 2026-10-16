@@ -93,6 +93,13 @@ export class AuthService {
       },
       accessToken,
       defaultWorkspaceId,
+      workspaces: [
+        {
+          id: defaultWorkspaceId,
+          name: 'My Workspace',
+          role: 'owner',
+        },
+      ],
     };
   }
 
@@ -118,12 +125,45 @@ export class AuthService {
     const payload: JwtPayload = { sub: user.id, email: user.email };
     const accessToken = await this.jwtService.signAsync(payload);
 
+    const ownedWorkspaces = await this.db
+      .select({
+        id: workspaces.id,
+        name: workspaces.name,
+      })
+      .from(workspaces)
+      .where(and(eq(workspaces.ownerId, user.id), eq(workspaces.isDeleted, false)));
+
+    const memberWorkspaces = await this.db
+      .select({
+        id: workspaces.id,
+        name: workspaces.name,
+        role: workspaceMembers.role,
+      })
+      .from(workspaceMembers)
+      .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
+      .where(and(eq(workspaceMembers.userId, user.id), eq(workspaces.isDeleted, false)));
+
+    const wsMap = new Map<string, { id: string; name: string; role?: string }>();
+    for (const w of ownedWorkspaces) {
+      wsMap.set(w.id, { id: w.id, name: w.name, role: 'owner' });
+    }
+    for (const m of memberWorkspaces) {
+      if (!wsMap.has(m.id)) {
+        wsMap.set(m.id, { id: m.id, name: m.name, role: m.role });
+      }
+    }
+
+    const wsList = Array.from(wsMap.values());
+    const defaultWorkspaceId = wsList.length > 0 ? wsList[0].id : undefined;
+
     return {
       user: {
         id: user.id,
         email: user.email,
       },
       accessToken,
+      defaultWorkspaceId,
+      workspaces: wsList,
     };
   }
 

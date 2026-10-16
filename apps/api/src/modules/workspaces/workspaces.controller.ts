@@ -24,6 +24,14 @@ export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
 
   /**
+   * Retrieves all workspaces accessible by the current authenticated user.
+   */
+  @Get()
+  async getWorkspaces(@Req() req: any) {
+    return this.workspacesService.getUserWorkspaces(req.user?.id);
+  }
+
+  /**
    * Retrieves all members of the specified workspace.
    */
   @UseGuards(WorkspaceMemberGuard)

@@ -73,14 +73,19 @@ describe('AuthService', () => {
       const passwordHash = await bcrypt.hash('secret123', 10);
       mockDb.select.mockReturnValue({
         from: vi.fn().mockReturnValue({
-          where: vi.fn().mockReturnValue({
-            limit: vi.fn().mockResolvedValue([
-              {
-                id: 'user_1',
-                email: 'test@yaad.app',
-                passwordHash,
-              },
-            ]),
+          where: vi.fn().mockReturnValue(
+            Object.assign(Promise.resolve([]), {
+              limit: vi.fn().mockResolvedValue([
+                {
+                  id: 'user_1',
+                  email: 'test@yaad.app',
+                  passwordHash,
+                },
+              ]),
+            }),
+          ),
+          innerJoin: vi.fn().mockReturnValue({
+            where: vi.fn().mockResolvedValue([]),
           }),
         }),
       });
