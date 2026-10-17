@@ -43,6 +43,7 @@ export const createBlockDefaults = (
           },
         ],
       };
+
     default:
       return {
         title: [{ text: "" }],
@@ -165,6 +166,183 @@ export const collectSubTreeForDeletion = (
   }
 
   return { blocksToDelete, blobsToDelete };
+};
+
+export interface MoveBlockOptions {
+  position: "after" | "before";
+  sourceBlockId: string;
+  targetBlockId: string;
+}
+
+/**
+ * Reorders or relocates a block before/after a target block within a document.
+ */
+export const moveBlockInDoc = (
+  doc: DocumentJSON,
+  options: MoveBlockOptions,
+): DocumentJSON => {
+  const { position, sourceBlockId, targetBlockId } = options;
+
+  if (
+    !sourceBlockId ||
+    !targetBlockId ||
+    sourceBlockId === targetBlockId ||
+    sourceBlockId === "root" ||
+    !(sourceBlockId in doc.blocks)
+  ) {
+    return doc;
+  }
+
+  const sourceBlock = doc.blocks[sourceBlockId];
+
+  if (targetBlockId === "root") {
+    const rootBlock = doc.blocks.root;
+    const oldParentId = sourceBlock.parentId ?? "root";
+    const oldParent = doc.blocks[oldParentId];
+
+    if (!oldParent) return doc;
+
+    const rootChildrenWithoutSource = rootBlock.childrenIds.filter(
+      (id) => id !== sourceBlockId,
+    );
+
+    if (
+      oldParentId === "root" &&
+      rootBlock.childrenIds[rootBlock.childrenIds.length - 1] === sourceBlockId
+    ) {
+      return doc;
+    }
+
+    const newRootChildren = [...rootChildrenWithoutSource, sourceBlockId];
+    const now = Date.now();
+
+    return {
+      ...doc,
+      blocks: {
+        ...doc.blocks,
+        [oldParentId]: {
+          ...oldParent,
+          childrenIds:
+            oldParentId === "root"
+              ? newRootChildren
+              : oldParent.childrenIds.filter((id) => id !== sourceBlockId),
+          updatedAt: now,
+        },
+        ...(oldParentId !== "root"
+          ? {
+              root: {
+                ...rootBlock,
+                childrenIds: newRootChildren,
+                updatedAt: now,
+              },
+            }
+          : {}),
+        [sourceBlockId]: {
+          ...sourceBlock,
+          parentId: "root",
+          updatedAt: now,
+        },
+      },
+      updatedAt: now,
+    };
+  }
+
+  if (!(targetBlockId in doc.blocks)) {
+    return doc;
+  }
+
+  const targetBlock = doc.blocks[targetBlockId];
+
+  const { blocksToDelete: descendants } = collectSubTreeForDeletion(
+    sourceBlockId,
+    doc.blocks,
+  );
+
+  if (descendants.has(targetBlockId)) {
+    return doc;
+  }
+
+  const oldParentId = sourceBlock.parentId ?? "root";
+  const targetParentId = targetBlock.parentId ?? "root";
+  const oldParent = doc.blocks[oldParentId];
+  const targetParent = doc.blocks[targetParentId];
+
+  if (!oldParent || !targetParent) return doc;
+
+  const now = Date.now();
+
+  if (oldParentId === targetParentId) {
+    const currentChildren = [...oldParent.childrenIds];
+    const sourceIdx = currentChildren.indexOf(sourceBlockId);
+    const targetIdx = currentChildren.indexOf(targetBlockId);
+
+    if (sourceIdx === -1 || targetIdx === -1) return doc;
+
+    if (position === "before" && sourceIdx === targetIdx - 1) return doc;
+    if (position === "after" && sourceIdx === targetIdx + 1) return doc;
+
+    const withoutSource = currentChildren.filter((id) => id !== sourceBlockId);
+    const newTargetIdx = withoutSource.indexOf(targetBlockId);
+    const insertIdx = position === "before" ? newTargetIdx : newTargetIdx + 1;
+
+    withoutSource.splice(insertIdx, 0, sourceBlockId);
+
+    return {
+      ...doc,
+      blocks: {
+        ...doc.blocks,
+        [oldParentId]: {
+          ...oldParent,
+          childrenIds: withoutSource,
+          updatedAt: now,
+        },
+        [sourceBlockId]: {
+          ...sourceBlock,
+          updatedAt: now,
+        },
+      },
+      updatedAt: now,
+    };
+  }
+
+  const oldParentChildren = oldParent.childrenIds.filter(
+    (id) => id !== sourceBlockId,
+  );
+  const targetParentChildren = targetParent.childrenIds.filter(
+    (id) => id !== sourceBlockId,
+  );
+  const targetIdx = targetParentChildren.indexOf(targetBlockId);
+  const insertIdx =
+    targetIdx === -1
+      ? targetParentChildren.length
+      : position === "before"
+        ? targetIdx
+        : targetIdx + 1;
+
+  targetParentChildren.splice(insertIdx, 0, sourceBlockId);
+
+  return {
+    ...doc,
+    blocks: {
+      ...doc.blocks,
+      [oldParentId]: {
+        ...oldParent,
+        childrenIds: oldParentChildren,
+        updatedAt: now,
+      },
+      [targetParentId]: {
+        ...targetParent,
+        childrenIds: targetParentChildren,
+        updatedAt: now,
+      },
+      [sourceBlockId]: {
+        ...sourceBlock,
+        parentId: targetParentId,
+        updatedAt: now,
+      },
+    },
+    updatedAt: now,
+  };
 };
 
 /**

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type {
   DocumentBlock,
   DocumentBlockType,
@@ -17,6 +16,7 @@ import {
   collectSubTreeForDeletion,
   createBlockDefaults,
   createNewBlankDocument,
+  moveBlockInDoc,
   saveNow,
   updateAndDebounceSave,
 } from "./helpers";
@@ -280,6 +280,16 @@ export const createBlockSlice: StateCreator<
 
       return { ...doc, blocks: updatedBlocks, updatedAt: Date.now() };
     });
+  },
+
+  moveBlock: async (
+    sourceBlockId: string,
+    targetBlockId: string,
+    position: "after" | "before",
+  ) => {
+    await updateAndDebounceSave(get, set, (doc) =>
+      moveBlockInDoc(doc, { position, sourceBlockId, targetBlockId }),
+    );
   },
 });
 

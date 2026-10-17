@@ -341,4 +341,175 @@ describe("document block-slice (Unit Test)", () => {
 
     expect(doc.blocks.b1.tags).toEqual([tag2]);
   });
+
+  describe("moveBlock", () => {
+    it("reorders blocks 'before' another block", async () => {
+      const store = getDocumentStore(pageId);
+      const doc = makeDoc();
+      doc.blocks.b2 = {
+        id: "b2",
+        type: "paragraph",
+        parentId: "root",
+        childrenIds: [],
+        properties: { title: [{ text: "Second" }] },
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.b3 = {
+        id: "b3",
+        type: "paragraph",
+        parentId: "root",
+        childrenIds: [],
+        properties: { title: [{ text: "Third" }] },
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.root.childrenIds = ["b1", "b2", "b3"];
+      store.setState({ currentDocument: doc });
+
+      // Move b3 before b1
+      await store.getState().moveBlock("b3", "b1", "before");
+
+      const updated = store.getState().currentDocument!;
+      expect(updated.blocks.root.childrenIds).toEqual(["b3", "b1", "b2"]);
+    });
+
+    it("reorders blocks 'after' another block", async () => {
+      const store = getDocumentStore(pageId);
+      const doc = makeDoc();
+      doc.blocks.b2 = {
+        id: "b2",
+        type: "paragraph",
+        parentId: "root",
+        childrenIds: [],
+        properties: { title: [{ text: "Second" }] },
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.b3 = {
+        id: "b3",
+        type: "paragraph",
+        parentId: "root",
+        childrenIds: [],
+        properties: { title: [{ text: "Third" }] },
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.root.childrenIds = ["b1", "b2", "b3"];
+      store.setState({ currentDocument: doc });
+
+      // Move b1 after b2
+      await store.getState().moveBlock("b1", "b2", "after");
+
+      const updated = store.getState().currentDocument!;
+      expect(updated.blocks.root.childrenIds).toEqual(["b2", "b1", "b3"]);
+    });
+
+    it("moves block to the end of root when targeting root with 'after'", async () => {
+      const store = getDocumentStore(pageId);
+      const doc = makeDoc();
+      doc.blocks.b2 = {
+        id: "b2",
+        type: "paragraph",
+        parentId: "root",
+        childrenIds: [],
+        properties: { title: [{ text: "Second" }] },
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.root.childrenIds = ["b1", "b2"];
+      store.setState({ currentDocument: doc });
+
+      // Move b1 to end of root
+      await store.getState().moveBlock("b1", "root", "after");
+
+      const updated = store.getState().currentDocument!;
+      expect(updated.blocks.root.childrenIds).toEqual(["b2", "b1"]);
+    });
+
+    it("moves a block between different parent blocks", async () => {
+      const store = getDocumentStore(pageId);
+      const doc = makeDoc();
+      doc.blocks.parentA = {
+        id: "parentA",
+        type: "callout",
+        parentId: "root",
+        childrenIds: ["b1"],
+        properties: {},
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.parentB = {
+        id: "parentB",
+        type: "callout",
+        parentId: "root",
+        childrenIds: ["b2"],
+        properties: {},
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.b1.parentId = "parentA";
+      doc.blocks.b2 = {
+        id: "b2",
+        type: "paragraph",
+        parentId: "parentB",
+        childrenIds: [],
+        properties: {},
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.root.childrenIds = ["parentA", "parentB"];
+      store.setState({ currentDocument: doc });
+
+      // Move b1 into parentB before b2
+      await store.getState().moveBlock("b1", "b2", "before");
+
+      const updated = store.getState().currentDocument!;
+      expect(updated.blocks.parentA.childrenIds).toEqual([]);
+      expect(updated.blocks.parentB.childrenIds).toEqual(["b1", "b2"]);
+      expect(updated.blocks.b1.parentId).toBe("parentB");
+    });
+
+    it("prevents circular hierarchy (moving a parent inside its descendant is a no-op)", async () => {
+      const store = getDocumentStore(pageId);
+      const doc = makeDoc();
+      doc.blocks.p1 = {
+        id: "p1",
+        type: "callout",
+        parentId: "root",
+        childrenIds: ["c1"],
+        properties: {},
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.c1 = {
+        id: "c1",
+        type: "paragraph",
+        parentId: "p1",
+        childrenIds: [],
+        properties: {},
+        createdAt: 0,
+        updatedAt: 0,
+      };
+      doc.blocks.root.childrenIds = ["p1"];
+      store.setState({ currentDocument: doc });
+
+      await store.getState().moveBlock("p1", "c1", "after");
+
+      const updated = store.getState().currentDocument!;
+      expect(updated.blocks.root.childrenIds).toEqual(["p1"]);
+      expect(updated.blocks.p1.childrenIds).toEqual(["c1"]);
+    });
+
+    it("ignores moving a block to itself", async () => {
+      const store = getDocumentStore(pageId);
+      const doc = makeDoc();
+      store.setState({ currentDocument: doc });
+
+      await store.getState().moveBlock("b1", "b1", "before");
+
+      const updated = store.getState().currentDocument!;
+      expect(updated.blocks.root.childrenIds).toEqual(["b1"]);
+    });
+  });
 });

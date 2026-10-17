@@ -1,5 +1,6 @@
-/* eslint-disable complexity, @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import type { TagIndexRecord } from "@yaad/core/lib/storage/types";
+import type { MoveBlockOptions } from "@yaad/core/store/document/helpers";
 import type {
   DocumentBlock,
   DocumentJSON,
@@ -12,6 +13,7 @@ import {
   applyBlockProperties,
   applyBlockTags,
   createNewBlankDocument,
+  moveBlockInDoc,
 } from "@yaad/core/store/document/helpers";
 import {
   getExistingDocumentStore,
@@ -146,6 +148,33 @@ export class DocumentService {
     if (!storedDoc) return;
 
     const updatedDoc = applyBlockTags(storedDoc, blockId, tags);
+
+    if (updatedDoc === storedDoc) return;
+
+    await this.saveDocument(updatedDoc);
+  }
+
+  async moveBlock(pageId: string, options: MoveBlockOptions): Promise<void> {
+    const { position, sourceBlockId, targetBlockId } = options;
+
+    if (!pageId || !sourceBlockId || !targetBlockId) return;
+
+    const docStore = getExistingDocumentStore(pageId);
+    const currentDoc = docStore?.getState().currentDocument;
+
+    if (docStore && currentDoc?.id === pageId) {
+      await docStore
+        .getState()
+        .moveBlock(sourceBlockId, targetBlockId, position);
+
+      return;
+    }
+
+    const storedDoc = await storage.getDocument(pageId);
+
+    if (!storedDoc) return;
+
+    const updatedDoc = moveBlockInDoc(storedDoc, options);
 
     if (updatedDoc === storedDoc) return;
 

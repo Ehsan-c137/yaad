@@ -46,6 +46,11 @@ export interface DocumentBlockSlice {
     newType: DocumentBlockType,
   ) => Promise<void>;
   duplicateBlock: (blockId: string) => Promise<void>;
+  moveBlock: (
+    sourceBlockId: string,
+    targetBlockId: string,
+    position: "after" | "before",
+  ) => Promise<void>;
 }
 
 export interface DocumentMetaSlice {
