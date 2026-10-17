@@ -64,7 +64,7 @@ describe("JoinWorkspacePrompt", () => {
       <JoinWorkspacePrompt workspaceId="ws_collab_999" onJoined={onJoined} />,
     );
 
-    const joinButton = screen.getByRole("button", { name: /Join Workspace/i });
+    const joinButton = screen.getByRole("button", { name: /join workspace/i });
     fireEvent.click(joinButton);
 
     await waitFor(() => {
@@ -80,6 +80,8 @@ describe("JoinWorkspacePrompt", () => {
     });
 
     // Check workspace was registered in store
-    expect(useWorkspaceStore.getState().workspaces["ws_collab_999"]).toBeDefined();
+    expect(
+      useWorkspaceStore.getState().workspaces["ws_collab_999"],
+    ).toBeDefined();
   });
 });

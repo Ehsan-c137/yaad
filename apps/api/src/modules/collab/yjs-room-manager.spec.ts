@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as Y from 'yjs';
+
 import { YjsRoomManager } from './yjs-room-manager.js';
 
 describe('YjsRoomManager', () => {
@@ -31,7 +32,11 @@ describe('YjsRoomManager', () => {
       title: 'Initial Title',
       rootBlockIds: ['blk_1', 'blk_2'],
       blocks: {
-        blk_1: { id: 'blk_1', type: 'paragraph', properties: { text: 'Hello' } },
+        blk_1: {
+          id: 'blk_1',
+          type: 'paragraph',
+          properties: { text: 'Hello' },
+        },
       },
     });
 
@@ -53,7 +58,9 @@ describe('YjsRoomManager', () => {
     await roomManager.applyUpdate('ws_1', 'doc_1', update);
 
     const room = await roomManager.getOrCreateRoom('ws_1', 'doc_1');
-    expect(room.ydoc.getText('test_text').toString()).toBe('Collaborative Edit');
+    expect(room.ydoc.getText('test_text').toString()).toBe(
+      'Collaborative Edit',
+    );
     expect(mockPersistence.appendUpdate).toHaveBeenCalledWith(
       'ws_1',
       'doc_1',
@@ -137,4 +144,3 @@ describe('YjsRoomManager', () => {
     );
   });
 });
-

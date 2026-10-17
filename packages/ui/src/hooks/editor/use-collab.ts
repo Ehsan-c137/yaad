@@ -1,21 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
-import { CollabClient } from '@yaad/core/lib/crdt/collab-client';
-import { getDefaultWsUrl } from '@yaad/core/constants/endpoints';
+import { getDefaultWsUrl } from "@yaad/core/constants/endpoints";
+import { CollabClient } from "@yaad/core/lib/crdt/collab-client";
 import {
-  Y,
   documentJsonToYDoc,
+  Y,
   yDocToDocumentJson,
-} from '@yaad/core/lib/crdt/yjs-converter';
-import { getDocumentStore } from '@yaad/core/store/document/use-document-store';
+} from "@yaad/core/lib/crdt/yjs-converter";
+import { workspaceService } from "@yaad/core/services/workspace-service";
+import { getDocumentStore } from "@yaad/core/store/document/use-document-store";
 import {
   onWorkspaceTreePersisted,
   useSidebarStore,
-} from '@yaad/core/store/use-sidebar-store';
-import { workspaceService } from '@yaad/core/services/workspace-service';
-import { useUserStore } from '@yaad/core/store/use-user-store';
-import { emitLiveWorkspaceRoleChange } from '../workspace/use-workspace-permissions';
+} from "@yaad/core/store/use-sidebar-store";
+import { useUserStore } from "@yaad/core/store/use-user-store";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+
+import { emitLiveWorkspaceRoleChange } from "../workspace/use-workspace-permissions";
 
 export interface CollabCursor {
   offset: number;
@@ -38,16 +39,18 @@ export function useCollab(
   pageId: string | undefined,
 ) {
   const { t } = useTranslation();
-  const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected');
+  const [status, setStatus] = useState<
+    "connected" | "connecting" | "disconnected"
+  >("disconnected");
   const [peers, setPeers] = useState<Map<string, CollabPeer>>(new Map());
 
   const clientRef = useRef<CollabClient | null>(null);
   const ydocRef = useRef<Y.Doc | null>(null);
 
   const token = useUserStore((s) => s.token);
-  const userName = useUserStore((s) => s.userName) ?? 'Anonymous';
-  const userId = useUserStore((s) => s.userId) ?? 'anon';
-  const userColor = useUserStore((s) => s.userColor) ?? '#3B82F6';
+  const userName = useUserStore((s) => s.userName) ?? "Anonymous";
+  const userId = useUserStore((s) => s.userId) ?? "anon";
+  const userColor = useUserStore((s) => s.userColor) ?? "#3B82F6";
 
   useEffect(() => {
     if (!workspaceId || !pageId) return;
@@ -68,15 +71,17 @@ export function useCollab(
 
     // 2. Listen to remote Y.Doc updates and update local Zustand store
     const handleYDocUpdate = (_update: Uint8Array, origin: any) => {
-      if (origin === 'server') {
+      if (origin === "server") {
         const updatedJson = yDocToDocumentJson(ydoc);
+
         if (updatedJson && Object.keys(updatedJson.blocks).length > 0) {
           isApplyingRemote = true;
+
           try {
             const finalDoc = {
               ...updatedJson,
               id: pageId,
-              rootBlockId: updatedJson.rootBlockId || 'root',
+              rootBlockId: updatedJson.rootBlockId || "root",
             };
             lastDocJson = finalDoc;
             store.setState({
@@ -89,17 +94,18 @@ export function useCollab(
         }
       }
     };
-    ydoc.on('update', handleYDocUpdate);
+
+    ydoc.on("update", handleYDocUpdate);
 
     // 3. Listen to local Zustand store edits (user typing) and sync to Y.Doc
     const unsubscribeStore = store.subscribe((state) => {
       if (isApplyingRemote) return;
-      if (
-        state.currentDocument &&
-        state.currentDocument !== lastDocJson
-      ) {
+      if (state.currentDocument && state.currentDocument !== lastDocJson) {
         lastDocJson = state.currentDocument;
-        console.log('[Collab] Local store changed, syncing to Yjs:', state.currentDocument);
+        console.log(
+          "[Collab] Local store changed, syncing to Yjs:",
+          state.currentDocument,
+        );
         documentJsonToYDoc(state.currentDocument, ydoc);
       }
     });
@@ -113,7 +119,8 @@ export function useCollab(
       token: token ?? undefined,
       onStatusChange: (newStatus) => {
         setStatus(newStatus);
-        if (newStatus === 'connected') {
+
+        if (newStatus === "connected") {
           client.sendAwareness({
             user: { id: userId, name: userName, color: userColor },
           });
@@ -126,8 +133,8 @@ export function useCollab(
           const next = new Map(prev);
           next.set(data.user.id, {
             id: data.user.id,
-            name: data.user.name ?? 'Collaborator',
-            color: data.user.color ?? '#8B5CF6',
+            name: data.user.name ?? "Collaborator",
+            color: data.user.color ?? "#8B5CF6",
             activeBlockId: data.activeBlockId,
             cursor: data.cursor,
           });
@@ -145,15 +152,16 @@ export function useCollab(
       onMemberRoleUpdated: (newRole) => {
         if (workspaceId) {
           emitLiveWorkspaceRoleChange(workspaceId, newRole as any);
-          const roleLabel = newRole === 'viewer' ? t('viewer') : t('editor');
-          toast.warning(t('roleChangedNotice', { role: roleLabel }));
+          const roleLabel = newRole === "viewer" ? t("viewer") : t("editor");
+          toast.warning(t("roleChangedNotice", { role: roleLabel }));
         }
       },
       onMemberKicked: () => {
-        toast.error(t('memberKickedNotice'));
+        toast.error(t("memberKickedNotice"));
         client.disconnect();
-        if (typeof window !== 'undefined') {
-          window.location.replace('/workspace/ws_personal');
+
+        if (typeof window !== "undefined") {
+          window.location.replace("/workspace/ws_personal");
         }
       },
       onTreeUpdate: (tree: any) => {
@@ -164,6 +172,7 @@ export function useCollab(
             } catch (e) {
               console.error("Failed to save remote tree:", e);
             }
+
             await useSidebarStore.getState().loadWorkspacePages(workspaceId);
           })();
         }
@@ -188,7 +197,7 @@ export function useCollab(
     return () => {
       unsubTree();
       unsubscribeStore();
-      ydoc.off('update', handleYDocUpdate);
+      ydoc.off("update", handleYDocUpdate);
       client.disconnect();
       clientRef.current = null;
       ydocRef.current = null;

@@ -1,6 +1,7 @@
-import { useUserStore } from '../store/use-user-store';
-import { getDefaultApiBaseUrl } from '../constants/endpoints.js';
-import type { WorkspaceMember, WorkspaceRole } from '../types/workspace';
+import type { WorkspaceMember, WorkspaceRole } from "../types/workspace";
+
+import { getDefaultApiBaseUrl } from "../constants/endpoints.js";
+import { useUserStore } from "../store/use-user-store";
 
 export interface AddMemberPayload {
   email: string;
@@ -8,10 +9,15 @@ export interface AddMemberPayload {
 }
 
 export interface IWorkspaceMemberService {
-  getMembers(workspaceId: string): Promise<WorkspaceMember[]>;
-  addMember(workspaceId: string, payload: AddMemberPayload): Promise<WorkspaceMember>;
-  removeMember(workspaceId: string, memberUserId: string): Promise<void>;
-  joinWorkspace(workspaceId: string): Promise<WorkspaceMember & { workspaceName?: string }>;
+  getMembers: (workspaceId: string) => Promise<WorkspaceMember[]>;
+  addMember: (
+    workspaceId: string,
+    payload: AddMemberPayload,
+  ) => Promise<WorkspaceMember>;
+  removeMember: (workspaceId: string, memberUserId: string) => Promise<void>;
+  joinWorkspace: (
+    workspaceId: string,
+  ) => Promise<WorkspaceMember & { workspaceName?: string }>;
 }
 
 export function createWorkspaceMemberService(
@@ -22,59 +28,85 @@ export function createWorkspaceMemberService(
   const getHeaders = () => {
     const token = getToken();
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
+
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
+
     return headers;
   };
 
   return {
     async getMembers(workspaceId: string): Promise<WorkspaceMember[]> {
-      const res = await fetchFn(`${baseUrl}/workspaces/${workspaceId}/members`, {
-        headers: getHeaders(),
-      });
+      const res = await fetchFn(
+        `${baseUrl}/workspaces/${workspaceId}/members`,
+        {
+          headers: getHeaders(),
+        },
+      );
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(err.message || 'Failed to fetch members');
+        throw new Error(err.message || "Failed to fetch members");
       }
+
       return res.json();
     },
 
-    async addMember(workspaceId: string, payload: AddMemberPayload): Promise<WorkspaceMember> {
-      const res = await fetchFn(`${baseUrl}/workspaces/${workspaceId}/members`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(payload),
-      });
+    async addMember(
+      workspaceId: string,
+      payload: AddMemberPayload,
+    ): Promise<WorkspaceMember> {
+      const res = await fetchFn(
+        `${baseUrl}/workspaces/${workspaceId}/members`,
+        {
+          method: "POST",
+          headers: getHeaders(),
+          body: JSON.stringify(payload),
+        },
+      );
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(err.message || 'Failed to add member');
+        throw new Error(err.message || "Failed to add member");
       }
+
       return res.json();
     },
 
-    async removeMember(workspaceId: string, memberUserId: string): Promise<void> {
-      const res = await fetchFn(`${baseUrl}/workspaces/${workspaceId}/members/${memberUserId}`, {
-        method: 'DELETE',
-        headers: getHeaders(),
-      });
+    async removeMember(
+      workspaceId: string,
+      memberUserId: string,
+    ): Promise<void> {
+      const res = await fetchFn(
+        `${baseUrl}/workspaces/${workspaceId}/members/${memberUserId}`,
+        {
+          method: "DELETE",
+          headers: getHeaders(),
+        },
+      );
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(err.message || 'Failed to remove member');
+        throw new Error(err.message || "Failed to remove member");
       }
     },
 
-    async joinWorkspace(workspaceId: string): Promise<WorkspaceMember & { workspaceName?: string }> {
+    async joinWorkspace(
+      workspaceId: string,
+    ): Promise<WorkspaceMember & { workspaceName?: string }> {
       const res = await fetchFn(`${baseUrl}/workspaces/${workspaceId}/join`, {
-        method: 'POST',
+        method: "POST",
         headers: getHeaders(),
       });
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(err.message || 'Failed to join workspace');
+        throw new Error(err.message || "Failed to join workspace");
       }
+
       return res.json();
     },
   };

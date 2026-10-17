@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { AuthService } from '../auth.service.js';
 
 @Injectable()
@@ -19,8 +20,11 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const [scheme, token] = authHeader.split(' ');
+
     if (scheme?.toLowerCase() !== 'bearer' || !token) {
-      throw new UnauthorizedException('Invalid Authorization header format. Expected Bearer <token>');
+      throw new UnauthorizedException(
+        'Invalid Authorization header format. Expected Bearer <token>',
+      );
     }
 
     const payload = await this.authService.verifyToken(token);

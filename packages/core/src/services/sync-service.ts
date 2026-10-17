@@ -1,11 +1,11 @@
-import { useUserStore } from '../store/use-user-store';
-import { getDefaultApiBaseUrl } from '../constants/endpoints.js';
+import { getDefaultApiBaseUrl } from "../constants/endpoints.js";
+import { useUserStore } from "../store/use-user-store";
 
 export interface SyncMutation {
   clientMutationId: string;
-  entityType: 'workspace' | 'workspace_tree' | 'page' | 'document' | 'tag';
+  entityType: "document" | "page" | "tag" | "workspace_tree" | "workspace";
   entityId: string;
-  operation: 'upsert' | 'delete';
+  operation: "delete" | "upsert";
   payload: any;
 }
 
@@ -15,7 +15,7 @@ export interface PushResult {
 }
 
 export interface PullResult {
-  changes: Array<{
+  changes: {
     id: string;
     version: number;
     entityType: string;
@@ -24,7 +24,7 @@ export interface PullResult {
     patch: any;
     clientMutationId: string | null;
     createdAt: string;
-  }>;
+  }[];
   latestVersion: number;
   hasMore: boolean;
 }
@@ -37,15 +37,19 @@ export class SyncService {
   }
 
   private getAuthHeader(): Record<string, string> {
-    const token = useUserStore.getState().token;
+    const { token } = useUserStore.getState();
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
-  async push(workspaceId: string, clientId: string, mutations: SyncMutation[]): Promise<PushResult> {
+  async push(
+    workspaceId: string,
+    clientId: string,
+    mutations: SyncMutation[],
+  ): Promise<PushResult> {
     const res = await fetch(`${this.baseUrl}/sync/push`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...this.getAuthHeader(),
       },
       body: JSON.stringify({
@@ -57,17 +61,21 @@ export class SyncService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error(err.message || 'Push sync failed');
+      throw new Error(err.message || "Push sync failed");
     }
 
     return res.json();
   }
 
-  async pull(workspaceId: string, sinceVersion = 0, limit = 500): Promise<PullResult> {
+  async pull(
+    workspaceId: string,
+    sinceVersion = 0,
+    limit = 500,
+  ): Promise<PullResult> {
     const res = await fetch(`${this.baseUrl}/sync/pull`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...this.getAuthHeader(),
       },
       body: JSON.stringify({
@@ -79,7 +87,7 @@ export class SyncService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error(err.message || 'Pull sync failed');
+      throw new Error(err.message || "Pull sync failed");
     }
 
     return res.json();

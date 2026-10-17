@@ -12,11 +12,12 @@ import { useTranslation } from "react-i18next";
 
 import { AuthModal } from "@/components/auth/auth-modal";
 
+import type { ShareModalProps } from "./types";
+
 import { GuestNotice } from "./guest-notice";
 import { InviteMemberForm } from "./invite-member-form";
 import { MemberList } from "./member-list";
 import { ShareLinkBar } from "./share-link-bar";
-import type { ShareModalProps } from "./types";
 import { useWorkspaceMembers } from "./use-workspace-members";
 
 export function ShareModal({
@@ -89,6 +90,7 @@ export function ShareModal({
                   canManageRoles={canManageRoles}
                   onRemove={async (userId) => {
                     const target = members.find((m) => m.userId === userId);
+
                     if (target) {
                       await removeMember(userId, target.email);
                     }
@@ -112,4 +114,4 @@ export function ShareModal({
   );
 }
 
-export * from "./types";
+export type * from "./types";

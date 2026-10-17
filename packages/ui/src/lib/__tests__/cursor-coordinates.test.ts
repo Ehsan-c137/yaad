@@ -1,8 +1,9 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+
 import {
   getCaretCoordinates,
-  getSelectionRectangles,
   getCurrentSelectionOffsets,
+  getSelectionRectangles,
 } from "../cursor-coordinates";
 
 describe("cursor-coordinates (Unit Tests)", () => {

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { Check, Feather, GitGraph, Link2, Search } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

@@ -4,22 +4,16 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectDrizzle } from '@nestjs/drizzle';
+import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { and, eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
+
 import type { Database } from '../../database/database.module.js';
-import {
-  users,
-  workspaceMembers,
-  workspaces,
-} from '../../database/schema.js';
-import type {
-  AuthResponseDto,
-  LoginDto,
-  RegisterDto,
-} from './dto/auth.dto.js';
+import type { AuthResponseDto, LoginDto, RegisterDto } from './dto/auth.dto.js';
+
+import { users, workspaceMembers, workspaces } from '../../database/schema.js';
 
 export interface JwtPayload {
   sub: string;
@@ -81,7 +75,10 @@ export class AuthService {
       });
     });
 
-    const payload: JwtPayload = { sub: userId, email: dto.email.toLowerCase().trim() };
+    const payload: JwtPayload = {
+      sub: userId,
+      email: dto.email.toLowerCase().trim(),
+    };
     const accessToken = await this.jwtService.signAsync(payload);
 
     this.logger.log(`Registered user ${userId} (${dto.email})`);
@@ -118,6 +115,7 @@ export class AuthService {
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.passwordHash);
+
     if (!isMatch) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -131,7 +129,9 @@ export class AuthService {
         name: workspaces.name,
       })
       .from(workspaces)
-      .where(and(eq(workspaces.ownerId, user.id), eq(workspaces.isDeleted, false)));
+      .where(
+        and(eq(workspaces.ownerId, user.id), eq(workspaces.isDeleted, false)),
+      );
 
     const memberWorkspaces = await this.db
       .select({
@@ -141,12 +141,22 @@ export class AuthService {
       })
       .from(workspaceMembers)
       .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
-      .where(and(eq(workspaceMembers.userId, user.id), eq(workspaces.isDeleted, false)));
+      .where(
+        and(
+          eq(workspaceMembers.userId, user.id),
+          eq(workspaces.isDeleted, false),
+        ),
+      );
 
-    const wsMap = new Map<string, { id: string; name: string; role?: string }>();
+    const wsMap = new Map<
+      string,
+      { id: string; name: string; role?: string }
+    >();
+
     for (const w of ownedWorkspaces) {
       wsMap.set(w.id, { id: w.id, name: w.name, role: 'owner' });
     }
+
     for (const m of memberWorkspaces) {
       if (!wsMap.has(m.id)) {
         wsMap.set(m.id, { id: m.id, name: m.name, role: m.role });
@@ -174,7 +184,9 @@ export class AuthService {
     try {
       return await this.jwtService.verifyAsync<JwtPayload>(token);
     } catch {
-      throw new UnauthorizedException('Invalid or expired authentication token');
+      throw new UnauthorizedException(
+        'Invalid or expired authentication token',
+      );
     }
   }
 

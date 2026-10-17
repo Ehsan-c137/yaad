@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
+
 import { AuthService } from '../auth.service.js';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class WorkspaceMemberGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const { user } = request;
 
     if (!user?.id) {
       throw new ForbiddenException('User is not authenticated');
@@ -25,7 +26,9 @@ export class WorkspaceMemberGuard implements CanActivate {
       request.query?.workspaceId;
 
     if (!workspaceId || typeof workspaceId !== 'string') {
-      throw new BadRequestException('workspaceId is required for this operation');
+      throw new BadRequestException(
+        'workspaceId is required for this operation',
+      );
     }
 
     const isMember = await this.authService.isUserMemberOfWorkspace(

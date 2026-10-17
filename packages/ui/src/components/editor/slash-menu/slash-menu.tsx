@@ -47,7 +47,6 @@ interface SlashMenuItemProps {
   itemRef: (el: HTMLButtonElement | null) => void;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function SlashMenu({
   position,
   query,

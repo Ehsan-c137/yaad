@@ -1,5 +1,6 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { WorkspacesService } from './workspaces.service.js';
 
 describe('WorkspacesService', () => {
@@ -66,7 +67,11 @@ describe('WorkspacesService', () => {
       mockDb.limit.mockResolvedValueOnce([{ role: 'viewer' }]);
 
       await expect(
-        service.addMember('ws_1', { email: 'unknown@test.com', role: 'member' }, 'user_viewer'),
+        service.addMember(
+          'ws_1',
+          { email: 'unknown@test.com', role: 'member' },
+          'user_viewer',
+        ),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -84,7 +89,11 @@ describe('WorkspacesService', () => {
       mockDb.limit.mockResolvedValueOnce([]);
 
       await expect(
-        service.addMember('ws_1', { email: 'unknown@test.com', role: 'member' }, 'user_1'),
+        service.addMember(
+          'ws_1',
+          { email: 'unknown@test.com', role: 'member' },
+          'user_1',
+        ),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -99,7 +108,9 @@ describe('WorkspacesService', () => {
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'user_2', email: 'bob@test.com' }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'user_2', email: 'bob@test.com' },
+      ]);
 
       // 2. Existing check
       mockDb.select.mockReturnValueOnce(mockDb);
@@ -133,7 +144,9 @@ describe('WorkspacesService', () => {
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'user_2', email: 'bob@test.com' }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'user_2', email: 'bob@test.com' },
+      ]);
 
       // 2. Existing check
       mockDb.select.mockReturnValueOnce(mockDb);
@@ -216,9 +229,9 @@ describe('WorkspacesService', () => {
       mockDb.where.mockReturnValue(mockDb);
       mockDb.limit.mockResolvedValue([]);
 
-      await expect(service.joinWorkspace('ws_nonexistent', 'user_1')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.joinWorkspace('ws_nonexistent', 'user_1'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('returns existing membership if user is already a member', async () => {
@@ -226,20 +239,26 @@ describe('WorkspacesService', () => {
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'ws_1', name: 'My Team', ownerId: 'user_owner' }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'ws_1', name: 'My Team', ownerId: 'user_owner' },
+      ]);
 
       // 2. User lookup
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'user_1', email: 'user@test.com' }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'user_1', email: 'user@test.com' },
+      ]);
 
       // 3. Existing check
       const createdAt = new Date();
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'mem_1', role: 'member', createdAt }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'mem_1', role: 'member', createdAt },
+      ]);
 
       const result = await service.joinWorkspace('ws_1', 'user_1');
       expect(result.id).toBe('mem_1');
@@ -252,13 +271,17 @@ describe('WorkspacesService', () => {
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'ws_1', name: 'New Collab', ownerId: 'user_owner' }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'ws_1', name: 'New Collab', ownerId: 'user_owner' },
+      ]);
 
       // 2. User lookup
       mockDb.select.mockReturnValueOnce(mockDb);
       mockDb.from.mockReturnValueOnce(mockDb);
       mockDb.where.mockReturnValueOnce(mockDb);
-      mockDb.limit.mockResolvedValueOnce([{ id: 'user_2', email: 'newbie@test.com' }]);
+      mockDb.limit.mockResolvedValueOnce([
+        { id: 'user_2', email: 'newbie@test.com' },
+      ]);
 
       // 3. Existing check
       mockDb.select.mockReturnValueOnce(mockDb);

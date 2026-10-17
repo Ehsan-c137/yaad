@@ -1,4 +1,4 @@
-/* eslint-disable complexity, @typescript-eslint/no-shadow, @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-shadow, @typescript-eslint/no-unnecessary-condition */
 
 import { Handle, Position } from "@xyflow/react";
 import { memo } from "react";

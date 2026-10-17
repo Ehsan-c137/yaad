@@ -1,10 +1,13 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import { useCollab, type CollabPeer } from "../hooks/editor/use-collab";
+
+import type { CollabPeer } from "../hooks/editor/use-collab";
+
+import { useCollab } from "../hooks/editor/use-collab";
 
 interface CollabContextValue {
-  status: "connecting" | "connected" | "disconnected";
+  status: "connected" | "connecting" | "disconnected";
   peers: CollabPeer[];
   broadcastFocus: (blockId: string | null) => void;
   broadcastCursor: (
@@ -22,6 +25,7 @@ const CollabContext = createContext<CollabContextValue>({
   broadcastFocus: () => {},
   broadcastCursor: () => {},
 });
+CollabContext.displayName = "CollabContext";
 
 export function CollabProvider({
   workspaceId,
@@ -35,9 +39,7 @@ export function CollabProvider({
   const collab = useCollab(workspaceId, pageId);
 
   return (
-    <CollabContext.Provider value={collab}>
-      {children}
-    </CollabContext.Provider>
+    <CollabContext.Provider value={collab}>{children}</CollabContext.Provider>
   );
 }
 

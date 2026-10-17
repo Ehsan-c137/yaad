@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { pages, workspaceTrees } from '../../../database/schema.js';
+
 import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
 import type {
   DbTransaction,
   MutationHandler,
 } from './mutation-handler.interface.js';
+
+import { pages, workspaceTrees } from '../../../database/schema.js';
 
 @Injectable()
 export class WorkspaceTreeMutationHandler implements MutationHandler {

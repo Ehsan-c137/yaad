@@ -35,11 +35,13 @@ function getSnapshot<T>(key: string, initialValue: T): T {
 
   try {
     const raw = window.localStorage.getItem(key);
+
     if (raw === null) {
       return initialValue;
     }
 
     const cached = snapshotCache.get(key);
+
     if (cached?.raw === raw) {
       return cached.parsed as T;
     }

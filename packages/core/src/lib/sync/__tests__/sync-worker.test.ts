@@ -1,6 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUserStore } from "@yaad/core/store/use-user-store";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { StorageAdapter } from "../../storage/types";
+
 import { OutboxQueue } from "../outbox-queue";
 import { SyncWorker } from "../sync-worker";
 
@@ -29,7 +31,9 @@ describe("SyncWorker (Background Sync Engine)", () => {
     };
 
     mockSyncClient = {
-      push: vi.fn().mockResolvedValue({ acceptedMutationIds: [], lastServerVersion: 1 }),
+      push: vi
+        .fn()
+        .mockResolvedValue({ acceptedMutationIds: [], lastServerVersion: 1 }),
       pull: vi.fn().mockResolvedValue({ changes: [], latestVersion: 1 }),
     };
 
@@ -165,9 +169,8 @@ describe("SyncWorker (Background Sync Engine)", () => {
   });
 
   it("updates active in-memory document store when remote document changes are pulled", async () => {
-    const { getDocumentStore, removeDocumentStore } = await import(
-      "@yaad/core/store/document/use-document-store"
-    );
+    const { getDocumentStore, removeDocumentStore } =
+      await import("@yaad/core/store/document/use-document-store");
 
     useUserStore.setState({ token: "valid-jwt-token" });
     const store = getDocumentStore("doc_open_1");
@@ -212,7 +215,9 @@ describe("SyncWorker (Background Sync Engine)", () => {
 
     await worker.syncNow("ws_1");
 
-    expect(store.getState().currentDocument?.title).toBe("Remote Updated Title");
+    expect(store.getState().currentDocument?.title).toBe(
+      "Remote Updated Title",
+    );
     removeDocumentStore("doc_open_1", false);
   });
 });

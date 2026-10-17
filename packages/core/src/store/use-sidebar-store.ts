@@ -1,3 +1,4 @@
+export { onWorkspaceTreePersisted } from "./sidebar/helpers";
 export type {
   DropPosition,
   SidebarPageItem,
@@ -7,4 +8,3 @@ export type {
   SidebarUiSlice,
 } from "./sidebar/types";
 export { useSidebarStore } from "./sidebar/use-sidebar-store";
-export { onWorkspaceTreePersisted } from "./sidebar/helpers";

@@ -1,12 +1,18 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import type { DocumentBlock } from "@yaad/core/types/document";
+
+import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  getDocumentStore,
+  removeDocumentStore,
+} from "@yaad/core/store/document/use-document-store";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
 import { EditorPageIdProvider } from "@/providers/document-provider";
-import { EditableContent } from "../block/editable-content";
-import { BlockRow } from "../block/block-row";
+
 import { BlockCanvas } from "../block-canvas";
-import { getDocumentStore, removeDocumentStore } from "@yaad/core/store/document/use-document-store";
+import { BlockRow } from "../block/block-row";
+import { EditableContent } from "../block/editable-content";
 
 describe("Editor Read-Only Mode (Integration Tests)", () => {
   const viewerPermissions = {

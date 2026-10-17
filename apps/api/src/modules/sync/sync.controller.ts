@@ -8,16 +8,14 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
+
+import type { PullResultDto, PushResultDto } from './dto/sync.dto.js';
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { WorkspaceMemberGuard } from '../auth/guards/workspace-member.guard.js';
-import {
-  PullSyncDto,
-  PushSyncDto,
-  type PullResultDto,
-  type PushResultDto,
-} from './dto/sync.dto.js';
+import { PullSyncDto, PushSyncDto } from './dto/sync.dto.js';
 import { SyncService } from './sync.service.js';
 
 @UseGuards(JwtAuthGuard, WorkspaceMemberGuard)

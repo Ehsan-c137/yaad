@@ -18,7 +18,7 @@ export interface WorkspacePageMeta {
   updatedAt: number;
   isBookmarked?: boolean;
 }
-export type WorkspaceRole = 'owner' | 'member' | 'viewer';
+export type WorkspaceRole = "member" | "owner" | "viewer";
 
 export interface WorkspaceMember {
   id: string;

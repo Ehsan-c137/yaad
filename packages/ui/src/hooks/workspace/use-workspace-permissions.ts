@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
-import { useUserStore } from "@yaad/core/store/use-user-store";
+import type { IWorkspaceMemberService } from "@yaad/core/services/workspace-member-service";
+import type {
+  WorkspacePermissions,
+  WorkspaceRole,
+} from "@yaad/core/types/workspace";
+
 import { evaluateWorkspacePermissions } from "@yaad/core/lib/workspace/workspace-permissions";
-import { workspaceMemberService, type IWorkspaceMemberService } from "@yaad/core/services/workspace-member-service";
-import type { WorkspacePermissions, WorkspaceRole } from "@yaad/core/types/workspace";
+import { workspaceMemberService } from "@yaad/core/services/workspace-member-service";
+import { useUserStore } from "@yaad/core/store/use-user-store";
+import { useEffect, useState } from "react";
 
 export interface UseWorkspacePermissionsOptions {
   memberService?: IWorkspaceMemberService;
@@ -18,9 +23,13 @@ const DEFAULT_OWNER_PERMISSIONS: WorkspacePermissionsState = {
 };
 
 type LiveRoleListener = (workspaceId: string, role: WorkspaceRole) => void;
+
 const liveRoleListeners = new Set<LiveRoleListener>();
 
-export function emitLiveWorkspaceRoleChange(workspaceId: string, role: WorkspaceRole): void {
+export function emitLiveWorkspaceRoleChange(
+  workspaceId: string,
+  role: WorkspaceRole,
+): void {
   liveRoleListeners.forEach((fn) => {
     try {
       fn(workspaceId, role);
@@ -30,8 +39,11 @@ export function emitLiveWorkspaceRoleChange(workspaceId: string, role: Workspace
   });
 }
 
-export function onLiveWorkspaceRoleChange(listener: LiveRoleListener): () => void {
+export function onLiveWorkspaceRoleChange(
+  listener: LiveRoleListener,
+): () => void {
   liveRoleListeners.add(listener);
+
   return () => {
     liveRoleListeners.delete(listener);
   };
@@ -49,7 +61,12 @@ export function useWorkspacePermissions(
     useState<WorkspacePermissionsState>(DEFAULT_OWNER_PERMISSIONS);
 
   useEffect(() => {
-    if (!workspaceId || workspaceId === "ws_personal" || !token || !currentUserId) {
+    if (
+      !workspaceId ||
+      workspaceId === "ws_personal" ||
+      !token ||
+      !currentUserId
+    ) {
       setPermissionsState(DEFAULT_OWNER_PERMISSIONS);
       return;
     }
@@ -63,7 +80,9 @@ export function useWorkspacePermissions(
         if (!isMounted) return;
 
         const currentMember = members.find((m) => m.userId === currentUserId);
-        const role: WorkspaceRole = currentMember ? currentMember.role : "owner";
+        const role: WorkspaceRole = currentMember
+          ? currentMember.role
+          : "owner";
 
         setPermissionsState({
           ...evaluateWorkspacePermissions(role),

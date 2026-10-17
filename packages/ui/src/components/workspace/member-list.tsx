@@ -1,8 +1,9 @@
 import { Loader2, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { MemberRow } from "./member-row";
 import type { MemberListProps } from "./types";
+
+import { MemberRow } from "./member-row";
 
 export function MemberList({
   members,
@@ -21,7 +22,9 @@ export function MemberList({
           <Users className="size-3.5" />
           {t("workspaceCollaborators", { count: members.length })}
         </span>
-        {isLoading && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
+        {isLoading && (
+          <Loader2 className="size-3 animate-spin text-muted-foreground" />
+        )}
       </div>
 
       <div className="max-h-52 overflow-y-auto rounded-xl border border-border/40 bg-background/50 divide-y divide-border/30">

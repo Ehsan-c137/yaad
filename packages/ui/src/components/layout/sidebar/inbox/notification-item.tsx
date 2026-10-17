@@ -1,4 +1,4 @@
-/* eslint-disable perfectionist/sort-imports, max-lines-per-function, @typescript-eslint/no-floating-promises */
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/no-floating-promises */
 "use client";
 
 import type { NotificationItem as NotificationItemType } from "@yaad/core/store/inbox/use-inbox-store";

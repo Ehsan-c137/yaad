@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-floating-promises */
 "use client";
 
 import "@xyflow/react/dist/style.css";

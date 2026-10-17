@@ -1,8 +1,10 @@
 import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import * as Y from 'yjs';
-import { COLLAB_PERSISTENCE } from './collab.tokens.js';
+
 import type { ICollabPersistence } from './interfaces/collab-persistence.interface.js';
 import type { IRoomManager } from './interfaces/room-manager.interface.js';
+
+import { COLLAB_PERSISTENCE } from './collab.tokens.js';
 
 export interface CollabRoom {
   workspaceId: string;
@@ -17,7 +19,6 @@ export interface CollabRoom {
 export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
   private readonly logger = new Logger(YjsRoomManager.name);
   private readonly rooms = new Map<string, CollabRoom>();
-
   // Snapshot debounce delay (10 seconds of idle typing)
   private readonly SNAPSHOT_DEBOUNCE_MS = 10_000;
   // Room in-memory cache time after all consumers disconnect (5 minutes)
@@ -47,6 +48,7 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
         clearTimeout(room.evictionTimeout);
         room.evictionTimeout = undefined;
       }
+
       return room;
     }
 
@@ -67,6 +69,7 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
         workspaceId,
         documentId,
       );
+
       if (baselineJson) {
         this.seedYDocFromJson(ydoc, baselineJson);
       }
@@ -111,9 +114,11 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
     clientStateVector?: Uint8Array,
   ): Promise<Uint8Array> {
     const room = await this.getOrCreateRoom(workspaceId, documentId);
+
     if (clientStateVector && clientStateVector.length > 0) {
       return Y.encodeStateAsUpdate(room.ydoc, clientStateVector);
     }
+
     return Y.encodeStateAsUpdate(room.ydoc);
   }
 
@@ -156,6 +161,7 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
     if (room.saveTimeout) {
       clearTimeout(room.saveTimeout);
     }
+
     room.saveTimeout = setTimeout(() => {
       void this.persistence.materializeSnapshot(
         room.workspaceId,
@@ -183,19 +189,23 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
       meta.set('updatedAt', json.updatedAt ?? Date.now());
 
       const rootBlockIds = ydoc.getArray('rootBlockIds');
+
       if (Array.isArray(json.rootBlockIds)) {
         rootBlockIds.push(json.rootBlockIds);
       }
 
       const blocks = ydoc.getMap('blocks');
+
       if (json.blocks && typeof json.blocks === 'object') {
         for (const [blockId, blockData] of Object.entries(json.blocks)) {
           const blockMap = new Y.Map();
+
           for (const [propKey, propVal] of Object.entries(
             blockData as Record<string, any>,
           )) {
             blockMap.set(propKey, propVal);
           }
+
           blocks.set(blockId, blockMap);
         }
       }
@@ -213,6 +223,7 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
       );
       room.ydoc.destroy();
     }
+
     this.rooms.clear();
   }
 }

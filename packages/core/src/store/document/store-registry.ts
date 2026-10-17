@@ -1,4 +1,5 @@
 import type { StoreApi } from "zustand";
+
 import type { DocumentState } from "./types";
 
 const documentStoresMap = new Map<string, StoreApi<DocumentState>>();

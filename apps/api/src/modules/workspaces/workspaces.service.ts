@@ -7,17 +7,15 @@ import {
 import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
+
 import type { Database } from '../../database/database.module.js';
-import {
-  users,
-  workspaceMembers,
-  workspaces,
-} from '../../database/schema.js';
-import { CollabGateway } from '../collab/collab.gateway.js';
 import type {
   AddMemberDto,
   WorkspaceMemberResponseDto,
 } from './dto/workspace-member.dto.js';
+
+import { users, workspaceMembers, workspaces } from '../../database/schema.js';
+import { CollabGateway } from '../collab/collab.gateway.js';
 
 @Injectable()
 export class WorkspacesService {
@@ -85,8 +83,11 @@ export class WorkspacesService {
     // 1. Authorize caller if user ID provided
     if (currentUserId && workspaceId !== 'ws_personal') {
       const callerRole = await this.getCallerRole(workspaceId, currentUserId);
+
       if (callerRole !== 'owner') {
-        throw new ForbiddenException('Only workspace owners can add or manage members.');
+        throw new ForbiddenException(
+          'Only workspace owners can add or manage members.',
+        );
       }
     }
 
@@ -128,7 +129,11 @@ export class WorkspacesService {
         .set({ role })
         .where(eq(workspaceMembers.id, existing.id));
 
-      this.collabGateway?.notifyMemberRoleUpdated(workspaceId, targetUser.id, role);
+      this.collabGateway?.notifyMemberRoleUpdated(
+        workspaceId,
+        targetUser.id,
+        role,
+      );
     } else {
       await this.db.insert(workspaceMembers).values({
         id: memberId,
@@ -168,8 +173,13 @@ export class WorkspacesService {
     }
 
     // Authorize caller: non-owners can only remove themselves (leave workspace)
-    if (currentUserId && currentUserId !== targetUserId && workspaceId !== 'ws_personal') {
+    if (
+      currentUserId &&
+      currentUserId !== targetUserId &&
+      workspaceId !== 'ws_personal'
+    ) {
       const isOwner = ws?.ownerId === currentUserId;
+
       if (!isOwner) {
         const [callerMembership] = await this.db
           .select({ role: workspaceMembers.role })
@@ -183,7 +193,9 @@ export class WorkspacesService {
           .limit(1);
 
         if (callerMembership?.role !== 'owner') {
-          throw new ForbiddenException('Only workspace owners can remove other members.');
+          throw new ForbiddenException(
+            'Only workspace owners can remove other members.',
+          );
         }
       }
     }
@@ -209,9 +221,15 @@ export class WorkspacesService {
   ): Promise<WorkspaceMemberResponseDto> {
     // 1. Locate workspace
     const [ws] = await this.db
-      .select({ id: workspaces.id, name: workspaces.name, ownerId: workspaces.ownerId })
+      .select({
+        id: workspaces.id,
+        name: workspaces.name,
+        ownerId: workspaces.ownerId,
+      })
       .from(workspaces)
-      .where(and(eq(workspaces.id, workspaceId), eq(workspaces.isDeleted, false)))
+      .where(
+        and(eq(workspaces.id, workspaceId), eq(workspaces.isDeleted, false)),
+      )
       .limit(1);
 
     if (!ws) {
@@ -283,14 +301,16 @@ export class WorkspacesService {
    */
   async getUserWorkspaces(
     userId: string,
-  ): Promise<Array<{ id: string; name: string; role: string }>> {
+  ): Promise<{ id: string; name: string; role: string }[]> {
     const ownedWorkspaces = await this.db
       .select({
         id: workspaces.id,
         name: workspaces.name,
       })
       .from(workspaces)
-      .where(and(eq(workspaces.ownerId, userId), eq(workspaces.isDeleted, false)));
+      .where(
+        and(eq(workspaces.ownerId, userId), eq(workspaces.isDeleted, false)),
+      );
 
     const memberWorkspaces = await this.db
       .select({
@@ -300,12 +320,19 @@ export class WorkspacesService {
       })
       .from(workspaceMembers)
       .innerJoin(workspaces, eq(workspaces.id, workspaceMembers.workspaceId))
-      .where(and(eq(workspaceMembers.userId, userId), eq(workspaces.isDeleted, false)));
+      .where(
+        and(
+          eq(workspaceMembers.userId, userId),
+          eq(workspaces.isDeleted, false),
+        ),
+      );
 
     const wsMap = new Map<string, { id: string; name: string; role: string }>();
+
     for (const w of ownedWorkspaces) {
       wsMap.set(w.id, { id: w.id, name: w.name, role: 'owner' });
     }
+
     for (const m of memberWorkspaces) {
       if (!wsMap.has(m.id)) {
         wsMap.set(m.id, { id: m.id, name: m.name, role: m.role });

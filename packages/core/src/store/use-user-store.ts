@@ -11,14 +11,27 @@ export interface UserState {
   _hasHydrated: boolean;
 
   setUserName: (name: string | null) => void;
-  setAuth: (data: { token: string; userId: string; email: string; name?: string }) => void;
+  setAuth: (data: {
+    token: string;
+    userId: string;
+    email: string;
+    name?: string;
+  }) => void;
   clearAuth: () => void;
   completeOnboarding: () => void;
   setHasHydrated: (state: boolean) => void;
 }
 
-const DEFAULT_COLORS = ['#3B82F6', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#EF4444'];
-const getRandomColor = () => DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)];
+const DEFAULT_COLORS = [
+  "#3B82F6",
+  "#8B5CF6",
+  "#EC4899",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+];
+const getRandomColor = () =>
+  DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)];
 
 export const useUserStore = create<UserState>()(
   persist(
@@ -40,7 +53,7 @@ export const useUserStore = create<UserState>()(
           token,
           userId,
           email,
-          userName: name ?? email.split('@')[0],
+          userName: name ?? email.split("@")[0],
         });
       },
 

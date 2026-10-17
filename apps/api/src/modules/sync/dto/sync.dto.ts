@@ -28,24 +28,19 @@ export class SyncMutationDto {
   @IsString()
   @IsNotEmpty()
   clientMutationId!: string;
-
   @IsIn(SYNC_ENTITY_TYPES, {
     message: `entityType must be one of: ${SYNC_ENTITY_TYPES.join(', ')}`,
   })
   entityType!: SyncEntityType;
-
   @IsString()
   @IsNotEmpty()
   entityId!: string;
-
   @IsIn(SYNC_OPERATIONS, {
     message: `operation must be one of: ${SYNC_OPERATIONS.join(', ')}`,
   })
   operation!: SyncOperation;
-
   @IsDefined()
   payload!: any;
-
   @IsOptional()
   @IsNumber()
   timestamp?: number;
@@ -55,11 +50,9 @@ export class PushSyncDto {
   @IsString()
   @IsNotEmpty()
   workspaceId!: string;
-
   @IsString()
   @IsNotEmpty()
   clientId!: string;
-
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SyncMutationDto)
@@ -70,12 +63,10 @@ export class PullSyncDto {
   @IsString()
   @IsNotEmpty()
   workspaceId!: string;
-
   @IsInt()
   @Min(0)
   @Type(() => Number)
   sinceVersion!: number;
-
   @IsOptional()
   @IsInt()
   @Min(1)

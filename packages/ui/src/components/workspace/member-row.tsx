@@ -27,6 +27,7 @@ export function MemberRow({
   const handleRemove = async () => {
     if (isOwner) return;
     setIsRemoving(true);
+
     try {
       await onRemove(member.userId);
     } catch (err: any) {
@@ -39,6 +40,7 @@ export function MemberRow({
   const handleRoleChange = async (newRole: any) => {
     if (isOwner || newRole === member.role || !onUpdateRole) return;
     setIsUpdatingRole(true);
+
     try {
       await onUpdateRole(member.userId, newRole);
     } catch (err: any) {
@@ -76,7 +78,9 @@ export function MemberRow({
               {member.email}
             </span>
             {isSelf && (
-              <span className="text-[10px] text-muted-foreground">({t("you")})</span>
+              <span className="text-[10px] text-muted-foreground">
+                ({t("you")})
+              </span>
             )}
           </div>
           <span className="text-[10px] text-muted-foreground capitalize">

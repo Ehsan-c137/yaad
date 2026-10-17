@@ -11,8 +11,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { useCollabContext } from "@/context/collab-context";
 import { getCurrentSelectionOffsets } from "@/lib/cursor-coordinates";
-import { RemoteCursorOverlay } from "../collab/remote-cursor-overlay";
+
 import type { SlashOption } from "../slash-menu/slash-options";
+
+import { RemoteCursorOverlay } from "../collab/remote-cursor-overlay";
 import { SlashMenu } from "../slash-menu/slash-menu";
 
 interface EditableContentProps {

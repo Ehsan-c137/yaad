@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { describe, expect, it } from 'vitest';
+
 import { PullSyncDto, PushSyncDto, SyncMutationDto } from './sync.dto.js';
 
 describe('Sync DTO Runtime Validation', () => {
@@ -101,7 +102,11 @@ describe('Sync DTO Runtime Validation', () => {
       const errors = await validate(dto);
       expect(errors.length).toBeGreaterThan(0);
       expect(errors[0].property).toBe('mutations');
-      expect(errors[0].children?.[0]?.children?.some((e) => e.property === 'entityType')).toBe(true);
+      expect(
+        errors[0].children?.[0]?.children?.some(
+          (e) => e.property === 'entityType',
+        ),
+      ).toBe(true);
     });
 
     it('rejects push payload missing workspaceId or clientId', async () => {

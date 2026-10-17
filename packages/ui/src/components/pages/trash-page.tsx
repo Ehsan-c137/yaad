@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, perfectionist/sort-imports */
+/* eslint-disable @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing, perfectionist/sort-imports */
 "use client";
 
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";

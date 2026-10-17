@@ -1,7 +1,9 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { SyncStatusIndicator } from "../sync-status-indicator";
+
 import * as useSyncStatusModule from "@/hooks/editor/use-sync-status";
+
+import { SyncStatusIndicator } from "../sync-status-indicator";
 
 describe("SyncStatusIndicator (Unit Tests)", () => {
   it("renders saved state with checkmark and label", () => {

@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { Heading, Image as ImageIcon, LayoutGrid, Table } from "lucide-react";

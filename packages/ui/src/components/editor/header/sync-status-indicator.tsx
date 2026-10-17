@@ -1,7 +1,8 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
 import { AlertCircle, Check, CloudOff, RotateCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import { useSyncStatus } from "@/hooks/editor/use-sync-status";
 import { cn } from "@/lib/utils";
 

@@ -1,4 +1,5 @@
 import { del, get, set } from "idb-keyval";
+
 import type { OutboxItem } from "./types";
 
 const OUTBOX_KEY = "yaad_sync_outbox_queue_v1";
@@ -7,7 +8,7 @@ const CLIENT_ID_KEY = "yaad_sync_client_id_v1";
 
 export class OutboxQueue {
   private inMemoryQueue: OutboxItem[] = [];
-  private inMemoryVersions: Map<string, number> = new Map();
+  private inMemoryVersions = new Map<string, number>();
   private clientId: string | null = null;
   private lock: Promise<void> = Promise.resolve();
 
@@ -21,6 +22,7 @@ export class OutboxQueue {
     this.lock = new Promise<void>((resolve) => {
       resolveNext = resolve;
     });
+
     try {
       await prev;
       return await fn();
@@ -33,10 +35,12 @@ export class OutboxQueue {
     if (typeof window !== "undefined" && window.localStorage) {
       try {
         let id = window.localStorage.getItem(CLIENT_ID_KEY);
+
         if (!id) {
           id = `client_${crypto.randomUUID()}`;
           window.localStorage.setItem(CLIENT_ID_KEY, id);
         }
+
         this.clientId = id;
       } catch {
         this.clientId = `client_${crypto.randomUUID()}`;
@@ -50,6 +54,7 @@ export class OutboxQueue {
     if (!this.clientId) {
       this.initClientId();
     }
+
     return this.clientId ?? "client_default";
   }
 
@@ -74,6 +79,7 @@ export class OutboxQueue {
       } catch {
         this.inMemoryQueue.push(fullItem);
       }
+
       return fullItem;
     });
   }
@@ -127,6 +133,7 @@ export class OutboxQueue {
 
   async getLastSyncedVersion(workspaceId: string): Promise<number> {
     const key = `${SYNC_VERSION_PREFIX}${workspaceId}`;
+
     try {
       const version = await get<number>(key);
       if (typeof version === "number") return version;
@@ -142,6 +149,7 @@ export class OutboxQueue {
   ): Promise<void> {
     const key = `${SYNC_VERSION_PREFIX}${workspaceId}`;
     this.inMemoryVersions.set(workspaceId, version);
+
     try {
       await set(key, version);
     } catch {
@@ -151,9 +159,11 @@ export class OutboxQueue {
 
   private async readQueue(): Promise<OutboxItem[]> {
     const stored = await get<OutboxItem[]>(OUTBOX_KEY);
+
     if (!stored || !Array.isArray(stored)) {
       return this.inMemoryQueue;
     }
+
     this.inMemoryQueue = stored;
     return stored;
   }

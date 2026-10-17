@@ -7,9 +7,8 @@ import {
 import { InjectDrizzle } from '@nestjs/drizzle';
 import { and, asc, eq, gt } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
+
 import type { Database } from '../../database/database.module.js';
-import { syncLog, users, workspaces } from '../../database/schema.js';
-import { AuthService } from '../auth/auth.service.js';
 import type {
   PullResultDto,
   PullSyncDto,
@@ -18,6 +17,9 @@ import type {
   SyncMutationDto,
 } from './dto/sync.dto.js';
 import type { DbTransaction } from './handlers/mutation-handler.interface.js';
+
+import { syncLog, users, workspaces } from '../../database/schema.js';
+import { AuthService } from '../auth/auth.service.js';
 import { SyncHandlerRegistry } from './handlers/sync-handler.registry.js';
 
 @Injectable()
@@ -35,6 +37,7 @@ export class SyncService {
     // Authorize caller: reject pushes if caller is a viewer
     if (userId && this.authService && dto.workspaceId !== 'ws_personal') {
       const role = await this.authService.getUserRole(userId, dto.workspaceId);
+
       if (role === 'viewer') {
         throw new ForbiddenException(
           'Forbidden: read-only members (viewers) cannot push mutations to this workspace',
@@ -91,6 +94,7 @@ export class SyncService {
             tx,
             mut.clientMutationId,
           );
+
           if (isProcessed) {
             acceptedMutationIds.push(mut.clientMutationId);
             continue;
@@ -186,7 +190,9 @@ export class SyncService {
 
     const latestVersion = workspace.currentVersion;
     const lastVersionInBatch =
-      changes.length > 0 ? changes[changes.length - 1].version : dto.sinceVersion;
+      changes.length > 0
+        ? changes[changes.length - 1].version
+        : dto.sinceVersion;
 
     return {
       changes,

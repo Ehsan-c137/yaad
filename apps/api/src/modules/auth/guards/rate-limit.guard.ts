@@ -1,10 +1,6 @@
-import {
-  type CanActivate,
-  type ExecutionContext,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import type { CanActivate, ExecutionContext } from '@nestjs/common';
+
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 interface RateLimitRecord {
   count: number;
@@ -28,6 +24,7 @@ export class RateLimitGuard implements CanActivate {
     const now = Date.now();
 
     const record = this.ipRequests.get(ip);
+
     if (!record || now > record.resetTime) {
       this.ipRequests.set(ip, {
         count: 1,

@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
 import { CollabProvider } from "@/context/collab-context";
+import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
+import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { styles } from "@/lib/design-token";
 import { EditorPageIdProvider } from "@/providers/document-provider";
 
-import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
-import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { BlockCanvas } from "./block-canvas";
 import { BlockCanvasSkeleton } from "./block-canvas-skeleton";
 import { PageHeader } from "./header/page-header";
@@ -28,6 +28,7 @@ export function EditorShell({ pageId }: EditorShellProps) {
 
   useEffect(() => {
     let isMounted = true;
+
     const loadDoc = async () => {
       try {
         if (!pageId) return;
@@ -36,12 +37,15 @@ export function EditorShell({ pageId }: EditorShellProps) {
       } catch (err) {
         if (isMounted) {
           console.error(`[EditorShell] Failed to load page ${pageId}:`, err);
-          setLoadError(err instanceof Error ? err.message : "Failed to load document");
+          setLoadError(
+            err instanceof Error ? err.message : "Failed to load document",
+          );
         }
       }
     };
 
     void loadDoc();
+
     return () => {
       isMounted = false;
     };

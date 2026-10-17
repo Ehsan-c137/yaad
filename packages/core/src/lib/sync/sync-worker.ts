@@ -1,10 +1,13 @@
-import { useUserStore } from "../../store/use-user-store";
-import { getExistingDocumentStore } from "../../store/document/store-registry";
-import { syncService, type SyncService } from "../../services/sync-service";
+import type { SyncService } from "../../services/sync-service";
 import type { StorageAdapter } from "../storage/types";
-import { outboxQueue, type OutboxQueue } from "./outbox-queue";
+import type { OutboxQueue } from "./outbox-queue";
 import type { SyncOutboxAdapter } from "./sync-outbox-storage-adapter";
 import type { ISyncWorker, SyncStatus } from "./types";
+
+import { syncService } from "../../services/sync-service";
+import { getExistingDocumentStore } from "../../store/document/store-registry";
+import { useUserStore } from "../../store/use-user-store";
+import { outboxQueue } from "./outbox-queue";
 
 export interface SyncWorkerOptions {
   queue?: OutboxQueue;
@@ -17,7 +20,7 @@ export class SyncWorker implements ISyncWorker {
   private status: SyncStatus = "idle";
   private timer: any = null;
   private isSyncing = false;
-  private listeners: Set<(status: SyncStatus) => void> = new Set();
+  private listeners = new Set<(status: SyncStatus) => void>();
   private readonly queue: OutboxQueue;
   private readonly client: SyncService;
   private readonly intervalMs: number;
@@ -87,11 +90,9 @@ export class SyncWorker implements ISyncWorker {
   private handleOnline = () => {
     this.syncNow().catch(() => {});
   };
-
   private handleOffline = () => {
     this.setStatus("offline");
   };
-
   private reconciledWorkspaces = new Set<string>();
 
   private async reconcileLocalTreeIfNeeded(workspaceId: string): Promise<void> {
@@ -100,20 +101,25 @@ export class SyncWorker implements ISyncWorker {
     try {
       const adapter = this.getAdapter();
       const localTree = await adapter.getWorkspaceTree(workspaceId);
+
       if (localTree && localTree.length > 0) {
         const size = await this.queue.size();
+
         if (size === 0) {
           // Local has pages that may not have been pushed to the server yet.
           // Enqueue tree and document snapshots to ensure remote backup.
           await adapter.saveWorkspaceTree(workspaceId, localTree);
+
           for (const node of localTree) {
             const doc = await adapter.getDocument(node.id);
+
             if (doc) {
               await adapter.saveDocument(doc);
             }
           }
         }
       }
+
       this.reconciledWorkspaces.add(workspaceId);
     } catch (e) {
       console.warn("[SyncWorker] Error reconciling local tree:", e);
@@ -125,6 +131,7 @@ export class SyncWorker implements ISyncWorker {
    */
   async syncNow(workspaceId?: string): Promise<void> {
     let targetWorkspaceId = workspaceId;
+
     if (!targetWorkspaceId) {
       try {
         const { useWorkspaceStore } =
@@ -136,14 +143,15 @@ export class SyncWorker implements ISyncWorker {
       }
     }
 
-    const token = useUserStore.getState().token;
+    const { token } = useUserStore.getState();
+
     if (!token) {
       // Unauthenticated / local guest mode: no server sync needed
       this.setStatus("idle");
       return;
     }
 
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
       this.setStatus("offline");
       return;
     }
@@ -171,6 +179,7 @@ export class SyncWorker implements ISyncWorker {
 
     // Group mutations by workspaceId to avoid head-of-line blocking
     const byWorkspace = new Map<string, typeof pending>();
+
     for (const item of pending) {
       const list = byWorkspace.get(item.workspaceId) ?? [];
       list.push(item);
@@ -191,12 +200,14 @@ export class SyncWorker implements ISyncWorker {
 
       try {
         const result = await this.client.push(wsId, clientId, batch);
+
         if (result.acceptedMutationIds?.length) {
           await this.queue.dequeue(result.acceptedMutationIds);
         }
 
         if (typeof result.lastServerVersion === "number") {
           const currentKnown = await this.queue.getLastSyncedVersion(wsId);
+
           if (result.lastServerVersion > currentKnown) {
             await this.queue.setLastSyncedVersion(
               wsId,
@@ -240,6 +251,7 @@ export class SyncWorker implements ISyncWorker {
           if (change.operation === "delete") {
             await adapter.deleteDocument(change.entityId);
             const existingStore = getExistingDocumentStore(change.entityId);
+
             if (existingStore) {
               existingStore.setState({
                 currentDocument: null,
@@ -249,6 +261,7 @@ export class SyncWorker implements ISyncWorker {
           } else {
             await adapter.saveDocument(change.patch);
             const existingStore = getExistingDocumentStore(change.entityId);
+
             if (existingStore) {
               existingStore.setState({
                 currentDocument: change.patch,
@@ -286,6 +299,7 @@ export class SyncWorker implements ISyncWorker {
               detail: { workspaceId },
             }),
           );
+
           if (typeof BroadcastChannel !== "undefined") {
             try {
               const channel = new BroadcastChannel("yaad-sync-channel");

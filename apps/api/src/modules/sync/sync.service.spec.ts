@@ -1,5 +1,6 @@
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { SyncService } from './sync.service.js';
 
 describe('SyncService', () => {
@@ -21,7 +22,7 @@ describe('SyncService', () => {
       get: vi.fn().mockReturnValue(mockHandler),
       register: vi.fn(),
     };
-    service = new SyncService(mockDb, mockRegistry as any);
+    service = new SyncService(mockDb, mockRegistry);
   });
 
   describe('push', () => {
@@ -31,7 +32,7 @@ describe('SyncService', () => {
       };
       const secureSyncService = new SyncService(
         mockDb,
-        mockRegistry as any,
+        mockRegistry,
         mockAuthService,
       );
 
@@ -74,7 +75,9 @@ describe('SyncService', () => {
       mockDb.select.mockReturnValue({
         from: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
-            limit: vi.fn().mockResolvedValue([{ id: 'ws_1', currentVersion: 10 }]),
+            limit: vi
+              .fn()
+              .mockResolvedValue([{ id: 'ws_1', currentVersion: 10 }]),
           }),
         }),
       });
@@ -130,7 +133,9 @@ describe('SyncService', () => {
       mockDb.select.mockReturnValue({
         from: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
-            limit: vi.fn().mockResolvedValue([{ id: 'ws_1', currentVersion: 10 }]),
+            limit: vi
+              .fn()
+              .mockResolvedValue([{ id: 'ws_1', currentVersion: 10 }]),
           }),
         }),
       });

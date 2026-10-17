@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { StorageAdapter } from "../../storage/types";
+import type { SyncOutboxAdapter } from "../sync-outbox-storage-adapter";
+
 import { OutboxQueue } from "../outbox-queue";
-import {
-  createSyncOutboxAdapter,
-  type SyncOutboxAdapter,
-} from "../sync-outbox-storage-adapter";
+import { createSyncOutboxAdapter } from "../sync-outbox-storage-adapter";
 
 describe("createSyncOutboxAdapter (Functional Decorator)", () => {
   let mockInner: StorageAdapter;
@@ -40,7 +40,15 @@ describe("createSyncOutboxAdapter (Functional Decorator)", () => {
   });
 
   it("writes to inner adapter AND enqueues to outbox for saveWorkspaceTree", async () => {
-    const tree = [{ id: "p1", title: "Page 1", parentId: null, childrenIds: [], updatedAt: Date.now() }];
+    const tree = [
+      {
+        id: "p1",
+        title: "Page 1",
+        parentId: null,
+        childrenIds: [],
+        updatedAt: Date.now(),
+      },
+    ];
     await adapter.saveWorkspaceTree("ws_1", tree as any);
 
     expect(mockInner.saveWorkspaceTree).toHaveBeenCalledWith("ws_1", tree);

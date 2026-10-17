@@ -53,7 +53,10 @@ export function ToggleThemeButton() {
       const y = top + height / 2;
       const right = window.innerWidth - left;
       const bottom = window.innerHeight - top;
-      const maxRadius = Math.hypot(Math.max(left, right), Math.max(top, bottom));
+      const maxRadius = Math.hypot(
+        Math.max(left, right),
+        Math.max(top, bottom),
+      );
 
       document.documentElement.animate(
         {

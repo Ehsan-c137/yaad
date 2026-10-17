@@ -35,10 +35,8 @@ describe("ShareModal", () => {
       />,
     );
 
-    expect(screen.getByText(/Share.*Personal/i)).toBeDefined();
-    expect(
-      screen.getByText(/Sign In to Invite Collaborators/i),
-    ).toBeDefined();
+    expect(screen.getByText(/share.*personal/i)).toBeDefined();
+    expect(screen.getByText(/sign in to invite collaborators/i)).toBeDefined();
   });
 
   it("loads and displays workspace members when authenticated", async () => {
@@ -83,7 +81,7 @@ describe("ShareModal", () => {
     });
 
     expect(screen.getAllByText("Owner").length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Can edit/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/can edit/i).length).toBeGreaterThan(0);
   });
 
   it("allows inviting a collaborator with role", async () => {
@@ -163,12 +161,15 @@ describe("ShareModal", () => {
     });
 
     const removeBtn = screen.getByRole("button", {
-      name: /Remove editor@yaad.app/i,
+      name: /remove editor@yaad.app/i,
     });
     fireEvent.click(removeBtn);
 
     await waitFor(() => {
-      expect(mockMemberService.removeMember).toHaveBeenCalledWith("ws_1", "u_editor");
+      expect(mockMemberService.removeMember).toHaveBeenCalledWith(
+        "ws_1",
+        "u_editor",
+      );
       expect(screen.queryByText("editor@yaad.app")).toBeNull();
     });
   });

@@ -3,9 +3,15 @@ import { InjectDrizzle } from '@nestjs/drizzle';
 import { asc, eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import * as Y from 'yjs';
+
 import type { Database } from '../../database/database.module.js';
-import { documentCrdtUpdates, documents, pages } from '../../database/schema.js';
 import type { ICollabPersistence } from './interfaces/collab-persistence.interface.js';
+
+import {
+  documentCrdtUpdates,
+  documents,
+  pages,
+} from '../../database/schema.js';
 
 @Injectable()
 export class CollabPersistenceService implements ICollabPersistence {
@@ -117,6 +123,7 @@ export class CollabPersistenceService implements ICollabPersistence {
 
       const rawRootArray = rootBlockIdsArray.toArray() as string[];
       const rootBlock = blocksObj[rootBlockId];
+
       if (
         rootBlock &&
         rawRootArray.length > 0 &&
@@ -132,7 +139,10 @@ export class CollabPersistenceService implements ICollabPersistence {
         icon,
         coverImage,
         rootBlockId,
-        rootBlockIds: rawRootArray.length > 0 ? rawRootArray : (rootBlock?.childrenIds ?? []),
+        rootBlockIds:
+          rawRootArray.length > 0
+            ? rawRootArray
+            : (rootBlock?.childrenIds ?? []),
         blocks: blocksObj,
         createdAt,
         updatedAt,
@@ -170,7 +180,7 @@ export class CollabPersistenceService implements ICollabPersistence {
         .onConflictDoUpdate({
           target: documents.id,
           set: {
-            content: materializedJson as any,
+            content: materializedJson,
             updatedAt: new Date(updatedAt),
           },
         });

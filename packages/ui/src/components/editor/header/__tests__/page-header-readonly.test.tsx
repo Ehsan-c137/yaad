@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
 import { EditorPageIdProvider } from "@/providers/document-provider";
+
 import { PageHeader } from "../page-header";
 
 vi.mock("react-router", () => ({

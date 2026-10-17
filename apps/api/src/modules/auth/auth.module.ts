@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+
 import { DatabaseModule } from '../../database/database.module.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
@@ -9,6 +10,7 @@ import { WorkspaceMemberGuard } from './guards/workspace-member.guard.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const jwtSecret = process.env.JWT_SECRET;
+
 if (
   isProduction &&
   (!jwtSecret ||
@@ -31,6 +33,12 @@ if (
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtAuthGuard, WorkspaceMemberGuard, RateLimitGuard],
-  exports: [AuthService, JwtAuthGuard, WorkspaceMemberGuard, RateLimitGuard, JwtModule],
+  exports: [
+    AuthService,
+    JwtAuthGuard,
+    WorkspaceMemberGuard,
+    RateLimitGuard,
+    JwtModule,
+  ],
 })
 export class AuthModule {}

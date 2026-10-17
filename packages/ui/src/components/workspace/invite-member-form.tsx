@@ -21,6 +21,7 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
     if (!trimmed) return;
 
     setIsSubmitting(true);
+
     try {
       await onInvite(trimmed, role);
       setEmail("");

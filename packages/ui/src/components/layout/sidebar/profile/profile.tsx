@@ -6,8 +6,9 @@ import { useUserStore } from "@yaad/core/store/use-user-store";
 import { LogIn, LogOut, Pencil, Settings, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { WelcomeModal } from "@/components/onboarding/welcome-modal";
+
 import { AuthModal } from "@/components/auth/auth-modal";
+import { WelcomeModal } from "@/components/onboarding/welcome-modal";
 import { cn } from "@/lib/utils";
 
 import { SettingsModal } from "../settings/settings-modal";
@@ -29,9 +30,13 @@ export function Profile({ compact = false }: { compact?: boolean }) {
   const displayName = userName
     ? t("possessiveYaad", { name: userName })
     : isLoggedIn
-      ? email ?? "Account"
+      ? (email ?? "Account")
       : t("myYaad");
-  const initial = (userName?.trim().charAt(0) ?? email?.trim().charAt(0) ?? "Y").toUpperCase();
+  const initial = (
+    userName?.trim().charAt(0) ??
+    email?.trim().charAt(0) ??
+    "Y"
+  ).toUpperCase();
 
   const handleLogout = () => {
     setIsMenuOpen(false);
@@ -56,14 +61,27 @@ export function Profile({ compact = false }: { compact?: boolean }) {
             />
           }
         >
-          <Avatar className="size-7" style={{ backgroundColor: isLoggedIn ? `${userColor}20` : undefined }}>
-            <AvatarFallback style={{ color: isLoggedIn ? userColor : undefined }}>{initial}</AvatarFallback>
+          <Avatar
+            className="size-7"
+            style={{
+              backgroundColor: isLoggedIn ? `${userColor}20` : undefined,
+            }}
+          >
+            <AvatarFallback
+              style={{ color: isLoggedIn ? userColor : undefined }}
+            >
+              {initial}
+            </AvatarFallback>
           </Avatar>
           {!compact && (
             <div className="flex flex-col items-start truncate text-left">
-              <span className="truncate text-sm font-medium">{displayName}</span>
+              <span className="truncate text-sm font-medium">
+                {displayName}
+              </span>
               {isLoggedIn && email && (
-                <span className="truncate text-[10px] text-muted-foreground">{email}</span>
+                <span className="truncate text-[10px] text-muted-foreground">
+                  {email}
+                </span>
               )}
             </div>
           )}
@@ -77,8 +95,12 @@ export function Profile({ compact = false }: { compact?: boolean }) {
           {isLoggedIn ? (
             <>
               <div className="px-2 py-1.5 border-b border-border/50">
-                <p className="text-xs font-semibold text-foreground truncate">{userName || "User"}</p>
-                <p className="text-[11px] text-muted-foreground truncate">{email}</p>
+                <p className="text-xs font-semibold text-foreground truncate">
+                  {userName || "User"}
+                </p>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  {email}
+                </p>
               </div>
 
               <Button
@@ -119,8 +141,12 @@ export function Profile({ compact = false }: { compact?: boolean }) {
           ) : (
             <>
               <div className="px-2 py-1.5 border-b border-border/50">
-                <p className="text-xs font-semibold text-foreground">{t("sidebar:guestMode")}</p>
-                <p className="text-[11px] text-muted-foreground">{t("sidebar:guestModeDesc")}</p>
+                <p className="text-xs font-semibold text-foreground">
+                  {t("sidebar:guestMode")}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {t("sidebar:guestModeDesc")}
+                </p>
               </div>
 
               <Button
@@ -180,7 +206,11 @@ export function Profile({ compact = false }: { compact?: boolean }) {
       </Popover>
       <SettingsModal open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
       <WelcomeModal open={isEditNameOpen} onOpenChange={setIsEditNameOpen} />
-      <AuthModal open={isAuthOpen} onOpenChange={setIsAuthOpen} initialMode={authMode} />
+      <AuthModal
+        open={isAuthOpen}
+        onOpenChange={setIsAuthOpen}
+        initialMode={authMode}
+      />
     </>
   );
 }

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/strict-void-return, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-condition, complexity */
+/* eslint-disable @typescript-eslint/strict-void-return, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-condition */
 "use client";
 
 import type { Edge, Node } from "@xyflow/react";

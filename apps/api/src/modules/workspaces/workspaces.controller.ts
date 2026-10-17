@@ -10,12 +10,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
+import type { WorkspaceMemberResponseDto } from './dto/workspace-member.dto.js';
+
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { WorkspaceMemberGuard } from '../auth/guards/workspace-member.guard.js';
-import {
-  AddMemberDto,
-  type WorkspaceMemberResponseDto,
-} from './dto/workspace-member.dto.js';
+import { AddMemberDto } from './dto/workspace-member.dto.js';
 import { WorkspacesService } from './workspaces.service.js';
 
 @UseGuards(JwtAuthGuard)

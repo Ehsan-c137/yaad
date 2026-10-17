@@ -28,9 +28,14 @@ function findNodeAndOffset(
   function traverse(current: Node): { node: Node; offset: number } | null {
     if (current.nodeType === Node.TEXT_NODE) {
       const len = current.textContent?.length ?? 0;
+
       if (accumulated + len >= targetOffset) {
-        return { node: current, offset: Math.max(0, targetOffset - accumulated) };
+        return {
+          node: current,
+          offset: Math.max(0, targetOffset - accumulated),
+        };
       }
+
       accumulated += len;
       return null;
     }
@@ -39,6 +44,7 @@ function findNodeAndOffset(
       if (accumulated >= targetOffset) {
         return { node: current.parentNode ?? current, offset: 0 };
       }
+
       accumulated += 1;
       return null;
     }
@@ -57,9 +63,11 @@ function findNodeAndOffset(
   // If target offset is at or beyond the total length, pick the last leaf node
   if (container.lastChild) {
     let last: Node = container.lastChild;
+
     while (last.lastChild) {
       last = last.lastChild;
     }
+
     const len = last.textContent?.length ?? 0;
     return { node: last, offset: len };
   }
@@ -108,6 +116,7 @@ export function getCaretCoordinates(
 
     if (rect.height === 0) {
       const clientRects = range.getClientRects();
+
       if (clientRects.length > 0) {
         rect = clientRects[0];
       }
@@ -119,6 +128,7 @@ export function getCaretCoordinates(
         range.setStart(target.node, target.offset - 1);
         range.setEnd(target.node, target.offset);
         const spanRect = range.getBoundingClientRect();
+
         if (spanRect.height > 0) {
           return {
             top: spanRect.top - containerRect.top,
@@ -133,6 +143,7 @@ export function getCaretCoordinates(
         range.setStart(target.node, target.offset);
         range.setEnd(target.node, target.offset + 1);
         const spanRect = range.getBoundingClientRect();
+
         if (spanRect.height > 0) {
           return {
             top: spanRect.top - containerRect.top,

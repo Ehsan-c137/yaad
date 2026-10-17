@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type { DocumentBlock } from "@yaad/core/types/document";
 
 import { useState } from "react";

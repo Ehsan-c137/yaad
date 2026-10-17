@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { AuthFormProps } from "./types";
+
 import { validateLoginInput } from "./validation";
 
 export function LoginForm({
@@ -27,17 +28,21 @@ export function LoginForm({
     setError(null);
 
     const validation = validateLoginInput(email, password);
+
     if (!validation.isValid) {
       setError(validation.error || "Please check your inputs.");
       return;
     }
 
     setIsLoading(true);
+
     try {
       await authService.login(email.trim(), password);
       onSuccess();
     } catch (err: any) {
-      setError(err.message || "Failed to log in. Please check your credentials.");
+      setError(
+        err.message || "Failed to log in. Please check your credentials.",
+      );
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,6 @@ import { createBlockSlice } from "./block-slice";
 import { createCoreSlice } from "./core-slice";
 import { cancelAutoSave, flushAutoSave } from "./helpers";
 import { createMetaSlice } from "./meta-slice";
-
 import {
   deleteDocumentStoreFromRegistry,
   getExistingDocumentStore,
@@ -21,6 +20,7 @@ export { getExistingDocumentStore, hasDocumentStore };
 
 export function getDocumentStore(pageId: string): StoreApi<DocumentState> {
   let store = getExistingDocumentStore(pageId);
+
   if (!store) {
     store = createStore<DocumentState>()((...args) => ({
       ...createCoreSlice(...args),

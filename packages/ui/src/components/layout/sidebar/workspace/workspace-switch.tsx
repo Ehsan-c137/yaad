@@ -11,12 +11,12 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import { ShareModal } from "@/components/workspace/share-modal";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ShareModal } from "@/components/workspace/share-modal";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 

@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { pages } from '../../../database/schema.js';
+
 import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
 import type {
   DbTransaction,
   MutationHandler,
 } from './mutation-handler.interface.js';
+
+import { pages } from '../../../database/schema.js';
 
 @Injectable()
 export class PageMutationHandler implements MutationHandler {

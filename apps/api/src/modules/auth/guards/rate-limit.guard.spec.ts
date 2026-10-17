@@ -1,5 +1,6 @@
-import { describe, expect, it, beforeEach } from 'vitest';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { RateLimitGuard } from './rate-limit.guard.js';
 
 describe('RateLimitGuard', () => {
@@ -21,6 +22,7 @@ describe('RateLimitGuard', () => {
 
   it('allows requests within rate limit', () => {
     const ctx = createMockContext('127.0.0.1');
+
     for (let i = 0; i < 10; i++) {
       expect(guard.canActivate(ctx)).toBe(true);
     }
@@ -28,11 +30,13 @@ describe('RateLimitGuard', () => {
 
   it('throws 429 Too Many Requests when rate limit is exceeded', () => {
     const ctx = createMockContext('127.0.0.1');
+
     for (let i = 0; i < 10; i++) {
       guard.canActivate(ctx);
     }
 
     expect(() => guard.canActivate(ctx)).toThrow(HttpException);
+
     try {
       guard.canActivate(ctx);
     } catch (err: any) {

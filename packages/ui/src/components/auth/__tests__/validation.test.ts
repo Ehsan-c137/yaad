@@ -47,19 +47,29 @@ describe("Auth Validation (SRP)", () => {
     it("validates both email and password presence", () => {
       expect(validateLoginInput("", "secret").isValid).toBe(false);
       expect(validateLoginInput("user@example.com", "").isValid).toBe(false);
-      expect(validateLoginInput("user@example.com", "secret").isValid).toBe(true);
+      expect(validateLoginInput("user@example.com", "secret").isValid).toBe(
+        true,
+      );
     });
   });
 
   describe("validateRegisterInput", () => {
     it("fails when password and confirmPassword mismatch", () => {
-      const res = validateRegisterInput("user@example.com", "pass123", "pass456");
+      const res = validateRegisterInput(
+        "user@example.com",
+        "pass123",
+        "pass456",
+      );
       expect(res.isValid).toBe(false);
       expect(res.error).toBe("Passwords do not match.");
     });
 
     it("succeeds when all fields are valid and passwords match", () => {
-      const res = validateRegisterInput("user@example.com", "pass123", "pass123");
+      const res = validateRegisterInput(
+        "user@example.com",
+        "pass123",
+        "pass123",
+      );
       expect(res.isValid).toBe(true);
     });
   });

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { CollabGateway } from './collab.gateway.js';
 
 describe('CollabGateway', () => {
@@ -141,7 +142,10 @@ describe('CollabGateway', () => {
     expect(mockSocket.send).toHaveBeenCalledWith(
       expect.stringContaining('"event":"member-kicked"'),
     );
-    expect(mockSocket.close).toHaveBeenCalledWith(4003, 'Removed from workspace');
+    expect(mockSocket.close).toHaveBeenCalledWith(
+      4003,
+      'Removed from workspace',
+    );
   });
 
   it('rejects connection without token when authService is present for shared workspace', async () => {
@@ -185,7 +189,9 @@ describe('CollabGateway', () => {
     });
 
     expect(mockSocket.send).toHaveBeenCalledWith(
-      expect.stringContaining('Forbidden: read-only members (viewers) cannot send document edits'),
+      expect.stringContaining(
+        'Forbidden: read-only members (viewers) cannot send document edits',
+      ),
     );
     expect(mockRoomManager.applyUpdate).not.toHaveBeenCalled();
   });

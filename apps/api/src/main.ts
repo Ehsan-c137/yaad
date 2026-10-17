@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
+
 import { AppModule, ObserveInstrument } from './app.module.js';
 
 async function bootstrap() {
@@ -12,9 +13,7 @@ async function bootstrap() {
   const isProduction = process.env.NODE_ENV === 'production';
   const allowedOrigins = corsOrigin
     ? corsOrigin.split(',').map((o) => o.trim())
-    : isProduction
-      ? false
-      : true;
+    : !isProduction;
 
   app.enableCors({
     origin: allowedOrigins,
@@ -36,4 +35,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
+
 await bootstrap();

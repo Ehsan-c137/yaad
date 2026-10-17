@@ -3,11 +3,20 @@
 import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { authService as defaultAuthService } from "@yaad/core/services/auth-service";
-import { AlertCircle, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  Mail,
+  User,
+} from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { AuthFormProps } from "./types";
+
 import { validateRegisterInput } from "./validation";
 
 export function RegisterForm({
@@ -29,12 +38,14 @@ export function RegisterForm({
     setError(null);
 
     const validation = validateRegisterInput(email, password, confirmPassword);
+
     if (!validation.isValid) {
       setError(validation.error || "Please check your inputs.");
       return;
     }
 
     setIsLoading(true);
+
     try {
       await authService.register(
         email.trim(),

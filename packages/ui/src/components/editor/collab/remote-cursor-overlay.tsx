@@ -1,13 +1,18 @@
 "use client";
 
 import type { RefObject } from "react";
+
 import { useEffect, useState } from "react";
+
 import type { CollabPeer } from "@/hooks/editor/use-collab";
+import type {
+  CursorCoordinates,
+  SelectionRectangle,
+} from "@/lib/cursor-coordinates";
+
 import {
   getCaretCoordinates,
   getSelectionRectangles,
-  type CursorCoordinates,
-  type SelectionRectangle,
 } from "@/lib/cursor-coordinates";
 
 export interface RemoteCursorOverlayProps {
@@ -43,6 +48,7 @@ export function RemoteCursorOverlay({
         const caret = getCaretCoordinates(container, offset);
 
         let selections: SelectionRectangle[] = [];
+
         if (peer.cursor?.selection) {
           selections = getSelectionRectangles(
             container,

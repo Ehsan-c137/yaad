@@ -11,9 +11,10 @@ import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import type { AuthModalProps, AuthMode, AuthViewConfig } from "./types";
+
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
-import type { AuthMode, AuthModalProps, AuthViewConfig } from "./types";
 
 export function AuthModal({
   open,
@@ -98,7 +99,7 @@ export function AuthModal({
   );
 }
 
-export * from "./types";
-export * from "./validation";
 export { LoginForm } from "./login-form";
 export { RegisterForm } from "./register-form";
+export type * from "./types";
+export * from "./validation";

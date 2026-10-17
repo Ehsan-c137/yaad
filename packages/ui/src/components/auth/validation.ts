@@ -2,18 +2,25 @@ import type { ValidationResult } from "./types";
 
 export function validateEmail(email: string): ValidationResult {
   const trimmed = email.trim();
+
   if (!trimmed) {
     return { isValid: false, error: "Please enter your email address." };
   }
+
   // Basic email pattern check
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
+
   if (!emailRegex.test(trimmed)) {
     return { isValid: false, error: "Please enter a valid email address." };
   }
+
   return { isValid: true };
 }
 
-export function validatePassword(password: string, minLength = 6): ValidationResult {
+export function validatePassword(
+  password: string,
+  minLength = 6,
+): ValidationResult {
   if (!password) {
     return { isValid: false, error: "Please enter your password." };
   }
@@ -23,6 +30,7 @@ export function validatePassword(password: string, minLength = 6): ValidationRes
       error: `Password must be at least ${minLength} characters long.`,
     };
   }
+
   return { isValid: true };
 }
 

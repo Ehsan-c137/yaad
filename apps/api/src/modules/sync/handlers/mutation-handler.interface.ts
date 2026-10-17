@@ -1,4 +1,5 @@
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+
 import type * as schema from '../../../database/schema.js';
 import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
 
@@ -8,10 +9,10 @@ export type DbTransaction = Parameters<
 
 export interface MutationHandler {
   readonly entityType: SyncEntityType;
-  apply(
+  apply: (
     tx: DbTransaction,
     mutation: SyncMutationDto,
     version: number,
     workspaceId: string,
-  ): Promise<void>;
+  ) => Promise<void>;
 }

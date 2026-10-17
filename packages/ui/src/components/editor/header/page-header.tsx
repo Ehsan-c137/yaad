@@ -1,21 +1,20 @@
+import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
+import { useUserStore } from "@yaad/core/store/use-user-store";
+import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
+import { Eye, Network, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import { EditableContent } from "@/components/editor/block/editable-content";
 import { Link } from "@/components/ui/link";
+import { ShareModal } from "@/components/workspace/share-modal";
 import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
-
-import { Button } from "@ui/button";
-import { useUserStore } from "@yaad/core/store/use-user-store";
-import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { Eye, Network, Share2 } from "lucide-react";
-import { ShareModal } from "@/components/workspace/share-modal";
 
 import { BookmarkButton } from "./bookmark-button";
 import { CollabPresence } from "./collab-presence";

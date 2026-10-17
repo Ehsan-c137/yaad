@@ -1,5 +1,8 @@
 import type { IWorkspaceMemberService } from "@yaad/core/services/workspace-member-service";
-import type { WorkspaceMember, WorkspaceRole } from "@yaad/core/types/workspace";
+import type {
+  WorkspaceMember,
+  WorkspaceRole,
+} from "@yaad/core/types/workspace";
 
 export interface ShareModalProps {
   open: boolean;
@@ -39,4 +42,3 @@ export interface MemberListProps {
   onRemove: (userId: string) => Promise<void> | void;
   onUpdateRole?: (userId: string, role: WorkspaceRole) => Promise<void> | void;
 }
-

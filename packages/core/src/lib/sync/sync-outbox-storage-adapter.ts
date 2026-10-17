@@ -1,6 +1,8 @@
 import type { StorageAdapter } from "../storage/types";
-import { outboxQueue, type OutboxQueue } from "./outbox-queue";
+import type { OutboxQueue } from "./outbox-queue";
 import type { SyncEntityType, SyncOperation } from "./types";
+
+import { outboxQueue } from "./outbox-queue";
 
 export interface SyncOutboxAdapterOptions {
   queue?: OutboxQueue;
@@ -8,8 +10,8 @@ export interface SyncOutboxAdapterOptions {
 }
 
 export interface SyncOutboxAdapter extends StorageAdapter {
-  withRemoteContext<T>(fn: () => Promise<T>): Promise<T>;
-  getInnerAdapter(): StorageAdapter;
+  withRemoteContext: <T>(fn: () => Promise<T>) => Promise<T>;
+  getInnerAdapter: () => StorageAdapter;
 }
 
 /**
@@ -28,6 +30,7 @@ export function createSyncOutboxAdapter(
 
   const withRemoteContext = async <T>(fn: () => Promise<T>): Promise<T> => {
     isApplyingRemote = true;
+
     try {
       return await fn();
     } finally {
@@ -81,20 +84,26 @@ export function createSyncOutboxAdapter(
     saveDocument: async (doc: any) => {
       await inner.saveDocument(doc);
       let wsId = "ws_personal";
+
       try {
-        const { useWorkspaceStore } = await import("../../store/use-workspace-store");
+        const { useWorkspaceStore } =
+          await import("../../store/use-workspace-store");
         wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
       } catch {}
+
       await enqueue(wsId, "document", doc.id, "upsert", doc);
     },
 
     deleteDocument: async (id: string) => {
       await inner.deleteDocument(id);
       let wsId = "ws_personal";
+
       try {
-        const { useWorkspaceStore } = await import("../../store/use-workspace-store");
+        const { useWorkspaceStore } =
+          await import("../../store/use-workspace-store");
         wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
       } catch {}
+
       await enqueue(wsId, "document", id, "delete", { id });
     },
   };
@@ -104,10 +113,13 @@ export function createSyncOutboxAdapter(
       if (prop in overrides) {
         return overrides[prop];
       }
+
       const val = Reflect.get(target, prop, receiver);
+
       if (typeof val === "function") {
         return val.bind(target);
       }
+
       return val;
     },
   });

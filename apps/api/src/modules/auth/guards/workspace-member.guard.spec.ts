@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { WorkspaceMemberGuard } from './workspace-member.guard.js';
 
 describe('WorkspaceMemberGuard', () => {

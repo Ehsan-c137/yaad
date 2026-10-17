@@ -30,7 +30,6 @@ export class TauriSearchProvider implements SearchProvider {
           let records: TagIndexRecord[] = [];
 
           if (storage.getTagsIndex) {
-            // eslint-disable-next-line no-await-in-loop
             records = await storage.getTagsIndex(tag.id);
             count = records.length;
           }

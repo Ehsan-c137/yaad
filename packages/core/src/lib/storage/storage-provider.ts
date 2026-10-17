@@ -1,10 +1,12 @@
+import type { SyncOutboxAdapter } from "../sync/sync-outbox-storage-adapter";
 import type { StorageAdapter } from "./types";
 
-import { getStorageAdapter } from "./storage-factory";
-import { createSyncOutboxAdapter, type SyncOutboxAdapter } from "../sync/sync-outbox-storage-adapter";
+import { createSyncOutboxAdapter } from "../sync/sync-outbox-storage-adapter";
 import { SyncWorker } from "../sync/sync-worker";
+import { getStorageAdapter } from "./storage-factory";
 
 let enqueueDebounceTimer: any = null;
+
 function handleEnqueue(workspaceId: string) {
   if (enqueueDebounceTimer) clearTimeout(enqueueDebounceTimer);
   enqueueDebounceTimer = setTimeout(() => {

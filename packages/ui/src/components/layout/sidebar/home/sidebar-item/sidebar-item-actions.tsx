@@ -1,4 +1,4 @@
-/* eslint-disable perfectionist/sort-imports, max-lines-per-function, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return */
+/* eslint-disable perfectionist/sort-imports, @typescript-eslint/no-floating-promises, @typescript-eslint/strict-void-return */
 import type { SidebarPageItem } from "@yaad/core/store/use-sidebar-store";
 
 import { ROUTES } from "@yaad/core/constants/routes";
@@ -136,7 +136,9 @@ export function SidebarActions({
           >
             <Copy className="size-3.5 text-muted-foreground" />
             <span>
-              {isDuplicating ? t("sidebar:duplicating") : t("sidebar:duplicate")}
+              {isDuplicating
+                ? t("sidebar:duplicating")
+                : t("sidebar:duplicate")}
             </span>
           </Button>
         )}

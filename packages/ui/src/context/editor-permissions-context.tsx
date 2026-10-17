@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext } from "react";
 import { evaluateWorkspacePermissions } from "@yaad/core/lib/workspace/workspace-permissions";
+import { createContext, useContext } from "react";
+
 import type { WorkspacePermissionsState } from "@/hooks/workspace/use-workspace-permissions";
 
 export type EditorPermissionsContextValue = WorkspacePermissionsState;

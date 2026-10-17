@@ -1,5 +1,8 @@
 import type { IWorkspaceMemberService } from "@yaad/core/services/workspace-member-service";
-import type { WorkspaceMember, WorkspaceRole } from "@yaad/core/types/workspace";
+import type {
+  WorkspaceMember,
+  WorkspaceRole,
+} from "@yaad/core/types/workspace";
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

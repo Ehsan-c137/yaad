@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
+
 import { DatabaseModule } from '../../database/database.module.js';
 import { AuthModule } from '../auth/auth.module.js';
-import { CollabGateway } from './collab.gateway.js';
 import { CollabPersistenceService } from './collab-persistence.service.js';
+import { CollabGateway } from './collab.gateway.js';
 import { COLLAB_PERSISTENCE, ROOM_MANAGER } from './collab.tokens.js';
 import { YjsRoomManager } from './yjs-room-manager.js';
 

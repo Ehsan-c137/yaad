@@ -1,4 +1,6 @@
-import { Inject, Logger } from '@nestjs/common';
+import type { Server, WebSocket } from 'ws';
+
+import { Inject, Logger, Optional } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -8,12 +10,11 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { type Server, type WebSocket } from 'ws';
-import { ROOM_MANAGER } from './collab.tokens.js';
+
 import type { IRoomManager } from './interfaces/room-manager.interface.js';
 
-import { Optional } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service.js';
+import { ROOM_MANAGER } from './collab.tokens.js';
 
 interface ClientContext {
   workspaceId?: string;
@@ -29,10 +30,8 @@ interface ClientContext {
 export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(CollabGateway.name);
   private readonly clientContexts = new Map<WebSocket, ClientContext>();
-
   // Gateway manages its own WebSocket room subscribers (SRP & Law of Demeter compliant)
   private readonly roomSubscribers = new Map<string, Set<WebSocket>>();
-
   @WebSocketServer()
   server!: Server;
 
@@ -54,11 +53,14 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: WebSocket): void {
     const ctx = this.clientContexts.get(client);
+
     if (ctx?.workspaceId && ctx?.documentId) {
       const roomKey = this.getRoomKey(ctx.workspaceId, ctx.documentId);
       const subscribers = this.roomSubscribers.get(roomKey);
+
       if (subscribers) {
         subscribers.delete(client);
+
         if (subscribers.size === 0) {
           this.roomSubscribers.delete(roomKey);
         }
@@ -93,16 +95,22 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     rawData: any,
   ): Promise<void> {
-    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
-      ? rawData.data
-      : (rawData ?? {});
+    const data =
+      rawData &&
+      typeof rawData === 'object' &&
+      'data' in rawData &&
+      rawData.data
+        ? rawData.data
+        : (rawData ?? {});
     const workspaceId = data.workspaceId ?? rawData?.workspaceId;
     const documentId = data.documentId ?? rawData?.documentId;
     const token = data.token ?? rawData?.token;
     const stateVector = data.stateVector ?? rawData?.stateVector;
 
     if (!workspaceId || !documentId) {
-      this.logger.warn(`join-room received without workspaceId or documentId: ${JSON.stringify(rawData)}`);
+      this.logger.warn(
+        `join-room received without workspaceId or documentId: ${JSON.stringify(rawData)}`,
+      );
       return;
     }
 
@@ -129,6 +137,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
             payload.sub,
             workspaceId,
           );
+
           if (!isMember) {
             client.send(
               JSON.stringify({
@@ -139,8 +148,11 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
             client.close(4003, 'Forbidden');
             return;
           }
+
           authenticatedUserId = payload.sub;
-          userRole = (await this.authService.getUserRole(payload.sub, workspaceId)) ?? 'member';
+          userRole =
+            (await this.authService.getUserRole(payload.sub, workspaceId)) ??
+            'member';
         } catch {
           client.send(
             JSON.stringify({
@@ -165,10 +177,12 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // 1. Manage WebSocket subscriber registration in Gateway
     let subscribers = this.roomSubscribers.get(roomKey);
+
     if (!subscribers) {
       subscribers = new Set<WebSocket>();
       this.roomSubscribers.set(roomKey, subscribers);
     }
+
     subscribers.add(client);
 
     // 2. Acquire room in CRDT RoomManager
@@ -205,6 +219,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       for (const peer of subscribers) {
         if (peer !== client && peer.readyState === 1) {
           const peerCtx = this.clientContexts.get(peer);
+
           if (peerCtx?.awarenessData) {
             client.send(
               JSON.stringify({
@@ -234,9 +249,13 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     rawData: any,
   ): Promise<void> {
-    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
-      ? rawData.data
-      : (rawData ?? {});
+    const data =
+      rawData &&
+      typeof rawData === 'object' &&
+      'data' in rawData &&
+      rawData.data
+        ? rawData.data
+        : (rawData ?? {});
     const workspaceId = data.workspaceId ?? rawData?.workspaceId;
     const documentId = data.documentId ?? rawData?.documentId;
     const update = data.update ?? rawData?.update;
@@ -245,11 +264,13 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // Enforce read-only restriction: viewers cannot broadcast or persist edits
     const ctx = this.clientContexts.get(client);
+
     if (ctx?.role === 'viewer') {
       client.send(
         JSON.stringify({
           event: 'error',
-          message: 'Forbidden: read-only members (viewers) cannot send document edits',
+          message:
+            'Forbidden: read-only members (viewers) cannot send document edits',
         }),
       );
       return;
@@ -272,7 +293,9 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const binaryUpdate = Buffer.from(update, 'base64');
       await this.roomManager.applyUpdate(workspaceId, documentId, binaryUpdate);
     } catch (err: any) {
-      this.logger.warn(`Could not persist CRDT update for ${documentId}: ${err.message}`);
+      this.logger.warn(
+        `Could not persist CRDT update for ${documentId}: ${err.message}`,
+      );
     }
   }
 
@@ -285,9 +308,13 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     rawData: any,
   ): void {
-    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
-      ? rawData.data
-      : (rawData ?? {});
+    const data =
+      rawData &&
+      typeof rawData === 'object' &&
+      'data' in rawData &&
+      rawData.data
+        ? rawData.data
+        : (rawData ?? {});
     const workspaceId = data.workspaceId ?? rawData?.workspaceId;
     const documentId = data.documentId ?? rawData?.documentId;
     const awarenessData = data.awarenessData ?? rawData?.awarenessData;
@@ -295,6 +322,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!workspaceId || !documentId) return;
 
     const ctx = this.clientContexts.get(client);
+
     if (ctx) {
       ctx.awarenessData = awarenessData;
     }
@@ -319,9 +347,13 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: WebSocket,
     @MessageBody() rawData: any,
   ): void {
-    const data = (rawData && typeof rawData === 'object' && 'data' in rawData && rawData.data)
-      ? rawData.data
-      : (rawData ?? {});
+    const data =
+      rawData &&
+      typeof rawData === 'object' &&
+      'data' in rawData &&
+      rawData.data
+        ? rawData.data
+        : (rawData ?? {});
     const workspaceId = data.workspaceId ?? rawData?.workspaceId;
     const tree = data.tree ?? rawData?.tree;
 
@@ -329,11 +361,13 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // Enforce read-only restriction: viewers cannot reorganize workspace tree
     const ctx = this.clientContexts.get(client);
+
     if (ctx?.role === 'viewer') {
       client.send(
         JSON.stringify({
           event: 'error',
-          message: 'Forbidden: read-only members (viewers) cannot reorganize workspace tree',
+          message:
+            'Forbidden: read-only members (viewers) cannot reorganize workspace tree',
         }),
       );
       return;
@@ -367,6 +401,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ...message,
       data: message,
     });
+
     for (const peer of subscribers) {
       if (peer !== excludeClient && peer.readyState === 1) {
         peer.send(payload);
@@ -388,7 +423,11 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     for (const [peer, ctx] of this.clientContexts.entries()) {
-      if (peer !== excludeClient && ctx.workspaceId === workspaceId && peer.readyState === 1) {
+      if (
+        peer !== excludeClient &&
+        ctx.workspaceId === workspaceId &&
+        peer.readyState === 1
+      ) {
         peer.send(payload);
       }
     }
@@ -417,8 +456,10 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     for (const [peer, ctx] of this.clientContexts.entries()) {
       const peerUserId = ctx.userId ?? ctx.awarenessData?.user?.id;
+
       if (ctx.workspaceId === workspaceId && peerUserId === userId) {
         ctx.role = newRole;
+
         if (peer.readyState === 1) {
           peer.send(payload);
         }
@@ -429,10 +470,7 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /**
    * Notifies and disconnects a kicked member from the workspace sessions in real-time.
    */
-  notifyMemberRemoved(
-    workspaceId: string,
-    userId: string,
-  ): void {
+  notifyMemberRemoved(workspaceId: string, userId: string): void {
     const payload = JSON.stringify({
       event: 'member-kicked',
       workspaceId,
@@ -446,8 +484,14 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     for (const [peer, ctx] of this.clientContexts.entries()) {
       const peerUserId = ctx.userId ?? ctx.awarenessData?.user?.id;
-      if (ctx.workspaceId === workspaceId && peerUserId === userId && peer.readyState === 1) {
+
+      if (
+        ctx.workspaceId === workspaceId &&
+        peerUserId === userId &&
+        peer.readyState === 1
+      ) {
         peer.send(payload);
+
         try {
           peer.close(4003, 'Removed from workspace');
         } catch {

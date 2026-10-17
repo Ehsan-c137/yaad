@@ -1,4 +1,4 @@
-/* eslint-disable max-statements, @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/require-await */
 import type { DocumentJSON } from "@yaad/core/types/document";
 import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 

@@ -7,7 +7,6 @@ export class AddMemberDto {
   @IsEmail({}, { message: 'Must be a valid email address' })
   @IsNotEmpty()
   email!: string;
-
   @IsOptional()
   @IsIn(WORKSPACE_ROLES, {
     message: `Role must be one of: ${WORKSPACE_ROLES.join(', ')}`,

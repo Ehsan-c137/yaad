@@ -12,6 +12,7 @@ export function ShareLinkBar({ shareUrl }: ShareLinkBarProps) {
 
   const handleCopy = async () => {
     if (!shareUrl) return;
+
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Workspace } from "@yaad/core/types/workspace";
+
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -19,6 +20,7 @@ export function WorkspaceHomePage({ workspace }: WorkspaceHomePageProps) {
     if (workspaceId) {
       return <JoinWorkspacePrompt workspaceId={workspaceId} />;
     }
+
     return null;
   }
 

@@ -32,7 +32,6 @@ interface BlockRendererProps {
   block: DocumentBlock;
 }
 
-/* eslint-disable complexity */
 export function BlockRenderer({ block }: BlockRendererProps) {
   switch (block.type) {
     case "separator":

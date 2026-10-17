@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+
 import type { SyncEntityType } from '../dto/sync.dto.js';
-import { DocumentMutationHandler } from './document-mutation.handler.js';
 import type { MutationHandler } from './mutation-handler.interface.js';
+
+import { DocumentMutationHandler } from './document-mutation.handler.js';
 import { PageMutationHandler } from './page-mutation.handler.js';
 import { TagMutationHandler } from './tag-mutation.handler.js';
 import { WorkspaceMutationHandler } from './workspace-mutation.handler.js';
@@ -31,11 +33,13 @@ export class SyncHandlerRegistry {
 
   get(entityType: SyncEntityType): MutationHandler {
     const handler = this.handlers.get(entityType);
+
     if (!handler) {
       throw new BadRequestException(
         `Unsupported entity type for synchronization: "${entityType}"`,
       );
     }
+
     return handler;
   }
 }

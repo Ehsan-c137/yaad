@@ -1,11 +1,7 @@
 export type SyncEntityType =
-  | "workspace"
-  | "workspace_tree"
-  | "page"
-  | "document"
-  | "tag";
+  "document" | "page" | "tag" | "workspace_tree" | "workspace";
 
-export type SyncOperation = "upsert" | "delete";
+export type SyncOperation = "delete" | "upsert";
 
 export interface OutboxItem {
   id: string; // clientMutationId
@@ -17,11 +13,11 @@ export interface OutboxItem {
   timestamp: number;
 }
 
-export type SyncStatus = "idle" | "syncing" | "offline" | "error";
+export type SyncStatus = "error" | "idle" | "offline" | "syncing";
 
 export interface ISyncWorker {
-  start(): void;
-  stop(): void;
-  syncNow(workspaceId?: string): Promise<void>;
-  getStatus(): SyncStatus;
+  start: () => void;
+  stop: () => void;
+  syncNow: (workspaceId?: string) => Promise<void>;
+  getStatus: () => SyncStatus;
 }

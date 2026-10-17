@@ -1,7 +1,9 @@
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { useUserStore } from "@yaad/core/store/use-user-store";
 import type { IWorkspaceMemberService } from "@yaad/core/services/workspace-member-service";
+
+import { renderHook, waitFor } from "@testing-library/react";
+import { useUserStore } from "@yaad/core/store/use-user-store";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import {
   emitLiveWorkspaceRoleChange,
   useWorkspacePermissions,
@@ -59,7 +61,9 @@ describe("useWorkspacePermissions (Unit Test)", () => {
     };
 
     const { result } = renderHook(() =>
-      useWorkspacePermissions("ws_collab", { memberService: mockMemberService }),
+      useWorkspacePermissions("ws_collab", {
+        memberService: mockMemberService,
+      }),
     );
 
     await waitFor(() => {
@@ -93,7 +97,9 @@ describe("useWorkspacePermissions (Unit Test)", () => {
     };
 
     const { result } = renderHook(() =>
-      useWorkspacePermissions("ws_collab", { memberService: mockMemberService }),
+      useWorkspacePermissions("ws_collab", {
+        memberService: mockMemberService,
+      }),
     );
 
     await waitFor(() => {
@@ -127,7 +133,9 @@ describe("useWorkspacePermissions (Unit Test)", () => {
     };
 
     const { result } = renderHook(() =>
-      useWorkspacePermissions("ws_collab", { memberService: mockMemberService }),
+      useWorkspacePermissions("ws_collab", {
+        memberService: mockMemberService,
+      }),
     );
 
     await waitFor(() => {

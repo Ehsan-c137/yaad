@@ -1,10 +1,11 @@
 "use client";
 
+import type { Workspace } from "@yaad/core/types/workspace";
+
 import { Button } from "@ui/button";
 import { workspaceMemberService } from "@yaad/core/services/workspace-member-service";
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import type { Workspace } from "@yaad/core/types/workspace";
 import { Loader2, LogIn, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -34,6 +35,7 @@ export function JoinWorkspacePrompt({
     }
 
     setIsJoining(true);
+
     try {
       const res = await workspaceMemberService.joinWorkspace(workspaceId);
       const newWorkspace: Workspace = {
@@ -86,7 +88,9 @@ export function JoinWorkspacePrompt({
               ) : (
                 <UserPlus className="size-4" />
               )}
-              <span>{isJoining ? t("joiningWorkspace") : t("joinWorkspace")}</span>
+              <span>
+                {isJoining ? t("joiningWorkspace") : t("joinWorkspace")}
+              </span>
             </Button>
           ) : (
             <Button

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { Button } from "@ui/button";
 import {
   Select,

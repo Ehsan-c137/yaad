@@ -117,15 +117,18 @@ export class LocalJsonAdapter implements StorageAdapter {
       );
       const docs: DocumentJSON[] = [];
       const CHUNK_SIZE = 25;
+
       for (let i = 0; i < docKeys.length; i += CHUNK_SIZE) {
         const chunk = docKeys.slice(i, i + CHUNK_SIZE);
         const chunkDocs = await Promise.all(
           chunk.map((k) => get<DocumentJSON>(k)),
         );
+
         for (const doc of chunkDocs) {
           if (doc) docs.push(doc);
         }
       }
+
       return docs;
     } catch (error) {
       console.error("[LocalJsonAdapter] Error fetching all documents:", error);
@@ -215,6 +218,7 @@ export class LocalJsonAdapter implements StorageAdapter {
       );
       const results: { id: string; blob: Blob }[] = [];
       const CHUNK_SIZE = 10;
+
       for (let i = 0; i < blobKeys.length; i += CHUNK_SIZE) {
         const chunk = blobKeys.slice(i, i + CHUNK_SIZE);
         const chunkBlobs = await Promise.all(
@@ -224,10 +228,12 @@ export class LocalJsonAdapter implements StorageAdapter {
             return blob ? { id, blob } : null;
           }),
         );
+
         for (const item of chunkBlobs) {
           if (item) results.push(item);
         }
       }
+
       return results;
     } catch (error) {
       console.error("[LocalJsonAdapter] Error fetching all blobs:", error);

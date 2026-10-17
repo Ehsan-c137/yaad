@@ -1,8 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
 import { createRef } from "react";
-import { RemoteCursorOverlay } from "../remote-cursor-overlay";
+import { describe, expect, it } from "vitest";
+
 import type { CollabPeer } from "@/hooks/editor/use-collab";
+
+import { RemoteCursorOverlay } from "../remote-cursor-overlay";
 
 describe("RemoteCursorOverlay (Unit Tests)", () => {
   it("renders nothing when peers list is empty", () => {
@@ -65,7 +67,9 @@ describe("RemoteCursorOverlay (Unit Tests)", () => {
 
     expect(screen.getByTestId("remote-cursor-overlay")).toBeDefined();
     expect(screen.getByTestId("remote-caret-peer_1")).toBeDefined();
-    expect(screen.getByTestId("remote-name-tag-peer_1").textContent).toContain("Alice");
+    expect(screen.getByTestId("remote-name-tag-peer_1").textContent).toContain(
+      "Alice",
+    );
   });
 
   it("renders selection highlight when peer has a text selection", () => {
@@ -95,6 +99,8 @@ describe("RemoteCursorOverlay (Unit Tests)", () => {
       />,
     );
 
-    expect(screen.getByTestId("remote-name-tag-peer_2").textContent).toContain("Bob");
+    expect(screen.getByTestId("remote-name-tag-peer_2").textContent).toContain(
+      "Bob",
+    );
   });
 });

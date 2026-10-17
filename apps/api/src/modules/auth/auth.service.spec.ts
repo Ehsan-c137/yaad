@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import bcrypt from 'bcryptjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { AuthService } from './auth.service.js';
 
 describe('AuthService', () => {
@@ -15,7 +16,9 @@ describe('AuthService', () => {
       insert: vi.fn(),
       transaction: vi.fn(async (cb) => {
         const tx = {
-          insert: vi.fn().mockReturnValue({ values: vi.fn().mockResolvedValue(undefined) }),
+          insert: vi
+            .fn()
+            .mockReturnValue({ values: vi.fn().mockResolvedValue(undefined) }),
         };
         return cb(tx);
       }),
@@ -23,7 +26,9 @@ describe('AuthService', () => {
 
     mockJwtService = {
       signAsync: vi.fn().mockResolvedValue('mock_jwt_token'),
-      verifyAsync: vi.fn().mockResolvedValue({ sub: 'user_1', email: 'test@yaad.app' }),
+      verifyAsync: vi
+        .fn()
+        .mockResolvedValue({ sub: 'user_1', email: 'test@yaad.app' }),
     };
 
     service = new AuthService(mockDb, mockJwtService);

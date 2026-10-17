@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { AuthModule } from '../auth/auth.module.js';
 import { CollabModule } from '../collab/collab.module.js';
 import { WorkspacesController } from './workspaces.controller.js';

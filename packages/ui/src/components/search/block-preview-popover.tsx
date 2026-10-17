@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type { Tag } from "@yaad/core/types/document";
 import type { SearchItem } from "@yaad/core/types/search";
 
