@@ -2,12 +2,17 @@ import { Button, buttonVariants } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { FileText, Network, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { SearchBox } from "@/components/search/search-command";
 import { Link } from "@/components/ui/link";
 import { Separator } from "@/components/ui/separator";
+import {
+  resetDndState,
+  useSidebarDndStore,
+} from "@/hooks/sidebar/use-sidebar-dnd";
 import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { isFirefox } from "@/lib/browser";
 import { styles } from "@/lib/design-token";
@@ -47,9 +52,62 @@ export function SidebarHome() {
           {rootPageIds.map((pageId) => (
             <SidebarPageItem key={pageId} pageId={pageId} />
           ))}
+          <SidebarRootDropZone />
         </nav>
       )}
     </>
+  );
+}
+
+function SidebarRootDropZone() {
+  const { t } = useTranslation("sidebar");
+  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
+  const { isReadOnly } = useWorkspacePermissions(activeWorkspaceId);
+  const rootPageIds = useSidebarStore((s) => s.rootPageIds);
+  const movePageInTree = useSidebarStore((s) => s.movePageInTree);
+  const { draggedPageId } = useSidebarDndStore();
+  const [isOver, setIsOver] = useState(false);
+
+  if (!draggedPageId || isReadOnly || rootPageIds.length === 0) return null;
+
+  const lastRootId = rootPageIds[rootPageIds.length - 1];
+  if (lastRootId === draggedPageId) return null;
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "move";
+    if (!isOver) setIsOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOver(false);
+    if (!draggedPageId || !lastRootId) return;
+    movePageInTree(draggedPageId, lastRootId, "after");
+    resetDndState();
+  };
+
+  return (
+    <div
+      data-testid="sidebar-root-drop-zone"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={cn(
+        "my-1.5 h-7 w-full rounded-full border border-dashed transition-all duration-(--spring-duration) ease-(--spring) flex items-center justify-center text-xs select-none",
+        isOver
+          ? "border-(--accent-blue) bg-(--accent-blue-tint) text-(--accent-blue) font-medium shadow-xs"
+          : "border-border/50 text-muted-foreground/70 hover:border-border",
+      )}
+    >
+      <span>{t("moveToRoot")}</span>
+    </div>
   );
 }
 

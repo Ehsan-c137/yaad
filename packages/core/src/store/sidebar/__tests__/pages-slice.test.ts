@@ -552,3 +552,144 @@ describe("pages-slice tree mutations (Unit Test)", () => {
     ]);
   });
 });
+
+describe("pages-slice movePageInTree (Unit Test)", () => {
+  it("reorders root pages 'before' another root page", () => {
+    resetStore(
+      {
+        a: makePage("a"),
+        b: makePage("b"),
+        c: makePage("c"),
+      },
+      ["a", "b", "c"],
+    );
+
+    useSidebarStore.getState().movePageInTree("c", "a", "before");
+
+    expect(useSidebarStore.getState().rootPageIds).toEqual(["c", "a", "b"]);
+    expect(useSidebarStore.getState().pages.c?.parentId).toBeNull();
+  });
+
+  it("reorders root pages 'after' another root page", () => {
+    resetStore(
+      {
+        a: makePage("a"),
+        b: makePage("b"),
+        c: makePage("c"),
+      },
+      ["a", "b", "c"],
+    );
+
+    useSidebarStore.getState().movePageInTree("a", "b", "after");
+
+    expect(useSidebarStore.getState().rootPageIds).toEqual(["b", "a", "c"]);
+  });
+
+  it("nests a root page 'inside' another page, setting parentId and expanding parent", () => {
+    resetStore(
+      {
+        parent: makePage("parent", { isExpanded: false }),
+        page: makePage("page"),
+      },
+      ["parent", "page"],
+    );
+
+    useSidebarStore.getState().movePageInTree("page", "parent", "inside");
+
+    const state = useSidebarStore.getState();
+    expect(state.rootPageIds).toEqual(["parent"]);
+    expect(state.pages.page?.parentId).toBe("parent");
+    expect(state.pages.parent?.childrenIds).toEqual(["page"]);
+    expect(state.pages.parent?.isExpanded).toBe(true);
+  });
+
+  it("moves a nested page out to root level before another root page", () => {
+    resetStore(
+      {
+        parent: makePage("parent", { childrenIds: ["child"] }),
+        child: makePage("child", { parentId: "parent" }),
+        root2: makePage("root2"),
+      },
+      ["parent", "root2"],
+    );
+
+    useSidebarStore.getState().movePageInTree("child", "parent", "before");
+
+    const state = useSidebarStore.getState();
+    expect(state.rootPageIds).toEqual(["child", "parent", "root2"]);
+    expect(state.pages.child?.parentId).toBeNull();
+    expect(state.pages.parent?.childrenIds).toEqual([]);
+  });
+
+  it("reorders children inside a parent page", () => {
+    resetStore(
+      {
+        parent: makePage("parent", { childrenIds: ["c1", "c2", "c3"] }),
+        c1: makePage("c1", { parentId: "parent" }),
+        c2: makePage("c2", { parentId: "parent" }),
+        c3: makePage("c3", { parentId: "parent" }),
+      },
+      ["parent"],
+    );
+
+    useSidebarStore.getState().movePageInTree("c3", "c1", "before");
+
+    const state = useSidebarStore.getState();
+    expect(state.pages.parent?.childrenIds).toEqual(["c3", "c1", "c2"]);
+  });
+
+  it("moves a child from one parent to inside another parent", () => {
+    resetStore(
+      {
+        p1: makePage("p1", { childrenIds: ["c1"] }),
+        p2: makePage("p2", { childrenIds: [], isExpanded: false }),
+        c1: makePage("c1", { parentId: "p1" }),
+      },
+      ["p1", "p2"],
+    );
+
+    useSidebarStore.getState().movePageInTree("c1", "p2", "inside");
+
+    const state = useSidebarStore.getState();
+    expect(state.pages.p1?.childrenIds).toEqual([]);
+    expect(state.pages.p2?.childrenIds).toEqual(["c1"]);
+    expect(state.pages.p2?.isExpanded).toBe(true);
+    expect(state.pages.c1?.parentId).toBe("p2");
+  });
+
+  it("prevents circular moves (moving a parent inside its own descendant is a no-op)", () => {
+    resetStore(
+      {
+        grandparent: makePage("grandparent", { childrenIds: ["parent"] }),
+        parent: makePage("parent", {
+          parentId: "grandparent",
+          childrenIds: ["child"],
+        }),
+        child: makePage("child", { parentId: "parent" }),
+      },
+      ["grandparent"],
+    );
+
+    useSidebarStore.getState().movePageInTree("grandparent", "child", "inside");
+
+    const state = useSidebarStore.getState();
+    expect(state.rootPageIds).toEqual(["grandparent"]);
+    expect(state.pages.grandparent?.parentId).toBeNull();
+    expect(state.pages.child?.childrenIds).toEqual([]);
+  });
+
+  it("moving a page to itself or non-existent pages is a no-op", () => {
+    resetStore(
+      {
+        a: makePage("a"),
+      },
+      ["a"],
+    );
+
+    useSidebarStore.getState().movePageInTree("a", "a", "before");
+    useSidebarStore.getState().movePageInTree("a", "ghost", "inside");
+    useSidebarStore.getState().movePageInTree("ghost", "a", "inside");
+
+    expect(useSidebarStore.getState().rootPageIds).toEqual(["a"]);
+  });
+});

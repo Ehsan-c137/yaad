@@ -80,5 +80,6 @@
   "signIn": "Sign in",
   "createAccount": "Create account",
   "guestMode": "Guest Mode",
-  "guestModeDesc": "Sign in to sync across devices"
+  "guestModeDesc": "Sign in to sync across devices",
+  "moveToRoot": "Move to root"
 }

@@ -4,7 +4,7 @@ import { generatePageId } from "@yaad/core/lib/id";
 import { documentService } from "@yaad/core/services/document-service";
 import { workspaceService } from "@yaad/core/services/workspace-service";
 
-import type { SidebarPagesSlice, SidebarState } from "./types";
+import type { DropPosition, SidebarPagesSlice, SidebarState } from "./types";
 
 import { useTabStore } from "../use-tab-store";
 import {
@@ -13,6 +13,7 @@ import {
   emptyTrashDocuments,
   insertCreatedPageInTree,
   insertDuplicatedPageInTree,
+  movePageInTreeState,
   parseWorkspaceTreeNodes,
   persistWorkspaceTree,
   registerSubPageInTreeState,
@@ -25,7 +26,12 @@ import {
   updatePageTitleInTreeState,
 } from "./helpers";
 
-export { collectPageSubtree, persistWorkspaceTree, setCurrentWorkspaceId };
+export {
+  collectPageSubtree,
+  movePageInTreeState,
+  persistWorkspaceTree,
+  setCurrentWorkspaceId,
+};
 
 export const createPagesSlice: StateCreator<
   SidebarState,
@@ -37,8 +43,15 @@ export const createPagesSlice: StateCreator<
     (rawSet as any)((state: SidebarState) => {
       const next = typeof updater === "function" ? updater(state) : updater;
 
-      if (next?.pages && next.pages !== state.pages) {
-        persistWorkspaceTree(next.pages, undefined, next.rootPageIds ?? state.rootPageIds);
+      if (
+        (next?.pages && next.pages !== state.pages) ||
+        (next?.rootPageIds && next.rootPageIds !== state.rootPageIds)
+      ) {
+        persistWorkspaceTree(
+          next.pages ?? state.pages,
+          undefined,
+          next.rootPageIds ?? state.rootPageIds,
+        );
       }
 
       return next;
@@ -167,6 +180,16 @@ export const createPagesSlice: StateCreator<
 
     removePageFromTree: (pageId: string) => {
       get().deletePage(pageId);
+    },
+
+    movePageInTree: (
+      sourcePageId: string,
+      targetPageId: string,
+      position: DropPosition,
+    ) => {
+      set((state) =>
+        movePageInTreeState(state, sourcePageId, targetPageId, position),
+      );
     },
   };
 };

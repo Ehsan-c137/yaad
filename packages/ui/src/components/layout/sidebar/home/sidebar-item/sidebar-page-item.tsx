@@ -5,13 +5,14 @@ import type { SidebarPageItem as SidebarPageItemType } from "@yaad/core/store/us
 import type React from "react";
 
 import { Button } from "@ui/button";
+import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { ChevronRight, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { useSidebarPageDnd } from "@/hooks/sidebar/use-sidebar-dnd";
 import { useSidebarPageItem } from "@/hooks/sidebar/use-sidebar-page-item";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
-import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { cn } from "@/lib/utils";
 
 import { SidebarItemOptions } from "./sidebar-item-options";
@@ -50,12 +51,29 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
     handleCreateSubpage,
   } = useSidebarPageItem(pageId);
   const isMobile = useMediaQuery("(max-width: 640px)");
+  const {
+    isDragging,
+    isDropTarget,
+    activePosition,
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useSidebarPageDnd(pageId, isReadOnly);
 
   if (!page || page.isDeleted) return null;
 
   return (
     <div className="flex w-full flex-col select-none min-h-0 max-h-auto">
       <div
+        data-testid={`sidebar-page-item-${pageId}`}
+        draggable={!isReadOnly}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         className={cn(
           "group relative flex w-full items-center",
           "my-px rounded-full px-2",
@@ -63,9 +81,34 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
           isActive
             ? "bg-(--accent-blue-tint)"
             : "hover:bg-foreground/5 dark:hover:bg-white/6",
+          isDragging &&
+            "opacity-40 scale-[0.98] border border-dashed border-primary/40",
+          isDropTarget &&
+            activePosition === "inside" &&
+            "ring-2 ring-(--accent-blue) bg-(--accent-blue-tint) shadow-xs",
         )}
         style={getIndentStyle(depth)}
       >
+        {isDropTarget && activePosition === "before" && (
+          <div
+            data-testid="drop-indicator-before"
+            className="pointer-events-none absolute -top-0.5 start-1 end-1 z-30 flex items-center"
+          >
+            <div className="size-1.5 rounded-full bg-(--accent-blue) ring-2 ring-background" />
+            <div className="h-0.5 flex-1 rounded-full bg-(--accent-blue) shadow-[0_0_6px_var(--accent-blue)]" />
+          </div>
+        )}
+
+        {isDropTarget && activePosition === "after" && (
+          <div
+            data-testid="drop-indicator-after"
+            className="pointer-events-none absolute -bottom-0.5 start-1 end-1 z-30 flex items-center"
+          >
+            <div className="size-1.5 rounded-full bg-(--accent-blue) ring-2 ring-background" />
+            <div className="h-0.5 flex-1 rounded-full bg-(--accent-blue) shadow-[0_0_6px_var(--accent-blue)]" />
+          </div>
+        )}
+
         <SidebarPageHeader
           pageId={pageId}
           page={page}
@@ -77,11 +120,17 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
         />
 
         {isMobile ? (
-          <div className="shrink-0 pe-0.5">
+          <div
+            className="shrink-0 pe-0.5"
+            draggable={false}
+            onDragStart={(e) => e.stopPropagation()}
+          >
             <SidebarItemOptions pageId={pageId} />
           </div>
         ) : (
           <div
+            draggable={false}
+            onDragStart={(e) => e.stopPropagation()}
             className={cn(
               "ms-auto flex shrink-0 items-center gap-0.5 pe-0.5",
               "opacity-0 transition-opacity duration-(--press-duration)",
@@ -98,6 +147,8 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
                 title={t("sidebar:addSubPage")}
                 aria-label={t("sidebar:addSubPage")}
                 onClick={handleCreateSubpage}
+                draggable={false}
+                onDragStart={(e) => e.stopPropagation()}
                 className="size-5 rounded-sm p-0 text-muted-foreground hover:bg-foreground/8 hover:text-foreground"
               >
                 <Plus className="size-3.5" />
@@ -150,6 +201,8 @@ function SidebarPageHeader({
         type="button"
         variant="ghost"
         size="icon-xs"
+        draggable={false}
+        onDragStart={(e) => e.stopPropagation()}
         onClick={onToggleExpand}
         aria-label={
           page.isExpanded

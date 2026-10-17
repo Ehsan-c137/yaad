@@ -5,14 +5,23 @@ import { generateBlockId } from "@yaad/core/lib/id";
 import { documentService } from "@yaad/core/services/document-service";
 import { workspaceService } from "@yaad/core/services/workspace-service";
 
-import type { SidebarPageItem, SidebarPageMap, SidebarState } from "./types";
+import type {
+  DropPosition,
+  SidebarPageItem,
+  SidebarPageMap,
+  SidebarState,
+} from "./types";
 
 import { useTabStore } from "../use-tab-store";
 
 let currentWorkspaceId: string | null = null;
 const saveTreeTimersMap = new Map<string, ReturnType<typeof setTimeout>>();
 
-type TreeChangeCallback = (workspaceId: string, treeNodes: WorkspacePageMeta[]) => void;
+type TreeChangeCallback = (
+  workspaceId: string,
+  treeNodes: WorkspacePageMeta[],
+) => void;
+
 const treeChangeListeners = new Set<TreeChangeCallback>();
 
 export function onWorkspaceTreePersisted(cb: TreeChangeCallback): () => void {
@@ -26,12 +35,14 @@ export function persistWorkspaceTree(
   rootPageIds?: string[],
 ) {
   let wsId = workspaceId ?? currentWorkspaceId;
+
   if (!wsId) {
     try {
       const activeStorage =
         typeof localStorage !== "undefined"
           ? localStorage.getItem("active-workspace-storage")
           : null;
+
       if (activeStorage) {
         const parsed = JSON.parse(activeStorage);
         wsId = parsed?.state?.activeWorkspaceId;
@@ -51,7 +62,10 @@ export function persistWorkspaceTree(
   const timer = setTimeout(() => {
     void (async () => {
       try {
-        const nodes = Object.values(pages).filter((p): p is SidebarPageItem => Boolean(p));
+        const nodes = Object.values(pages).filter((p): p is SidebarPageItem =>
+          Boolean(p),
+        );
+
         if (rootPageIds && rootPageIds.length > 0) {
           const rootOrderMap = new Map(rootPageIds.map((id, idx) => [id, idx]));
           nodes.sort((a, b) => {
@@ -60,6 +74,7 @@ export function persistWorkspaceTree(
               const orderB = rootOrderMap.get(b.id) ?? 9999;
               return orderA - orderB;
             }
+
             return 0;
           });
         }
@@ -86,7 +101,10 @@ export function persistWorkspaceTree(
           }
         });
 
-        if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined") {
+        if (
+          typeof window !== "undefined" &&
+          typeof BroadcastChannel !== "undefined"
+        ) {
           try {
             const channel = new BroadcastChannel("yaad-sync-channel");
             channel.postMessage({ type: "tree-persisted", workspaceId: wsId });
@@ -535,4 +553,106 @@ export async function emptyTrashDocuments(
   );
 
   return trashedIds;
+}
+
+/* eslint-disable-next-line max-params */
+export function movePageInTreeState(
+  state: SidebarState,
+  sourceId: string,
+  targetId: string,
+  position: DropPosition,
+): Partial<SidebarState> {
+  if (!sourceId || !targetId || sourceId === targetId) return state;
+
+  const sourcePage = state.pages[sourceId];
+  const targetPage = state.pages[targetId];
+  if (!sourcePage || !targetPage) return state;
+
+  // Prevent circular hierarchy: cannot drop into descendant of source
+  const sourceDescendants = collectPageSubtree(state.pages, sourceId);
+  if (sourceDescendants.has(targetId)) return state;
+
+  const nextPages: Record<string, SidebarPageItem> = {
+    ...(state.pages as Record<string, SidebarPageItem>),
+  };
+  let nextRootPageIds = [...state.rootPageIds];
+
+  const now = Date.now();
+
+  // 1. Remove source from old parent or root
+  const oldParentId = sourcePage.parentId;
+
+  if (oldParentId) {
+    const oldParent = nextPages[oldParentId];
+    nextPages[oldParentId] = {
+      ...oldParent,
+      childrenIds: oldParent.childrenIds.filter((id) => id !== sourceId),
+      updatedAt: now,
+    };
+  } else {
+    nextRootPageIds = nextRootPageIds.filter((id) => id !== sourceId);
+  }
+
+  // 2. Insert into new location
+  if (position === "inside") {
+    const target = nextPages[targetId];
+    const nextChildren = target.childrenIds.filter((id) => id !== sourceId);
+    nextChildren.push(sourceId);
+
+    nextPages[targetId] = {
+      ...target,
+      childrenIds: nextChildren,
+      isExpanded: true,
+      updatedAt: now,
+    };
+
+    nextPages[sourceId] = {
+      ...sourcePage,
+      parentId: targetId,
+      updatedAt: now,
+    };
+  } else {
+    const newParentId = targetPage.parentId;
+
+    nextPages[sourceId] = {
+      ...sourcePage,
+      parentId: newParentId,
+      updatedAt: now,
+    };
+
+    if (newParentId) {
+      const parent = nextPages[newParentId];
+      const children = parent.childrenIds.filter((id) => id !== sourceId);
+      const targetIdx = children.indexOf(targetId);
+
+      if (targetIdx === -1) {
+        children.push(sourceId);
+      } else if (position === "before") {
+        children.splice(targetIdx, 0, sourceId);
+      } else {
+        children.splice(targetIdx + 1, 0, sourceId);
+      }
+
+      nextPages[newParentId] = {
+        ...parent,
+        childrenIds: children,
+        updatedAt: now,
+      };
+    } else {
+      const targetIdx = nextRootPageIds.indexOf(targetId);
+
+      if (targetIdx === -1) {
+        nextRootPageIds.push(sourceId);
+      } else if (position === "before") {
+        nextRootPageIds.splice(targetIdx, 0, sourceId);
+      } else {
+        nextRootPageIds.splice(targetIdx + 1, 0, sourceId);
+      }
+    }
+  }
+
+  return {
+    pages: nextPages,
+    rootPageIds: nextRootPageIds,
+  };
 }

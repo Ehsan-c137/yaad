@@ -54,6 +54,13 @@ export interface SidebarPagesSlice {
     icon?: string,
   ) => void;
   removePageFromTree: (pageId: string) => void;
+  movePageInTree: (
+    sourcePageId: string,
+    targetPageId: string,
+    position: DropPosition,
+  ) => void;
 }
+
+export type DropPosition = "after" | "before" | "inside";
 
 export type SidebarState = SidebarPagesSlice & SidebarUiSlice;
