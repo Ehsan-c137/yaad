@@ -58,7 +58,7 @@ export interface SidebarPagesSlice {
     sourcePageId: string,
     targetPageId: string,
     position: DropPosition,
-  ) => void;
+  ) => Promise<void> | void;
 }
 
 export type DropPosition = "after" | "before" | "inside";

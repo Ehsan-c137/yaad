@@ -168,6 +168,64 @@ describe("DocumentService (Integration Test)", () => {
     ).toBeUndefined();
   });
 
+  it("moveBlock reorders blocks in loaded store and persists", async () => {
+    const doc = docWithBlock("p1");
+
+    doc.blocks.b2 = {
+      childrenIds: [],
+      createdAt: 0,
+      id: "b2",
+      parentId: "root",
+      properties: {},
+      tags: [],
+      type: "text",
+      updatedAt: 0,
+    };
+    doc.blocks.root.childrenIds = ["b1", "b2"];
+
+    const store = getDocumentStore("p1");
+
+    store.setState({ currentDocument: doc, _hasHydrated: true });
+
+    await documentService.moveBlock("p1", {
+      position: "before",
+      sourceBlockId: "b2",
+      targetBlockId: "b1",
+    });
+
+    const updated = store.getState().currentDocument!;
+
+    expect(updated.blocks.root.childrenIds).toEqual(["b2", "b1"]);
+  });
+
+  it("moveBlock falls back to persisted document when not loaded", async () => {
+    const doc = docWithBlock("p2");
+
+    doc.blocks.b2 = {
+      childrenIds: [],
+      createdAt: 0,
+      id: "b2",
+      parentId: "root",
+      properties: {},
+      tags: [],
+      type: "text",
+      updatedAt: 0,
+    };
+    doc.blocks.root.childrenIds = ["b1", "b2"];
+
+    mockedStorage.getDocument.mockResolvedValue(doc);
+
+    await documentService.moveBlock("p2", {
+      position: "after",
+      sourceBlockId: "b1",
+      targetBlockId: "b2",
+    });
+
+    const saved = mockedStorage.saveDocument.mock.calls.at(-1)?.[0];
+
+    expect(saved?.blocks.root.childrenIds).toEqual(["b2", "b1"]);
+  });
+
   it("deletePageAndSubTree removes the subtree, its documents, blobs, tabs, and sidebar entries", async () => {
     const parentDoc = docWithBlock("p1");
 
@@ -320,6 +378,170 @@ describe("DocumentService (Integration Test)", () => {
     );
     expect(useSidebarStore.getState().pages[newPageId]).toMatchObject({
       parentId: "p2",
+    });
+  });
+
+  it("attachSubPageBlock creates a page block in loaded store and positions it", async () => {
+    getDocumentStore("p1").setState({
+      currentDocument: createNewBlankDocument("p1"),
+      _hasHydrated: true,
+    });
+
+    await documentService.attachSubPageBlock("p1", "child_1", {
+      title: "Child 1",
+      icon: "📗",
+      position: "inside",
+    });
+
+    const doc = getDocumentStore("p1").getState().currentDocument!;
+    expect(doc.blocks.root.childrenIds).toHaveLength(1);
+    const blockId = doc.blocks.root.childrenIds[0];
+    expect(doc.blocks[blockId]).toMatchObject({
+      type: "page",
+      properties: {
+        title: [{ text: "Child 1" }],
+        targetPageId: "child_1",
+        icon: "📗",
+      },
+    });
+  });
+
+  it("attachSubPageBlock falls back to sidebar store title and icon when options omit them", async () => {
+    useSidebarStore.setState({
+      pages: {
+        child_page: {
+          id: "child_page",
+          title: "Sidebar Title",
+          icon: "🌟",
+          parentId: null,
+          childrenIds: [],
+        },
+      },
+    });
+
+    getDocumentStore("p1").setState({
+      currentDocument: createNewBlankDocument("p1"),
+      _hasHydrated: true,
+    });
+
+    await documentService.attachSubPageBlock("p1", "child_page");
+
+    const doc = getDocumentStore("p1").getState().currentDocument!;
+    const blockId = doc.blocks.root.childrenIds[0];
+
+    expect(doc.blocks[blockId]?.properties).toMatchObject({
+      icon: "🌟",
+      targetPageId: "child_page",
+      title: [{ text: "Sidebar Title" }],
+    });
+  });
+
+  it("attachSubPageBlock reorders existing block when position is before or after sibling", async () => {
+    const doc = createNewBlankDocument("p1");
+    doc.blocks.b_s1 = {
+      id: "b_s1",
+      type: "page",
+      parentId: "root",
+      childrenIds: [],
+      properties: { targetPageId: "sub_1", title: [{ text: "Sub 1" }] },
+      createdAt: 0,
+      updatedAt: 0,
+    };
+    doc.blocks.b_s2 = {
+      id: "b_s2",
+      type: "page",
+      parentId: "root",
+      childrenIds: [],
+      properties: { targetPageId: "sub_2", title: [{ text: "Sub 2" }] },
+      createdAt: 0,
+      updatedAt: 0,
+    };
+    doc.blocks.root.childrenIds = ["b_s1", "b_s2"];
+
+    getDocumentStore("p1").setState({
+      currentDocument: doc,
+      _hasHydrated: true,
+    });
+
+    // Move sub_2 before sub_1
+    await documentService.attachSubPageBlock("p1", "sub_2", {
+      position: "before",
+      targetSiblingPageId: "sub_1",
+    });
+
+    const updated = getDocumentStore("p1").getState().currentDocument!;
+    expect(updated.blocks.root.childrenIds).toEqual(["b_s2", "b_s1"]);
+  });
+
+  it("removeSubPageBlock deletes the page block from loaded document and root children", async () => {
+    const doc = createNewBlankDocument("p1");
+    doc.blocks.b_sub = {
+      id: "b_sub",
+      type: "page",
+      parentId: "root",
+      childrenIds: [],
+      properties: { targetPageId: "sub_x", title: [{ text: "Sub X" }] },
+      createdAt: 0,
+      updatedAt: 0,
+    };
+    doc.blocks.root.childrenIds = ["b_sub"];
+
+    getDocumentStore("p1").setState({
+      currentDocument: doc,
+      _hasHydrated: true,
+    });
+
+    await documentService.removeSubPageBlock("p1", "sub_x");
+
+    const updated = getDocumentStore("p1").getState().currentDocument!;
+    expect(updated.blocks.root.childrenIds).toEqual([]);
+    expect(updated.blocks.b_sub).toBeUndefined();
+  });
+
+  it("moveSubPageBlock unlinks from old parent and attaches to new parent", async () => {
+    const doc1 = createNewBlankDocument("p1");
+    doc1.blocks.b_sub = {
+      id: "b_sub",
+      type: "page",
+      parentId: "root",
+      childrenIds: [],
+      properties: { targetPageId: "sub_moving", title: [{ text: "Moving" }] },
+      createdAt: 0,
+      updatedAt: 0,
+    };
+    doc1.blocks.root.childrenIds = ["b_sub"];
+
+    const doc2 = createNewBlankDocument("p2");
+
+    getDocumentStore("p1").setState({
+      currentDocument: doc1,
+      _hasHydrated: true,
+    });
+    getDocumentStore("p2").setState({
+      currentDocument: doc2,
+      _hasHydrated: true,
+    });
+
+    await documentService.moveSubPageBlock("sub_moving", "p1", "p2", {
+      title: "Moving",
+      icon: "🚀",
+      position: "inside",
+    });
+
+    const updated1 = getDocumentStore("p1").getState().currentDocument!;
+    expect(updated1.blocks.root.childrenIds).toEqual([]);
+    expect(updated1.blocks.b_sub).toBeUndefined();
+
+    const updated2 = getDocumentStore("p2").getState().currentDocument!;
+    expect(updated2.blocks.root.childrenIds).toHaveLength(1);
+    const newBlockId = updated2.blocks.root.childrenIds[0];
+    expect(updated2.blocks[newBlockId]).toMatchObject({
+      type: "page",
+      properties: {
+        targetPageId: "sub_moving",
+        title: [{ text: "Moving" }],
+        icon: "🚀",
+      },
     });
   });
 });

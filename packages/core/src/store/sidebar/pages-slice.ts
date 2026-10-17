@@ -182,14 +182,40 @@ export const createPagesSlice: StateCreator<
       get().deletePage(pageId);
     },
 
-    movePageInTree: (
+    movePageInTree: async (
       sourcePageId: string,
       targetPageId: string,
       position: DropPosition,
     ) => {
-      set((state) =>
-        movePageInTreeState(state, sourcePageId, targetPageId, position),
-      );
+      const state = get();
+      const sourcePage = state.pages[sourcePageId];
+      const targetPage = state.pages[targetPageId];
+      if (!sourcePage || !targetPage || sourcePageId === targetPageId) return;
+
+      const sourceDescendants = collectPageSubtree(state.pages, sourcePageId);
+      if (sourceDescendants.has(targetPageId)) return;
+
+      const oldParentId = sourcePage.parentId;
+      const newParentId =
+        position === "inside" ? targetPageId : (targetPage.parentId ?? null);
+
+      set((s) => movePageInTreeState(s, sourcePageId, targetPageId, position));
+
+      try {
+        await documentService.moveSubPageBlock(
+          sourcePageId,
+          oldParentId,
+          newParentId,
+          {
+            icon: sourcePage.icon,
+            position,
+            targetSiblingPageId: targetPageId,
+            title: sourcePage.title,
+          },
+        );
+      } catch (error) {
+        console.error("Error updating document blocks for moved page:", error);
+      }
     },
   };
 };

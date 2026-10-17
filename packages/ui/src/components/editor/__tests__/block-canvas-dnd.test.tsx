@@ -1,8 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { documentService } from "@yaad/core/services/document-service";
 import {
   getDocumentStore,
   removeDocumentStore,
 } from "@yaad/core/store/document/use-document-store";
+import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
@@ -10,6 +12,10 @@ import {
   resetBlockDndState,
   setBlockDndState,
 } from "@/hooks/editor/use-block-dnd";
+import {
+  resetDndState as resetSidebarDndState,
+  setDndState as setSidebarDndState,
+} from "@/hooks/sidebar/use-sidebar-dnd";
 import { EditorPageIdProvider } from "@/providers/document-provider";
 
 import { BlockCanvas } from "../block-canvas";
@@ -177,5 +183,49 @@ describe("BlockCanvas Drag and Drop Bottom Zone", () => {
     );
 
     expect(screen.queryByTestId("block-canvas-bottom-drop-zone")).toBeNull();
+  });
+
+  it("renders bottom drop zone when dragging a sidebar page and attaches it on drop", () => {
+    const attachSpy = vi
+      .spyOn(documentService, "attachSubPageBlock")
+      .mockResolvedValue("new-blk");
+    const movePageSpy = vi
+      .spyOn(useSidebarStore.getState(), "movePageInTree")
+      .mockResolvedValue(undefined);
+
+    setSidebarDndState({ draggedPageId: "sidebar-page-x" });
+
+    render(
+      <EditorPermissionsProvider value={editorPermissions}>
+        <EditorPageIdProvider pageId={pageId}>
+          <BlockCanvas />
+        </EditorPageIdProvider>
+      </EditorPermissionsProvider>,
+    );
+
+    const dropZone = screen.getByTestId("block-canvas-bottom-drop-zone");
+
+    fireEvent.dragOver(dropZone, {
+      dataTransfer: { dropEffect: "none" },
+    });
+
+    fireEvent.drop(dropZone, {
+      dataTransfer: {
+        getData: (type: string) =>
+          type === "application/x-yaad-page" ? "sidebar-page-x" : "",
+      },
+    });
+
+    expect(attachSpy).toHaveBeenCalledWith(pageId, "sidebar-page-x", {
+      position: "after",
+      targetBlockId: "b-2",
+    });
+    expect(movePageSpy).toHaveBeenCalledWith(
+      "sidebar-page-x",
+      pageId,
+      "inside",
+    );
+
+    resetSidebarDndState();
   });
 });

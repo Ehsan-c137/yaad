@@ -15,6 +15,9 @@ vi.mock("@/services/document-service", () => ({
     deletePageAndSubTree: vi.fn(),
     updateBlockProperties: vi.fn(),
     createSubPage: vi.fn(),
+    attachSubPageBlock: vi.fn(),
+    removeSubPageBlock: vi.fn(),
+    moveSubPageBlock: vi.fn(),
     getBlob: vi.fn(),
     saveBlob: vi.fn(),
     deleteBlobs: vi.fn(),
@@ -691,5 +694,51 @@ describe("pages-slice movePageInTree (Unit Test)", () => {
     useSidebarStore.getState().movePageInTree("ghost", "a", "inside");
 
     expect(useSidebarStore.getState().rootPageIds).toEqual(["a"]);
+  });
+
+  it("delegates to documentService.moveSubPageBlock when nesting inside another page", async () => {
+    resetStore(
+      {
+        page1: makePage("page1", { title: "Page 1", icon: "📘" }),
+        page2: makePage("page2", { title: "Page 2" }),
+      },
+      ["page1", "page2"],
+    );
+
+    await useSidebarStore.getState().movePageInTree("page2", "page1", "inside");
+
+    expect(documentService.moveSubPageBlock).toHaveBeenCalledWith(
+      "page2",
+      null,
+      "page1",
+      expect.objectContaining({
+        position: "inside",
+        targetSiblingPageId: "page1",
+        title: "Page 2",
+      }),
+    );
+  });
+
+  it("delegates to documentService.moveSubPageBlock when moving child out to root", async () => {
+    resetStore(
+      {
+        parent: makePage("parent", { childrenIds: ["child"] }),
+        child: makePage("child", { parentId: "parent" }),
+        root2: makePage("root2"),
+      },
+      ["parent", "root2"],
+    );
+
+    await useSidebarStore.getState().movePageInTree("child", "root2", "before");
+
+    expect(documentService.moveSubPageBlock).toHaveBeenCalledWith(
+      "child",
+      "parent",
+      null,
+      expect.objectContaining({
+        position: "before",
+        targetSiblingPageId: "root2",
+      }),
+    );
   });
 });
