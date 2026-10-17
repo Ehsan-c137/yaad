@@ -133,3 +133,71 @@
   opacity: 1;
   transform: scale(1) translateY(0);
 }
+
+/* Hero Subtitle Highlight Reveal */
+.t-highlight-reveal {
+  --hero-highlight-bg: rgba(254, 240, 138, 0.7);
+  background-image: linear-gradient(
+    to right,
+    var(--hero-highlight-bg),
+    var(--hero-highlight-bg)
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  background-position: left center;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 0.65s var(--stagger-ease);
+  transition-delay: 850ms;
+}
+
+.t-highlight-reveal--1 {
+  transition-delay: 850ms;
+}
+
+.t-highlight-reveal--2 {
+  transition-delay: 1400ms;
+}
+
+@supports (color: color-mix(in oklab, red 50%, blue)) {
+  .t-highlight-reveal {
+    --hero-highlight-bg: color-mix(
+      in oklab,
+      var(--color-yellow-200, #fef08a) 70%,
+      transparent
+    );
+  }
+}
+
+.dark .t-highlight-reveal,
+:is(.dark *) .t-highlight-reveal {
+  --hero-highlight-bg: rgba(234, 179, 8, 0.25);
+}
+
+@supports (color: color-mix(in oklab, red 50%, blue)) {
+  .dark .t-highlight-reveal,
+  :is(.dark *) .t-highlight-reveal {
+    --hero-highlight-bg: color-mix(
+      in oklab,
+      var(--color-yellow-500, #eab308) 25%,
+      transparent
+    );
+  }
+}
+
+[dir="rtl"] .t-highlight-reveal,
+.t-highlight-reveal[dir="rtl"] {
+  background-position: right center;
+}
+
+.t-stagger.is-visible .t-highlight-reveal,
+.t-highlight-reveal.is-visible {
+  background-size: 100% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-highlight-reveal {
+    transition: none;
+    background-size: 100% 100%;
+  }
+}

@@ -57,6 +57,23 @@ describe("LandingPage", () => {
     expect(screen.getAllByText(/web app/i).length).toBeGreaterThan(0);
   });
 
+  it("renders hero subtitle with sequential highlight reveal animation classes", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>,
+    );
+
+    const highlightSpans = container.querySelectorAll(".t-highlight-reveal");
+    expect(highlightSpans.length).toBe(2);
+    expect(highlightSpans[0].className).toContain("t-highlight-reveal--1");
+    expect(highlightSpans[0].textContent).toContain(
+      "Yaad is a fast, private note editor",
+    );
+    expect(highlightSpans[1].className).toContain("t-highlight-reveal--2");
+    expect(highlightSpans[1].textContent).toContain("work completely offline");
+  });
+
   it("renders key feature bento cards with user-friendly descriptions", () => {
     render(
       <MemoryRouter>

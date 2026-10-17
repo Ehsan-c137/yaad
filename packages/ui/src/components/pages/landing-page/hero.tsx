@@ -40,8 +40,12 @@ export function LandingHero({ onOpenApp }: LandingHeroProps) {
 
         {/* Subtitle */}
         <p className="t-stagger-line t-stagger-line--4 mx-auto mt-5 max-w-xl text-center text-[15px] leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-base">
-          <span className="box-decoration-clone rounded-sm bg-yellow-200/70 px-1 dark:bg-yellow-500/25">
-            {t("hero.subtitle")}
+          <span className="t-highlight-reveal t-highlight-reveal--1 box-decoration-clone rounded-sm px-1">
+            {t("hero.subtitle1")}
+          </span>{" "}
+          <br className="hidden sm:inline" />
+          <span className="t-highlight-reveal t-highlight-reveal--2 box-decoration-clone rounded-sm px-1">
+            {t("hero.subtitle2")}
           </span>
         </p>
 
