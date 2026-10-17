@@ -1,12 +1,10 @@
 "use client";
 
-import React, { createContext, useContext } from "react";
+import { createContext } from "react";
 
 import type { CollabPeer } from "../hooks/editor/use-collab";
 
-import { useCollab } from "../hooks/editor/use-collab";
-
-interface CollabContextValue {
+export interface CollabContextValue {
   status: "connected" | "connecting" | "disconnected";
   peers: CollabPeer[];
   broadcastFocus: (blockId: string | null) => void;
@@ -19,30 +17,12 @@ interface CollabContextValue {
   ) => void;
 }
 
-const CollabContext = createContext<CollabContextValue>({
+export const CollabContext = createContext<CollabContextValue>({
   status: "disconnected",
   peers: [],
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   broadcastFocus: () => {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   broadcastCursor: () => {},
 });
 CollabContext.displayName = "CollabContext";
-
-export function CollabProvider({
-  workspaceId,
-  pageId,
-  children,
-}: {
-  workspaceId: string | undefined;
-  pageId: string | undefined;
-  children: React.ReactNode;
-}) {
-  const collab = useCollab(workspaceId, pageId);
-
-  return (
-    <CollabContext.Provider value={collab}>{children}</CollabContext.Provider>
-  );
-}
-
-export function useCollabContext(): CollabContextValue {
-  return useContext(CollabContext);
-}

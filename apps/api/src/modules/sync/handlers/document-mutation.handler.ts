@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
+import type { SyncEntityType } from '../dto/sync.dto.js';
 import type {
-  DbTransaction,
+  MutationContext,
   MutationHandler,
 } from './mutation-handler.interface.js';
 
@@ -10,23 +10,25 @@ import { documents, pages } from '../../../database/schema.js';
 
 @Injectable()
 export class DocumentMutationHandler implements MutationHandler {
-  readonly entityType: SyncEntityType = 'document';
+  get entityType(): SyncEntityType {
+    return 'document';
+  }
 
-  async apply(
-    tx: DbTransaction,
-    mutation: SyncMutationDto,
-    version: number,
-    workspaceId: string,
-  ): Promise<void> {
+  async apply({
+    tx,
+    mutation,
+    version,
+    workspaceId,
+  }: MutationContext): Promise<void> {
     // Ensure parent page exists to satisfy documents_id_pages_id_fk
     await tx
       .insert(pages)
       .values({
         id: mutation.entityId,
         workspaceId,
-        title: mutation.payload?.title || 'Untitled',
+        title: mutation.payload?.title ?? 'Untitled',
         icon: mutation.payload?.icon ?? '📄',
-        updatedAt: new Date(mutation.payload?.updatedAt || Date.now()),
+        updatedAt: new Date(mutation.payload?.updatedAt ?? Date.now()),
       })
       .onConflictDoNothing();
 

@@ -15,7 +15,7 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
   const [role, setRole] = useState<WorkspaceRole>("member");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const trimmed = email.trim();
     if (!trimmed) return;
@@ -33,7 +33,12 @@ export function InviteMemberForm({ onInvite }: InviteMemberFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form
+      onSubmit={(e) => {
+        void handleSubmit(e);
+      }}
+      className="flex flex-col gap-2"
+    >
       <label className="text-xs font-semibold text-foreground">
         {t("inviteCollaborator")}
       </label>

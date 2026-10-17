@@ -42,7 +42,7 @@ export class AuthService implements IAuthService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error(err.message || "Registration failed");
+      throw new Error(err.message ?? "Registration failed");
     }
 
     const data: AuthResponse = await res.json();
@@ -67,7 +67,7 @@ export class AuthService implements IAuthService {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ message: res.statusText }));
-      throw new Error(err.message || "Login failed");
+      throw new Error(err.message ?? "Login failed");
     }
 
     const data: AuthResponse = await res.json();
@@ -118,7 +118,7 @@ export class AuthService implements IAuthService {
             ? currentActive
             : wsList.some((w: { id: string }) => w.id === "ws_personal")
               ? "ws_personal"
-              : data.defaultWorkspaceId || wsList[0].id;
+              : (data.defaultWorkspaceId ?? wsList[0].id);
         await useWorkspaceStore.getState().setActiveWorkspace(targetWs);
 
         // Reconcile pre-login local pages so they are pushed to the user's remote account

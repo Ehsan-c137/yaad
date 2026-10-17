@@ -42,7 +42,7 @@ export function useCollab(
   const [status, setStatus] = useState<
     "connected" | "connecting" | "disconnected"
   >("disconnected");
-  const [peers, setPeers] = useState<Map<string, CollabPeer>>(new Map());
+  const [peers, setPeers] = useState<Map<string, CollabPeer>>(() => new Map());
 
   const clientRef = useRef<CollabClient | null>(null);
   const ydocRef = useRef<Y.Doc | null>(null);
@@ -50,7 +50,7 @@ export function useCollab(
   const token = useUserStore((s) => s.token);
   const userName = useUserStore((s) => s.userName) ?? "Anonymous";
   const userId = useUserStore((s) => s.userId) ?? "anon";
-  const userColor = useUserStore((s) => s.userColor) ?? "#3B82F6";
+  const userColor = useUserStore((s) => s.userColor) || "#3B82F6";
 
   useEffect(() => {
     if (!workspaceId || !pageId) return;
@@ -74,7 +74,7 @@ export function useCollab(
       if (origin === "server") {
         const updatedJson = yDocToDocumentJson(ydoc);
 
-        if (updatedJson && Object.keys(updatedJson.blocks).length > 0) {
+        if (Object.keys(updatedJson.blocks).length > 0) {
           isApplyingRemote = true;
 
           try {
@@ -203,6 +203,8 @@ export function useCollab(
       ydocRef.current = null;
       setPeers(new Map());
     };
+
+    // eslint-disable-next-line @eslint-react/exhaustive-deps
   }, [workspaceId, pageId, token]);
 
   const broadcastFocus = (blockId: string | null) => {

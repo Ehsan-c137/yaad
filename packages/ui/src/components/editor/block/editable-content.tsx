@@ -9,7 +9,7 @@ import {
 } from "@yaad/core/lib/editor/selection";
 import { useEffect, useRef, useState } from "react";
 
-import { useCollabContext } from "@/context/collab-context";
+import { useCollabContext } from "@/context/use-collab";
 import { getCurrentSelectionOffsets } from "@/lib/cursor-coordinates";
 
 import type { SlashOption } from "../slash-menu/slash-options";

@@ -11,8 +11,8 @@ import { useParams } from "react-router";
 import { EditableContent } from "@/components/editor/block/editable-content";
 import { Link } from "@/components/ui/link";
 import { ShareModal } from "@/components/workspace/share-modal";
-import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
+import { useEditorPermissions } from "@/context/use-editor-permissions";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 
@@ -83,8 +83,8 @@ export function PageHeader() {
           open={isShareOpen}
           onOpenChange={setIsShareOpen}
           workspaceId={workspaceId}
-          workspaceName={workspace?.name}
-          workspaceIcon={workspace?.icon}
+          workspaceName={workspace.name}
+          workspaceIcon={workspace.icon}
           pageId={pageId}
         />
       )}

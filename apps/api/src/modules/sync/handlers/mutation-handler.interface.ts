@@ -7,12 +7,14 @@ export type DbTransaction = Parameters<
   Parameters<NodePgDatabase<typeof schema>['transaction']>[0]
 >[0];
 
+export interface MutationContext {
+  tx: DbTransaction;
+  mutation: SyncMutationDto;
+  version: number;
+  workspaceId: string;
+}
+
 export interface MutationHandler {
   readonly entityType: SyncEntityType;
-  apply: (
-    tx: DbTransaction,
-    mutation: SyncMutationDto,
-    version: number,
-    workspaceId: string,
-  ) => Promise<void>;
+  apply: (context: MutationContext) => Promise<void>;
 }

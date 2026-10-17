@@ -27,7 +27,7 @@ if (
     DatabaseModule,
     JwtModule.register({
       global: false,
-      secret: jwtSecret || 'yaad-default-secret-key-change-in-production',
+      secret: jwtSecret ?? 'yaad-default-secret-key-change-in-production',
       signOptions: { expiresIn: '7d' },
     }),
   ],

@@ -160,6 +160,7 @@ graph TD
 ### CRDT Document Model
 
 Each active page maps to a `Y.Doc` with structured shared types:
+
 - `yDoc.getMap('meta')`: Document metadata (title, icon, cover, bookmarked).
 - `yDoc.getMap('blocks')`: Key-value map from `blockId` to `Y.Map` containing properties, formatting, and tags.
 - `yDoc.getArray('rootBlockIds')`: `Y.Array<string>` deterministic ordering of root blocks.
@@ -180,15 +181,16 @@ Yaad features a multi-tenant, role-based access control (RBAC) architecture enfo
 
 ### Workspace Roles
 
-| Role     | Permissions                                                                                 |
-| -------- | ------------------------------------------------------------------------------------------- |
+| Role     | Permissions                                                                                |
+| -------- | ------------------------------------------------------------------------------------------ |
 | `OWNER`  | Full read/write access, invite members, change collaborator roles, remove members, delete. |
 | `EDITOR` | Read and write access to pages, block creation, edits, and sidebar reordering.             |
-| `VIEWER` | Read-only access. Cannot edit blocks, add pages, delete items, or modify workspace state.   |
+| `VIEWER` | Read-only access. Cannot edit blocks, add pages, delete items, or modify workspace state.  |
 
 ### Real-Time WebSocket Synchronization
 
 The `CollabGateway` relays workspace-wide changes in real time:
+
 - **`tree-update`**: Broadcasts sidebar page hierarchy adjustments live across all active collaborators in the workspace.
 - **`member-role-updated`**: Instantly notifies active client sessions when a user's role is changed (e.g. from `EDITOR` to `VIEWER`), immediately locking or unlocking the editor UI without a page reload.
 - **`member-kicked`**: Automatically closes socket connections and notifies clients when removed from a workspace.

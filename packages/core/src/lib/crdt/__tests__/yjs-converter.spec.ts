@@ -164,8 +164,16 @@ describe("CollabClient", () => {
         onOpenCallback = cb;
       }
 
+      get onopen(): any {
+        return onOpenCallback;
+      }
+
       set onmessage(cb: any) {
         onMessageCallback = cb;
+      }
+
+      get onmessage(): any {
+        return onMessageCallback;
       }
     }
 
@@ -201,7 +209,7 @@ describe("CollabClient", () => {
     });
 
     // Check that ydoc received the update
-    expect(ydoc.getText("text").toString()).toBe("Server Content");
+    expect(ydoc.getText("text").toJSON()).toBe("Server Content");
 
     client.disconnect();
   });

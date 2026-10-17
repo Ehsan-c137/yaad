@@ -4,7 +4,7 @@ import { syncWorker } from "@yaad/core/lib/storage/storage-provider";
 import { outboxQueue } from "@yaad/core/lib/sync/outbox-queue";
 import { useEffect, useState } from "react";
 
-import { useCollabContext } from "@/context/collab-context";
+import { useCollabContext } from "@/context/use-collab";
 
 export type SaveState = "error" | "offline" | "saved" | "syncing";
 
@@ -43,7 +43,9 @@ export function useSyncStatus(): SyncStatusState {
     };
 
     void checkQueue();
-    const interval = setInterval(checkQueue, 4000);
+    const interval = setInterval(() => {
+      void checkQueue();
+    }, 4000);
 
     return () => {
       isMounted = false;
@@ -56,7 +58,7 @@ export function useSyncStatus(): SyncStatusState {
     void syncWorker.syncNow();
   };
 
-  let saveState: SaveState = "saved";
+  let saveState: SaveState;
 
   if (syncWorkerStatus === "syncing" || collabStatus === "connecting") {
     saveState = "syncing";

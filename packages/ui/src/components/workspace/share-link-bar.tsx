@@ -33,7 +33,7 @@ export function ShareLinkBar({ shareUrl }: ShareLinkBarProps) {
         type="button"
         variant="outline"
         size="xs"
-        onClick={handleCopy}
+        onClick={() => void handleCopy()}
         className="shrink-0 gap-1 rounded-lg"
       >
         {copied ? (

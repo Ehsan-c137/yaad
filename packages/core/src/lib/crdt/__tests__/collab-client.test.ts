@@ -13,7 +13,9 @@ class MockWebSocket {
   onerror: ((err: any) => void) | null = null;
 
   constructor(public url: string) {
-    setTimeout(() => this.onopen?.(), 0);
+    setTimeout(() => {
+      this.onopen?.();
+    }, 0);
   }
 
   send(data: string) {
@@ -33,7 +35,7 @@ describe("CollabClient", () => {
     ydoc = new Y.Doc();
   });
 
-  it("broadcasts tree updates over WebSocket", async () => {
+  it("broadcasts tree updates over WebSocket", () => {
     const client = new CollabClient({
       serverUrl: "ws://localhost:3000/collab",
       workspaceId: "ws_test",
@@ -58,8 +60,8 @@ describe("CollabClient", () => {
     client.disconnect();
   });
 
-  it("dispatches onTreeUpdate when receiving tree-update event", async () => {
-    const onTreeUpdate = vi.fn();
+  it("dispatches onTreeUpdate when receiving tree-update event", () => {
+    const onTreeUpdate = vi.fn((): void => {});
     const client = new CollabClient({
       serverUrl: "ws://localhost:3000/collab",
       workspaceId: "ws_test",
@@ -87,8 +89,8 @@ describe("CollabClient", () => {
     client.disconnect();
   });
 
-  it("triggers onMemberRoleUpdated when receiving member-role-updated event for this user", async () => {
-    const onMemberRoleUpdated = vi.fn();
+  it("triggers onMemberRoleUpdated when receiving member-role-updated event for this user", () => {
+    const onMemberRoleUpdated = vi.fn((): void => {});
     const client = new CollabClient({
       serverUrl: "ws://localhost:3000/collab",
       workspaceId: "ws_test",
@@ -115,8 +117,8 @@ describe("CollabClient", () => {
     client.disconnect();
   });
 
-  it("triggers onMemberKicked when receiving member-kicked event for this user", async () => {
-    const onMemberKicked = vi.fn();
+  it("triggers onMemberKicked when receiving member-kicked event for this user", () => {
+    const onMemberKicked = vi.fn((): void => {});
     const client = new CollabClient({
       serverUrl: "ws://localhost:3000/collab",
       workspaceId: "ws_test",

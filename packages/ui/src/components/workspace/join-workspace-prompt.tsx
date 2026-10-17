@@ -40,7 +40,7 @@ export function JoinWorkspacePrompt({
       const res = await workspaceMemberService.joinWorkspace(workspaceId);
       const newWorkspace: Workspace = {
         id: workspaceId,
-        name: res.workspaceName || "Shared Workspace",
+        name: res.workspaceName ?? "Shared Workspace",
         icon: "🤝",
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -50,7 +50,7 @@ export function JoinWorkspacePrompt({
       toast.success(t("joinedWorkspaceSuccess"));
       onJoined?.(newWorkspace);
     } catch (err: any) {
-      toast.error(err.message || t("failedJoinWorkspace"));
+      toast.error(err.message ?? t("failedJoinWorkspace"));
     } finally {
       setIsJoining(false);
     }
@@ -79,7 +79,7 @@ export function JoinWorkspacePrompt({
           {isAuthenticated ? (
             <Button
               type="button"
-              onClick={handleJoin}
+              onClick={() => void handleJoin()}
               disabled={isJoining}
               className="w-full gap-2 rounded-xl h-10 font-medium transition-all"
             >

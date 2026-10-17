@@ -7,7 +7,7 @@ import {
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
+import { EditorPermissionsProvider } from "@/context/editor-permission-provider";
 import {
   resetBlockDndState,
   setBlockDndState,

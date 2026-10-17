@@ -41,7 +41,10 @@ export class SyncWorker implements ISyncWorker {
   subscribeStatus(listener: (status: SyncStatus) => void): () => void {
     this.listeners.add(listener);
     listener(this.status);
-    return () => this.listeners.delete(listener);
+
+    return () => {
+      this.listeners.delete(listener);
+    };
   }
 
   private setStatus(status: SyncStatus): void {
@@ -70,7 +73,9 @@ export class SyncWorker implements ISyncWorker {
     }, this.intervalMs);
 
     // Initial sync attempt
-    this.syncNow().catch(() => {});
+    this.syncNow().catch((err) => {
+      console.warn("[SyncWorker] Initial sync failed:", err);
+    });
   }
 
   stop(): void {
@@ -87,10 +92,12 @@ export class SyncWorker implements ISyncWorker {
     this.setStatus("idle");
   }
 
-  private handleOnline = () => {
-    this.syncNow().catch(() => {});
+  private handleOnline = (): void => {
+    this.syncNow().catch((err) => {
+      console.warn("[SyncWorker] Sync after reconnect failed:", err);
+    });
   };
-  private handleOffline = () => {
+  private handleOffline = (): void => {
     this.setStatus("offline");
   };
   private reconciledWorkspaces = new Set<string>();
@@ -305,7 +312,12 @@ export class SyncWorker implements ISyncWorker {
               const channel = new BroadcastChannel("yaad-sync-channel");
               channel.postMessage({ type: "tree-updated", workspaceId });
               channel.close();
-            } catch {}
+            } catch (err) {
+              console.warn(
+                "[SyncWorker] Could not broadcast tree update:",
+                err,
+              );
+            }
           }
         }
       }

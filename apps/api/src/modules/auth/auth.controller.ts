@@ -8,15 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
+import type { AuthUserResponse } from './dto/auth.dto.js';
 import type { CurrentUserPayload } from './guards/current-user.decorator.js';
 
 import { AuthService } from './auth.service.js';
-import {
-  AuthResponseDto,
-  AuthUserResponse,
-  LoginDto,
-  RegisterDto,
-} from './dto/auth.dto.js';
+import { AuthResponseDto, LoginDto, RegisterDto } from './dto/auth.dto.js';
 import { CurrentUser } from './guards/current-user.decorator.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { RateLimitGuard } from './guards/rate-limit.guard.js';
@@ -40,9 +36,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getProfile(
-    @CurrentUser() user: CurrentUserPayload,
-  ): Promise<AuthUserResponse> {
+  getProfile(@CurrentUser() user: CurrentUserPayload): AuthUserResponse {
     return {
       id: user.id,
       email: user.email,

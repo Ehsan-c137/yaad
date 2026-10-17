@@ -105,10 +105,20 @@ export class SyncService {
 
         // 2. Delegate entity persistence to the corresponding strategy handler (OCP)
         const handler = this.handlerRegistry.get(mut.entityType);
-        await handler.apply(tx, mut, nextVersion, dto.workspaceId);
+        await handler.apply({
+          tx,
+          mutation: mut,
+          version: nextVersion,
+          workspaceId: dto.workspaceId,
+        });
 
         // 3. Append to the immutable sync log
-        await this.appendSyncLog(tx, mut, nextVersion, dto.workspaceId);
+        await this.appendSyncLog({
+          tx,
+          mut,
+          version: nextVersion,
+          workspaceId: dto.workspaceId,
+        });
 
         acceptedMutationIds.push(mut.clientMutationId);
       }
@@ -220,12 +230,17 @@ export class SyncService {
   /**
    * Appends a mutation entry into the immutable append-only change log.
    */
-  private async appendSyncLog(
-    tx: DbTransaction,
-    mut: SyncMutationDto,
-    version: number,
-    workspaceId: string,
-  ): Promise<void> {
+  private async appendSyncLog({
+    tx,
+    mut,
+    version,
+    workspaceId,
+  }: {
+    tx: DbTransaction;
+    mut: SyncMutationDto;
+    version: number;
+    workspaceId: string;
+  }): Promise<void> {
     const logId = `log_${randomUUID()}`;
     await tx.insert(syncLog).values({
       id: logId,

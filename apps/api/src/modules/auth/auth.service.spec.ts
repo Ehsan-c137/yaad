@@ -14,7 +14,7 @@ describe('AuthService', () => {
     mockDb = {
       select: vi.fn(),
       insert: vi.fn(),
-      transaction: vi.fn(async (cb) => {
+      transaction: vi.fn((cb) => {
         const tx = {
           insert: vi
             .fn()

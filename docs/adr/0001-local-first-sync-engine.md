@@ -1,14 +1,17 @@
 # 0001: Local-First Mutation-Driven Sync Engine
 
 ## Status
+
 Accepted
 
 ## Context
+
 Yaad is a modular personal knowledge management and block-based workspace platform supporting both desktop (Tauri v2 + SQLite via `TauriSqlAdapter`) and web (IndexedDB via `LocalJsonAdapter`). Users require zero-latency document editing, full offline functionality, and resilient background synchronization across devices when connected.
 
 Standard client-server REST APIs (`PUT /pages/:id`, `PATCH /documents/:id`) fail in offline environments because they lead to race conditions, overwrite concurrent edits from other devices, and lack a mechanism to replay offline mutations.
 
 ## Decision
+
 We will implement an **asymmetric, mutation-driven delta sync engine** using NestJS and PostgreSQL (via Drizzle ORM):
 
 1. **Local Storage as Primary Source of Truth**:
@@ -28,11 +31,11 @@ We will implement an **asymmetric, mutation-driven delta sync engine** using Nes
 ## Considered Options
 
 - **CRDT Relay (Yjs / Automerge)**:
-  - *Deferred/Scoped*: Yaad's atomic block structure (`DocumentBlock`) does not require character-level multiplayer editing for primary sync. Storing opaque CRDT binary blobs in PostgreSQL hinders server-side search, migrations, and relational tree queries. CRDTs can be added later as an ephemeral in-memory layer for active collaborative rooms if needed.
+  - _Deferred/Scoped_: Yaad's atomic block structure (`DocumentBlock`) does not require character-level multiplayer editing for primary sync. Storing opaque CRDT binary blobs in PostgreSQL hinders server-side search, migrations, and relational tree queries. CRDTs can be added later as an ephemeral in-memory layer for active collaborative rooms if needed.
 - **Direct Dual-Write REST CRUD (`POST /pages`, `PUT /pages/:id`)**:
-  - *Rejected*: Lacks offline queuing, causes Last-Write-Wins clobbering across entire page payloads, and makes network reconciliation brittle.
+  - _Rejected_: Lacks offline queuing, causes Last-Write-Wins clobbering across entire page payloads, and makes network reconciliation brittle.
 - **Third-Party Sync-as-a-Service (ElectricSQL / PowerSync)**:
-  - *Deferred*: Introduces external cloud dependencies and non-standard PostgreSQL replication extensions. A lightweight NestJS transactional sync log provides full control over authentication, rate limiting, and self-hosted deployments.
+  - _Deferred_: Introduces external cloud dependencies and non-standard PostgreSQL replication extensions. A lightweight NestJS transactional sync log provides full control over authentication, rate limiting, and self-hosted deployments.
 
 ## Consequences
 

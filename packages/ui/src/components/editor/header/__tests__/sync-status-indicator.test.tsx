@@ -12,7 +12,7 @@ describe("SyncStatusIndicator (Unit Tests)", () => {
       pendingCount: 0,
       syncWorkerStatus: "idle",
       collabStatus: "connected",
-      triggerSync: vi.fn(),
+      triggerSync: vi.fn((): void => {}),
     });
 
     render(<SyncStatusIndicator />);
@@ -26,7 +26,7 @@ describe("SyncStatusIndicator (Unit Tests)", () => {
       pendingCount: 2,
       syncWorkerStatus: "syncing",
       collabStatus: "connected",
-      triggerSync: vi.fn(),
+      triggerSync: vi.fn((): void => {}),
     });
 
     render(<SyncStatusIndicator />);
@@ -39,7 +39,7 @@ describe("SyncStatusIndicator (Unit Tests)", () => {
       pendingCount: 4,
       syncWorkerStatus: "offline",
       collabStatus: "disconnected",
-      triggerSync: vi.fn(),
+      triggerSync: vi.fn((): void => {}),
     });
 
     render(<SyncStatusIndicator />);
@@ -48,7 +48,7 @@ describe("SyncStatusIndicator (Unit Tests)", () => {
   });
 
   it("renders error state and invokes triggerSync on click", () => {
-    const triggerSync = vi.fn();
+    const triggerSync = vi.fn((): void => {});
     vi.spyOn(useSyncStatusModule, "useSyncStatus").mockReturnValue({
       saveState: "error",
       pendingCount: 0,

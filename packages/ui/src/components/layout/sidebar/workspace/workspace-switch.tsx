@@ -172,7 +172,7 @@ export function WorkspaceSwitcher() {
         onOpenChange={setIsManageOpen}
       />
 
-      {activeWorkspace && (
+      {isShareOpen && (
         <ShareModal
           open={isShareOpen}
           onOpenChange={setIsShareOpen}

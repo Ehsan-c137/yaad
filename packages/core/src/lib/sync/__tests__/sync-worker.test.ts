@@ -132,8 +132,8 @@ describe("SyncWorker (Background Sync Engine)", () => {
 
   it("calls onTreeUpdated and dispatches window event when workspace_tree is pulled", async () => {
     useUserStore.setState({ token: "valid-jwt-token" });
-    const onTreeUpdated = vi.fn();
-    const eventHandler = vi.fn();
+    const onTreeUpdated = vi.fn((): void => {});
+    const eventHandler = vi.fn((): void => {});
 
     window.addEventListener("yaad:sync:tree-updated", eventHandler);
 

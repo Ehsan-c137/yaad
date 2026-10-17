@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 
-import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
+import type { SyncEntityType } from '../dto/sync.dto.js';
 import type {
-  DbTransaction,
+  MutationContext,
   MutationHandler,
 } from './mutation-handler.interface.js';
 
@@ -11,15 +11,12 @@ import { workspaces } from '../../../database/schema.js';
 
 @Injectable()
 export class WorkspaceMutationHandler implements MutationHandler {
-  readonly entityType: SyncEntityType = 'workspace';
+  get entityType(): SyncEntityType {
+    return 'workspace';
+  }
 
-  async apply(
-    tx: DbTransaction,
-    mutation: SyncMutationDto,
-    _version: number,
-    workspaceId: string,
-  ): Promise<void> {
-    const targetWorkspaceId = mutation.entityId || workspaceId;
+  async apply({ tx, mutation, workspaceId }: MutationContext): Promise<void> {
+    const targetWorkspaceId = mutation.entityId ?? workspaceId;
 
     if (mutation.operation === 'upsert') {
       const updateData: Record<string, any> = {

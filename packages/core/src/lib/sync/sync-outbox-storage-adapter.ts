@@ -14,6 +14,14 @@ export interface SyncOutboxAdapter extends StorageAdapter {
   getInnerAdapter: () => StorageAdapter;
 }
 
+interface EnqueueInput {
+  workspaceId: string;
+  entityType: SyncEntityType;
+  entityId: string;
+  operation: SyncOperation;
+  payload: any;
+}
+
 /**
  * Functional Proxy decorator creating a storage adapter that transparently enqueues
  * local mutations into the Outbox for background server synchronization (ADR 0001).
@@ -38,13 +46,13 @@ export function createSyncOutboxAdapter(
     }
   };
 
-  const enqueue = async (
-    workspaceId: string,
-    entityType: SyncEntityType,
-    entityId: string,
-    operation: SyncOperation,
-    payload: any,
-  ): Promise<void> => {
+  const enqueue = async ({
+    workspaceId,
+    entityType,
+    entityId,
+    operation,
+    payload,
+  }: EnqueueInput): Promise<void> => {
     if (isApplyingRemote) return;
     await queue.enqueue({
       workspaceId,
@@ -62,23 +70,35 @@ export function createSyncOutboxAdapter(
 
     saveWorkspace: async (workspace: any) => {
       await inner.saveWorkspace(workspace);
-      await enqueue(
-        workspace.id,
-        "workspace",
-        workspace.id,
-        "upsert",
-        workspace,
-      );
+      await enqueue({
+        workspaceId: workspace.id,
+        entityType: "workspace",
+        entityId: workspace.id,
+        operation: "upsert",
+        payload: workspace,
+      });
     },
 
     deleteWorkspace: async (id: string) => {
       await inner.deleteWorkspace(id);
-      await enqueue(id, "workspace", id, "delete", { id });
+      await enqueue({
+        workspaceId: id,
+        entityType: "workspace",
+        entityId: id,
+        operation: "delete",
+        payload: { id },
+      });
     },
 
     saveWorkspaceTree: async (workspaceId: string, tree: any) => {
       await inner.saveWorkspaceTree(workspaceId, tree);
-      await enqueue(workspaceId, "workspace_tree", workspaceId, "upsert", tree);
+      await enqueue({
+        workspaceId,
+        entityType: "workspace_tree",
+        entityId: workspaceId,
+        operation: "upsert",
+        payload: tree,
+      });
     },
 
     saveDocument: async (doc: any) => {
@@ -89,9 +109,20 @@ export function createSyncOutboxAdapter(
         const { useWorkspaceStore } =
           await import("../../store/use-workspace-store");
         wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
-      } catch {}
+      } catch (error) {
+        console.warn(
+          "[SyncOutboxAdapter] Could not resolve the active workspace:",
+          error,
+        );
+      }
 
-      await enqueue(wsId, "document", doc.id, "upsert", doc);
+      await enqueue({
+        workspaceId: wsId,
+        entityType: "document",
+        entityId: doc.id,
+        operation: "upsert",
+        payload: doc,
+      });
     },
 
     deleteDocument: async (id: string) => {
@@ -102,9 +133,20 @@ export function createSyncOutboxAdapter(
         const { useWorkspaceStore } =
           await import("../../store/use-workspace-store");
         wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
-      } catch {}
+      } catch (error) {
+        console.warn(
+          "[SyncOutboxAdapter] Could not resolve the active workspace:",
+          error,
+        );
+      }
 
-      await enqueue(wsId, "document", id, "delete", { id });
+      await enqueue({
+        workspaceId: wsId,
+        entityType: "document",
+        entityId: id,
+        operation: "delete",
+        payload: { id },
+      });
     },
   };
 

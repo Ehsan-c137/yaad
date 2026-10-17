@@ -31,13 +31,13 @@ describe("ToggleThemeButton (Component Test)", () => {
     expect(switchElement.getAttribute("aria-checked")).toBe("true");
   });
 
-  it("toggles dark mode on and off properly", async () => {
+  it("toggles dark mode on and off properly", () => {
     render(<ToggleThemeButton />);
     const switchElement = screen.getByRole("switch");
 
     expect(switchElement.getAttribute("aria-checked")).toBe("false");
 
-    await act(async () => {
+    act(() => {
       fireEvent.click(switchElement);
     });
 
@@ -45,7 +45,7 @@ describe("ToggleThemeButton (Component Test)", () => {
     expect(localStorage.getItem("theme")).toBe(JSON.stringify("dark"));
     expect(switchElement.getAttribute("aria-checked")).toBe("true");
 
-    await act(async () => {
+    act(() => {
       fireEvent.click(switchElement);
     });
 

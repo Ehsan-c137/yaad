@@ -10,8 +10,14 @@ interface RateLimitRecord {
 @Injectable()
 export class RateLimitGuard implements CanActivate {
   private readonly ipRequests = new Map<string, RateLimitRecord>();
-  private readonly limit = 10; // Max 10 attempts
-  private readonly windowMs = 60 * 1000; // per 1 minute window
+
+  private get limit(): number {
+    return 10;
+  }
+
+  private get windowMs(): number {
+    return 60 * 1000;
+  }
 
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest();

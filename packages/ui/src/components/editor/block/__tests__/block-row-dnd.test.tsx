@@ -5,7 +5,7 @@ import {
 } from "@yaad/core/store/document/use-document-store";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
+import { EditorPermissionsProvider } from "@/context/editor-permission-provider";
 import { resetBlockDndState } from "@/hooks/editor/use-block-dnd";
 import { EditorPageIdProvider } from "@/providers/document-provider";
 

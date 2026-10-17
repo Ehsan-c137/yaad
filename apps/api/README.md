@@ -14,6 +14,7 @@ Yaad's backend is built using **NestJS**, **PostgreSQL**, **Drizzle ORM**, and *
 - **Enterprise Security**: JWT-based authentication with `bcryptjs` password hashing, protected by `JwtAuthGuard` and multi-tenant `WorkspaceMemberGuard`.
 
 For in-depth architectural trade-offs, read the Architecture Decision Records:
+
 - [ADR 0001: Local-First Mutation-Driven Sync Engine](../../docs/adr/0001-local-first-sync-engine.md)
 - [ADR 0002: CRDT-Powered Real-Time Collaborative Multiplayer](../../docs/adr/0002-crdt-collaborative-multiplayer.md)
 
@@ -22,23 +23,30 @@ For in-depth architectural trade-offs, read the Architecture Decision Records:
 ## 2. Quickstart & Local Setup
 
 ### Prerequisites
+
 - Node.js >= 22.0.0
 - pnpm >= 10.0.0
 - Docker & Docker Compose (for PostgreSQL)
 
 ### 1. Start PostgreSQL
+
 ```bash
 # In apps/api
 pnpm docker:up
 ```
+
 This spins up PostgreSQL 16 on port `5432` with database `yaad`.
 
 ### 2. Configure Environment Variables
+
 Copy `.env.example` to `.env`:
+
 ```bash
 cp .env.example .env
 ```
+
 Default `.env` configuration:
+
 ```env
 DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/yaad"
 PORT=3000
@@ -46,17 +54,21 @@ JWT_SECRET="yaad-default-secret-key-change-in-production"
 ```
 
 ### 3. Push Schema to Database
+
 ```bash
 pnpm db:push
 ```
 
 ### 4. Run Development Server
+
 ```bash
 pnpm start:dev
 ```
+
 The server will start listening at `http://localhost:3000`.
 
 ### 5. Run Test Suite
+
 ```bash
 pnpm test
 ```
@@ -70,9 +82,11 @@ Base URL: `http://localhost:3000` (or `http://localhost:3000/api/v1`)
 ### Authentication (`/auth`)
 
 #### `POST /auth/register`
+
 Creates a user account, provisions a default workspace (`"My Workspace"`), adds the user as `owner`, and returns an access token.
 
 - **Request Body**:
+
 ```json
 {
   "email": "alice@yaad.app",
@@ -80,7 +94,9 @@ Creates a user account, provisions a default workspace (`"My Workspace"`), adds 
   "name": "Alice"
 }
 ```
+
 - **Response `201 Created`**:
+
 ```json
 {
   "user": {
@@ -95,16 +111,20 @@ Creates a user account, provisions a default workspace (`"My Workspace"`), adds 
 ---
 
 #### `POST /auth/login`
+
 Validates credentials and returns an access token.
 
 - **Request Body**:
+
 ```json
 {
   "email": "alice@yaad.app",
   "password": "securePassword123"
 }
 ```
+
 - **Response `200 OK`**:
+
 ```json
 {
   "user": {
@@ -118,10 +138,12 @@ Validates credentials and returns an access token.
 ---
 
 #### `GET /auth/me`
+
 Returns the authenticated user's profile.
 
 - **Headers**: `Authorization: Bearer <accessToken>`
 - **Response `200 OK`**:
+
 ```json
 {
   "id": "7b0b30bb-75dc-4258-86d1-44aa04085f1c",
@@ -134,13 +156,16 @@ Returns the authenticated user's profile.
 ### Delta Sync API (`/sync`)
 
 All sync routes require:
+
 - `Authorization: Bearer <accessToken>`
 - Valid membership in target `workspaceId` (enforced via `WorkspaceMemberGuard`).
 
 #### `POST /sync/push`
+
 Atomically applies a batch of local mutations, ensures idempotency via `clientMutationId`, appends records to `sync_log`, and increments the workspace's monotonic version.
 
 - **Request Body**:
+
 ```json
 {
   "workspaceId": "ws_1a2b3c4d",
@@ -161,9 +186,11 @@ Atomically applies a batch of local mutations, ensures idempotency via `clientMu
   ]
 }
 ```
+
 - **Supported `entityType` values**: `'workspace'`, `'workspace_tree'`, `'page'`, `'document'`, `'tag'`.
 - **Supported `operation` values**: `'upsert'`, `'delete'`.
 - **Response `200 OK`**:
+
 ```json
 {
   "acceptedMutationIds": ["mut_d290f1ee-6c54-4b01-90e6-d701748f0851"],
@@ -174,9 +201,11 @@ Atomically applies a batch of local mutations, ensures idempotency via `clientMu
 ---
 
 #### `POST /sync/pull`
+
 Fetches all delta changes that occurred after the client's last known version.
 
 - **Request Body**:
+
 ```json
 {
   "workspaceId": "ws_1a2b3c4d",
@@ -184,7 +213,9 @@ Fetches all delta changes that occurred after the client's last known version.
   "limit": 500
 }
 ```
+
 - **Response `200 OK`**:
+
 ```json
 {
   "changes": [
@@ -210,6 +241,7 @@ Fetches all delta changes that occurred after the client's last known version.
 ---
 
 #### `GET /sync/pull`
+
 Query parameter equivalent for delta pull.
 
 - **Query Parameters**:
@@ -225,9 +257,11 @@ Query parameter equivalent for delta pull.
 All member management routes require `Authorization: Bearer <accessToken>`.
 
 #### `GET /workspaces/:workspaceId/members`
+
 Retrieves all members, emails, names, and assigned roles (`owner`, `editor`, `viewer`) for the specified workspace. Requires workspace membership.
 
 - **Response `200 OK`**:
+
 ```json
 [
   {
@@ -254,16 +288,20 @@ Retrieves all members, emails, names, and assigned roles (`owner`, `editor`, `vi
 ---
 
 #### `POST /workspaces/:workspaceId/members`
+
 Adds a new collaborator by email or updates an existing member's role (`owner`, `editor`, `viewer`). Requires workspace membership. When a role changes, active client sessions for the user are immediately notified via WebSockets (`member-role-updated`).
 
 - **Request Body**:
+
 ```json
 {
   "email": "charlie@yaad.app",
   "role": "editor"
 }
 ```
+
 - **Response `200 OK`**:
+
 ```json
 {
   "id": "mem_9c0d1e2f",
@@ -277,6 +315,7 @@ Adds a new collaborator by email or updates an existing member's role (`owner`, 
 ---
 
 #### `DELETE /workspaces/:workspaceId/members/:memberUserId`
+
 Removes a collaborator's access from the workspace. Automatically notifies their active sessions via WebSocket (`member-kicked`) and terminates open connections.
 
 - **Response `204 No Content`**
@@ -284,9 +323,11 @@ Removes a collaborator's access from the workspace. Automatically notifies their
 ---
 
 #### `POST /workspaces/:workspaceId/join`
+
 Allows an authenticated user to join a shared workspace using their current session (e.g. from a shareable workspace link).
 
 - **Response `200 OK`**:
+
 ```json
 {
   "id": "mem_new",
@@ -305,9 +346,11 @@ Allows an authenticated user to join a shared workspace using their current sess
 - **Adapter**: `WsAdapter` (`@nestjs/platform-ws`)
 
 ### 1. Join Room (`join-room`)
+
 Initiates the 2-step Yjs sync handshake.
 
 - **Client Message**:
+
 ```json
 {
   "event": "join-room",
@@ -319,8 +362,10 @@ Initiates the 2-step Yjs sync handshake.
   }
 }
 ```
+
 - **Server Response (`sync-step-2`)**:
-The server computes the delta updates missing on the client using the client's state vector:
+  The server computes the delta updates missing on the client using the client's state vector:
+
 ```json
 {
   "event": "sync-step-2",
@@ -332,9 +377,11 @@ The server computes the delta updates missing on the client using the client's s
 ---
 
 ### 2. Live Document Edits (`sync-update`)
+
 Clients stream incremental binary CRDT updates as they type.
 
 - **Client Message**:
+
 ```json
 {
   "event": "sync-update",
@@ -345,6 +392,7 @@ Clients stream incremental binary CRDT updates as they type.
   }
 }
 ```
+
 - **Server Behavior**:
   1. Applies update to in-memory `Y.Doc`.
   2. Persists update to PostgreSQL `document_crdt_updates`.
@@ -360,9 +408,11 @@ Clients stream incremental binary CRDT updates as they type.
 ---
 
 ### 3. Ephemeral Presence & Cursors (`awareness-update`)
+
 Transmits live collaborator cursors and active block selections without database persistence.
 
 - **Client Message**:
+
 ```json
 {
   "event": "awareness-update",
@@ -380,14 +430,17 @@ Transmits live collaborator cursors and active block selections without database
   }
 }
 ```
+
 - **Server Broadcast**: Relayed immediately to all other collaborators in the room.
 
 ---
 
 ### 4. Real-Time Page Tree Synchronization (`tree-update`)
+
 Broadcasts sidebar hierarchy adjustments (creating, renaming, moving pages) to all clients in the workspace.
 
 - **Client Message**:
+
 ```json
 {
   "event": "tree-update",
@@ -399,6 +452,7 @@ Broadcasts sidebar hierarchy adjustments (creating, renaming, moving pages) to a
   }
 }
 ```
+
 - **Server Broadcast**: Relayed to all active workspace clients (`{ event: "tree-update", workspaceId, tree }`).
 
 ---
@@ -406,7 +460,9 @@ Broadcasts sidebar hierarchy adjustments (creating, renaming, moving pages) to a
 ### 5. Permission & Membership Real-Time Events
 
 #### Role Updated (`member-role-updated`)
+
 Broadcast to all active sockets of a target user when their role is altered by an owner:
+
 ```json
 {
   "event": "member-role-updated",
@@ -415,10 +471,13 @@ Broadcast to all active sockets of a target user when their role is altered by a
   "role": "viewer"
 }
 ```
-*Client Action*: Automatically transitions editor UI into read-only mode without reloading.
+
+_Client Action_: Automatically transitions editor UI into read-only mode without reloading.
 
 #### Member Removed (`member-kicked`)
+
 Sent immediately to a user when their membership is revoked, following which the socket is closed (code `4003`):
+
 ```json
 {
   "event": "member-kicked",
@@ -426,10 +485,13 @@ Sent immediately to a user when their membership is revoked, following which the
   "userId": "usr_bob"
 }
 ```
-*Client Action*: Redirects the removed user to workspace selection and clears cached credentials.
+
+_Client Action_: Redirects the removed user to workspace selection and clears cached credentials.
 
 #### Peer Departure (`peer-leave`)
+
 Broadcast to room subscribers when a collaborator disconnects:
+
 ```json
 {
   "event": "peer-leave",

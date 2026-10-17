@@ -33,14 +33,14 @@ export function RegisterForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
     const validation = validateRegisterInput(email, password, confirmPassword);
 
     if (!validation.isValid) {
-      setError(validation.error || "Please check your inputs.");
+      setError(validation.error ?? "Please check your inputs.");
       return;
     }
 
@@ -53,8 +53,12 @@ export function RegisterForm({
         name.trim() || undefined,
       );
       onSuccess();
-    } catch (err: any) {
-      setError(err.message || "Failed to create account. Please try again.");
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to create account. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +73,12 @@ export function RegisterForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+      <form
+        onSubmit={(e) => {
+          void handleSubmit(e);
+        }}
+        className="space-y-3.5"
+      >
         <div>
           <label
             htmlFor="register-name"
@@ -78,7 +87,7 @@ export function RegisterForm({
             {t("yourNameOptional")}
           </label>
           <div className="relative flex items-center">
-            <User className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
+            <User className="absolute inset-s-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-name"
               type="text"
@@ -99,7 +108,7 @@ export function RegisterForm({
             {t("email")}
           </label>
           <div className="relative flex items-center">
-            <Mail className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute inset-s-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-email"
               type="email"
@@ -121,7 +130,7 @@ export function RegisterForm({
             {t("password")}
           </label>
           <div className="relative flex items-center">
-            <Lock className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute inset-s-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-password"
               type={showPassword ? "text" : "password"}
@@ -135,7 +144,7 @@ export function RegisterForm({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute end-3.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute inset-e-3.5 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -155,7 +164,7 @@ export function RegisterForm({
             {t("confirmPassword")}
           </label>
           <div className="relative flex items-center">
-            <Lock className="absolute start-3.5 h-4 w-4 text-muted-foreground" />
+            <Lock className="absolute inset-s-3.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="register-confirm-password"
               type={showPassword ? "text" : "password"}

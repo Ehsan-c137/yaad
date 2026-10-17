@@ -9,8 +9,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useCollabContext } from "@/context/collab-context";
-import { useEditorPermissions } from "@/context/editor-permissions-context";
+import { useCollabContext } from "@/context/use-collab";
+import { useEditorPermissions } from "@/context/use-editor-permissions";
 import { useBlockDnd } from "@/hooks/editor/use-block-dnd";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";

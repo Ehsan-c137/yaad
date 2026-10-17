@@ -31,7 +31,7 @@ export function MemberRow({
     try {
       await onRemove(member.userId);
     } catch (err: any) {
-      toast.error(err.message || t("failedRemoveMember"));
+      toast.error(err.message ?? t("failedRemoveMember"));
     } finally {
       setIsRemoving(false);
     }
@@ -44,7 +44,7 @@ export function MemberRow({
     try {
       await onUpdateRole(member.userId, newRole);
     } catch (err: any) {
-      toast.error(err.message || t("failedInviteMember"));
+      toast.error(err.message ?? t("failedInviteMember"));
     } finally {
       setIsUpdatingRole(false);
     }
@@ -93,7 +93,9 @@ export function MemberRow({
         {canManageRoles && !isOwner && onUpdateRole ? (
           <select
             value={member.role}
-            onChange={(e) => handleRoleChange(e.target.value)}
+            onChange={(e) => {
+              void handleRoleChange(e.target.value);
+            }}
             disabled={isUpdatingRole || isRemoving}
             aria-label={t("collaboratorRole")}
             className="h-6 rounded-md border border-border/40 bg-input/70 px-1.5 py-0.5 text-[10px] text-foreground outline-none transition-colors hover:border-border/60 focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/20 dark:bg-input/30"
@@ -123,7 +125,7 @@ export function MemberRow({
             type="button"
             variant="ghost"
             size="icon-xs"
-            onClick={handleRemove}
+            onClick={() => void handleRemove()}
             disabled={isRemoving}
             title={t("removeMember", { email: member.email })}
             aria-label={t("removeMember", { email: member.email })}

@@ -26,7 +26,10 @@ const treeChangeListeners = new Set<TreeChangeCallback>();
 
 export function onWorkspaceTreePersisted(cb: TreeChangeCallback): () => void {
   treeChangeListeners.add(cb);
-  return () => treeChangeListeners.delete(cb);
+
+  return () => {
+    treeChangeListeners.delete(cb);
+  };
 }
 
 export function persistWorkspaceTree(
@@ -47,7 +50,12 @@ export function persistWorkspaceTree(
         const parsed = JSON.parse(activeStorage);
         wsId = parsed?.state?.activeWorkspaceId;
       }
-    } catch {}
+    } catch (error) {
+      console.warn(
+        "Could not read the active workspace from local storage:",
+        error,
+      );
+    }
   }
   if (!wsId) {
     wsId = "ws_personal";
@@ -109,7 +117,12 @@ export function persistWorkspaceTree(
             const channel = new BroadcastChannel("yaad-sync-channel");
             channel.postMessage({ type: "tree-persisted", workspaceId: wsId });
             channel.close();
-          } catch {}
+          } catch (error) {
+            console.warn(
+              "Could not broadcast the persisted workspace tree:",
+              error,
+            );
+          }
         }
       } catch (e) {
         console.error("Error saving workspace tree to storage:", e);

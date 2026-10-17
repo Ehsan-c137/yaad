@@ -7,20 +7,13 @@ import { getStorageAdapter } from "./storage-factory";
 
 let enqueueDebounceTimer: any = null;
 
-function handleEnqueue(workspaceId: string) {
-  if (enqueueDebounceTimer) clearTimeout(enqueueDebounceTimer);
-  enqueueDebounceTimer = setTimeout(() => {
-    void syncWorker.syncNow(workspaceId);
-  }, 500);
-}
-
 let rawAdapter: StorageAdapter = getStorageAdapter();
 let currentAdapter: SyncOutboxAdapter = createSyncOutboxAdapter(rawAdapter, {
   onEnqueue: handleEnqueue,
 });
 
 export const syncWorker = new SyncWorker(() => currentAdapter, {
-  onTreeUpdated: async (workspaceId) => {
+  onTreeUpdated: (workspaceId) => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(
         new CustomEvent("yaad:sync:tree-updated", {
@@ -30,6 +23,13 @@ export const syncWorker = new SyncWorker(() => currentAdapter, {
     }
   },
 });
+
+function handleEnqueue(workspaceId: string): void {
+  if (enqueueDebounceTimer) clearTimeout(enqueueDebounceTimer);
+  enqueueDebounceTimer = setTimeout(() => {
+    void syncWorker.syncNow(workspaceId);
+  }, 500);
+}
 
 export function setStorageAdapter(adapter: StorageAdapter): void {
   rawAdapter = adapter;

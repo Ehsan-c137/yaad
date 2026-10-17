@@ -84,12 +84,12 @@ function SidebarRootDropZone() {
     setIsOver(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsOver(false);
     if (!draggedPageId || !lastRootId) return;
-    movePageInTree(draggedPageId, lastRootId, "after");
+    await movePageInTree(draggedPageId, lastRootId, "after");
     resetDndState();
   };
 
@@ -98,7 +98,7 @@ function SidebarRootDropZone() {
       data-testid="sidebar-root-drop-zone"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDrop={(e) => void handleDrop(e)}
       className={cn(
         "my-1.5 h-7 w-full rounded-full border border-dashed transition-all duration-(--spring-duration) ease-(--spring) flex items-center justify-center text-xs select-none",
         isOver

@@ -28,7 +28,7 @@ describe("ShareModal", () => {
     render(
       <ShareModal
         open={true}
-        onOpenChange={vi.fn()}
+        onOpenChange={() => void vi.fn()}
         workspaceId="ws_1"
         workspaceName="Personal"
         memberService={mockMemberService}
@@ -66,7 +66,7 @@ describe("ShareModal", () => {
     render(
       <ShareModal
         open={true}
-        onOpenChange={vi.fn()}
+        onOpenChange={() => void vi.fn()}
         workspaceId="ws_1"
         workspaceName="Engineering"
         memberService={mockMemberService}
@@ -103,7 +103,7 @@ describe("ShareModal", () => {
     render(
       <ShareModal
         open={true}
-        onOpenChange={vi.fn()}
+        onOpenChange={() => void vi.fn()}
         workspaceId="ws_1"
         workspaceName="Engineering"
         memberService={mockMemberService}
@@ -149,7 +149,7 @@ describe("ShareModal", () => {
     render(
       <ShareModal
         open={true}
-        onOpenChange={vi.fn()}
+        onOpenChange={() => void vi.fn()}
         workspaceId="ws_1"
         workspaceName="Engineering"
         memberService={mockMemberService}
@@ -178,7 +178,7 @@ describe("ShareModal", () => {
     render(
       <ShareModal
         open={true}
-        onOpenChange={vi.fn()}
+        onOpenChange={() => void vi.fn()}
         workspaceId="ws_abc"
         workspaceName="Demo"
         pageId="page_123"
@@ -230,7 +230,7 @@ describe("ShareModal", () => {
     render(
       <ShareModal
         open={true}
-        onOpenChange={vi.fn()}
+        onOpenChange={() => void vi.fn()}
         workspaceId="ws_1"
         workspaceName="Engineering"
         memberService={mockMemberService}

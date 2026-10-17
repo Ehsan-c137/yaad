@@ -125,4 +125,3 @@ _Avoid_: Mind map, network diagram, relation graph
 **Tag**:
 A categorized label with a color that can be attached to pages or individual blocks to facilitate cross-cutting discovery.
 _Avoid_: Label, hashtag, category
-

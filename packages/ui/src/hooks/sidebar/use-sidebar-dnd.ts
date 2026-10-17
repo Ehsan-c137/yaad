@@ -202,7 +202,7 @@ export function useSidebarPageDnd(pageId: string, isReadOnly: boolean) {
         const descendants = collectPageSubtree(pages, currentDragged);
 
         if (!descendants.has(pageId)) {
-          movePageInTree(currentDragged, pageId, pos);
+          void movePageInTree(currentDragged, pageId, pos);
         }
       }
 

@@ -100,7 +100,7 @@ describe('SyncService', () => {
         }),
       };
 
-      mockDb.transaction.mockImplementation(async (callback: any) => {
+      mockDb.transaction.mockImplementation((callback: any) => {
         return callback(mockTx);
       });
 
@@ -119,12 +119,12 @@ describe('SyncService', () => {
       });
 
       expect(mockRegistry.get).toHaveBeenCalledWith('page');
-      expect(mockHandler.apply).toHaveBeenCalledWith(
-        mockTx,
+      expect(mockHandler.apply).toHaveBeenCalledWith({
+        tx: mockTx,
         mutation,
-        11,
-        'ws_1',
-      );
+        version: 11,
+        workspaceId: 'ws_1',
+      });
       expect(result.acceptedMutationIds).toContain('mut_1');
       expect(result.lastServerVersion).toBe(11);
     });
@@ -152,7 +152,7 @@ describe('SyncService', () => {
         update: vi.fn(),
       };
 
-      mockDb.transaction.mockImplementation(async (callback: any) => {
+      mockDb.transaction.mockImplementation((callback: any) => {
         return callback(mockTx);
       });
 

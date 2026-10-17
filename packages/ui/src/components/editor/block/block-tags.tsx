@@ -3,8 +3,8 @@
 
 import type { Tag } from "@yaad/core/types/document";
 
-import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
+import { useEditorPermissions } from "@/context/use-editor-permissions";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 import { TagList } from "../tags/tag-list";

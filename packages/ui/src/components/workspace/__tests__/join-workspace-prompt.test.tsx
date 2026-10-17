@@ -61,7 +61,10 @@ describe("JoinWorkspacePrompt", () => {
     });
 
     render(
-      <JoinWorkspacePrompt workspaceId="ws_collab_999" onJoined={onJoined} />,
+      <JoinWorkspacePrompt
+        workspaceId="ws_collab_999"
+        onJoined={() => void onJoined()}
+      />,
     );
 
     const joinButton = screen.getByRole("button", { name: /join workspace/i });

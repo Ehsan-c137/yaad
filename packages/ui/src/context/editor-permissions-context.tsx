@@ -1,7 +1,5 @@
-"use client";
-
 import { evaluateWorkspacePermissions } from "@yaad/core/lib/workspace/workspace-permissions";
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
 import type { WorkspacePermissionsState } from "@/hooks/workspace/use-workspace-permissions";
 
@@ -15,21 +13,3 @@ const DEFAULT_EDITOR_PERMISSIONS: EditorPermissionsContextValue = {
 export const EditorPermissionsContext =
   createContext<EditorPermissionsContextValue>(DEFAULT_EDITOR_PERMISSIONS);
 EditorPermissionsContext.displayName = "EditorPermissionsContext";
-
-export function EditorPermissionsProvider({
-  value,
-  children,
-}: {
-  value: EditorPermissionsContextValue;
-  children: React.ReactNode;
-}) {
-  return (
-    <EditorPermissionsContext.Provider value={value}>
-      {children}
-    </EditorPermissionsContext.Provider>
-  );
-}
-
-export function useEditorPermissions(): EditorPermissionsContextValue {
-  return useContext(EditorPermissionsContext);
-}

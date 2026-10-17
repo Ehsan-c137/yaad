@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 
-import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
+import type { SyncEntityType } from '../dto/sync.dto.js';
 import type {
-  DbTransaction,
+  MutationContext,
   MutationHandler,
 } from './mutation-handler.interface.js';
 
@@ -11,14 +11,16 @@ import { pages } from '../../../database/schema.js';
 
 @Injectable()
 export class PageMutationHandler implements MutationHandler {
-  readonly entityType: SyncEntityType = 'page';
+  get entityType(): SyncEntityType {
+    return 'page';
+  }
 
-  async apply(
-    tx: DbTransaction,
-    mutation: SyncMutationDto,
-    version: number,
-    workspaceId: string,
-  ): Promise<void> {
+  async apply({
+    tx,
+    mutation,
+    version,
+    workspaceId,
+  }: MutationContext): Promise<void> {
     if (mutation.operation === 'upsert') {
       await tx
         .insert(pages)

@@ -8,11 +8,11 @@ services:
       POSTGRES_PASSWORD: postgrespassword
       POSTGRES_DB: yaad
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - yaad_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d yaad"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d yaad']
       interval: 5s
       timeout: 5s
       retries: 5

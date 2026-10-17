@@ -23,7 +23,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
@@ -57,7 +57,12 @@ export function LoginForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+      <form
+        onSubmit={(e) => {
+          void handleSubmit(e);
+        }}
+        className="space-y-3.5"
+      >
         <div>
           <label
             htmlFor="login-email"

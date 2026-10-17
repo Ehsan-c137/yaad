@@ -4,7 +4,7 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useEditorPermissions } from "@/context/editor-permissions-context";
+import { useEditorPermissions } from "@/context/use-editor-permissions";
 import {
   resetBlockDndState,
   setBlockDndState,

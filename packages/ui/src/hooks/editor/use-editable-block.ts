@@ -7,8 +7,8 @@ import type {
 
 import { useCallback } from "react";
 
-import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
+import { useEditorPermissions } from "@/context/use-editor-permissions";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 
 export function useEditableBlock(

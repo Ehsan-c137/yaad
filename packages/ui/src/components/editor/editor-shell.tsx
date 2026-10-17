@@ -2,8 +2,8 @@ import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
-import { CollabProvider } from "@/context/collab-context";
-import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
+import { CollabProvider } from "@/context/collab-provider";
+import { EditorPermissionsProvider } from "@/context/editor-permission-provider";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
 import { styles } from "@/lib/design-token";

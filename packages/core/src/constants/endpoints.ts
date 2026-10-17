@@ -16,9 +16,9 @@ function isTauriEnvironment(): boolean {
 
 export function getDefaultApiBaseUrl(): string {
   // 1. Explicit Vite env
-  // @ts-ignore
+  // @ts-ignore -- Vite injects `import.meta.env` at build time.
   if (import.meta?.env?.VITE_API_URL) {
-    // @ts-ignore
+    // @ts-ignore -- Vite injects `import.meta.env` at build time.
     return import.meta.env.VITE_API_URL;
   }
 
@@ -42,9 +42,9 @@ export function getDefaultApiBaseUrl(): string {
 
 export function getDefaultWsUrl(): string {
   // 1. Explicit Vite env
-  // @ts-ignore
+  // @ts-ignore -- Vite injects `import.meta.env` at build time.
   if (import.meta?.env?.VITE_WS_URL) {
-    // @ts-ignore
+    // @ts-ignore -- Vite injects `import.meta.env` at build time.
     return import.meta.env.VITE_WS_URL;
   }
 

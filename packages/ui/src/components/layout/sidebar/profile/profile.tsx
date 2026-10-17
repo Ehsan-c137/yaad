@@ -96,7 +96,7 @@ export function Profile({ compact = false }: { compact?: boolean }) {
             <>
               <div className="px-2 py-1.5 border-b border-border/50">
                 <p className="text-xs font-semibold text-foreground truncate">
-                  {userName || "User"}
+                  {userName ?? "User"}
                 </p>
                 <p className="text-[11px] text-muted-foreground truncate">
                   {email}

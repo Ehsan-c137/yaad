@@ -1,8 +1,8 @@
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 
 import { IconPickerPopover } from "@/components/shared/icon-picker-popover";
-import { useEditorPermissions } from "@/context/editor-permissions-context";
 import { useEditorPageIdContext } from "@/context/use-editor-context";
+import { useEditorPermissions } from "@/context/use-editor-permissions";
 import { useDocumentStore } from "@/hooks/editor/use-document-store-ui";
 import { cn } from "@/lib/utils";
 

@@ -1,7 +1,7 @@
 import { useUserStore } from "@yaad/core/store/use-user-store";
 import { useTranslation } from "react-i18next";
 
-import { useCollabContext } from "@/context/collab-context";
+import { useCollabContext } from "@/context/use-collab";
 
 export function CollabPresence() {
   const { t } = useTranslation();

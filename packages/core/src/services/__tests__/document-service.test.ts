@@ -178,7 +178,7 @@ describe("DocumentService (Integration Test)", () => {
       parentId: "root",
       properties: {},
       tags: [],
-      type: "text",
+      type: "paragraph",
       updatedAt: 0,
     };
     doc.blocks.root.childrenIds = ["b1", "b2"];
@@ -208,7 +208,7 @@ describe("DocumentService (Integration Test)", () => {
       parentId: "root",
       properties: {},
       tags: [],
-      type: "text",
+      type: "paragraph",
       updatedAt: 0,
     };
     doc.blocks.root.childrenIds = ["b1", "b2"];

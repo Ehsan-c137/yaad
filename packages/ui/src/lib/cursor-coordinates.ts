@@ -85,7 +85,7 @@ export function getCaretCoordinates(
   if (!container) return null;
 
   const containerRect = container.getBoundingClientRect();
-  const text = container.innerText ?? "";
+  const text = container.innerText || "";
   const clampedOffset = Math.max(0, Math.min(offset, text.length));
 
   // If container is empty or has no child nodes
@@ -185,7 +185,7 @@ export function getSelectionRectangles(
   if (!container || startOffset >= endOffset) return [];
 
   const containerRect = container.getBoundingClientRect();
-  const text = container.innerText ?? "";
+  const text = container.innerText || "";
   const start = Math.max(0, Math.min(startOffset, text.length));
   const end = Math.max(0, Math.min(endOffset, text.length));
   if (start >= end) return [];

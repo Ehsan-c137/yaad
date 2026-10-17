@@ -7,7 +7,7 @@ import {
 } from "@yaad/core/store/document/use-document-store";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EditorPermissionsProvider } from "@/context/editor-permissions-context";
+import { EditorPermissionsProvider } from "@/context/editor-permission-provider";
 import { EditorPageIdProvider } from "@/providers/document-provider";
 
 import { BlockCanvas } from "../block-canvas";
@@ -33,8 +33,8 @@ describe("Editor Read-Only Mode (Integration Tests)", () => {
 
   describe("EditableContent", () => {
     it("disables editing and ignores input/keyboard events when readOnly", () => {
-      const onChange = vi.fn();
-      const onEnter = vi.fn();
+      const onChange = vi.fn((): void => {});
+      const onEnter = vi.fn((): void => {});
 
       render(
         <EditableContent
@@ -57,7 +57,7 @@ describe("Editor Read-Only Mode (Integration Tests)", () => {
     });
 
     it("enables editing when readOnly is false", () => {
-      const onChange = vi.fn();
+      const onChange = vi.fn((): void => {});
 
       render(
         <EditableContent

@@ -58,9 +58,10 @@ describe('YjsRoomManager', () => {
     await roomManager.applyUpdate('ws_1', 'doc_1', update);
 
     const room = await roomManager.getOrCreateRoom('ws_1', 'doc_1');
-    expect(room.ydoc.getText('test_text').toString()).toBe(
-      'Collaborative Edit',
-    );
+    const testText = room.ydoc.getText('test_text') as unknown as {
+      toString: () => string;
+    };
+    expect(testText.toString()).toBe('Collaborative Edit');
     expect(mockPersistence.appendUpdate).toHaveBeenCalledWith(
       'ws_1',
       'doc_1',
@@ -84,7 +85,10 @@ describe('YjsRoomManager', () => {
     await roomManager.applyUpdate('ws_1', 'doc_1', updateB);
 
     const serverRoom = await roomManager.getOrCreateRoom('ws_1', 'doc_1');
-    const serverResult = serverRoom.ydoc.getText('content').toString();
+    const serverText = serverRoom.ydoc.getText('content') as unknown as {
+      toString: () => string;
+    };
+    const serverResult = serverText.toString();
 
     // Client A applies update B
     Y.applyUpdate(clientADoc, updateB);
@@ -92,8 +96,14 @@ describe('YjsRoomManager', () => {
     Y.applyUpdate(clientBDoc, updateA);
 
     // Mathematically proven: all converge to the exact same text!
-    expect(clientADoc.getText('content').toString()).toBe(serverResult);
-    expect(clientBDoc.getText('content').toString()).toBe(serverResult);
+    const clientAText = clientADoc.getText('content') as unknown as {
+      toString: () => string;
+    };
+    const clientBText = clientBDoc.getText('content') as unknown as {
+      toString: () => string;
+    };
+    expect(clientAText.toString()).toBe(serverResult);
+    expect(clientBText.toString()).toBe(serverResult);
   });
 
   it('computes differential updates for clients using state vector (Sync Step 2)', async () => {
@@ -126,7 +136,10 @@ describe('YjsRoomManager', () => {
 
     // 5. Applying the diff to client brings client to 'Initial World'
     Y.applyUpdate(clientDoc, diff);
-    expect(clientDoc.getText('notes').toString()).toBe('Initial World');
+    const clientNotes = clientDoc.getText('notes') as unknown as {
+      toString: () => string;
+    };
+    expect(clientNotes.toString()).toBe('Initial World');
   });
 
   it('manages consumer lifecycle via acquireRoom and releaseRoom', async () => {

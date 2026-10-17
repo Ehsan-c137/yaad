@@ -14,7 +14,7 @@ export type Database = NodePgDatabase<typeof schema>;
       drizzle,
       schema,
       connection:
-        process.env.DATABASE_URL ||
+        process.env.DATABASE_URL ??
         'postgres://postgres:postgrespassword@localhost:5432/yaad',
     }),
   ],

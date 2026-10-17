@@ -102,4 +102,5 @@ export function AuthModal({
 export { LoginForm } from "./login-form";
 export { RegisterForm } from "./register-form";
 export type * from "./types";
+// eslint-disable-next-line react-refresh/only-export-components -- Preserve the auth module's validation exports.
 export * from "./validation";

@@ -50,14 +50,14 @@ yaad/
 
 ### Package Overview
 
-| Package             | Path                                   | Description                                                                                                                                  |
-| ------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`@yaad/core`**    | [`packages/core`](./packages/core)     | Pure domain logic, Zustand stores, storage engine, CRDT Yjs client, offline sync outbox queue, and typed ID generators. Zero UI dependencies. |
+| Package             | Path                                   | Description                                                                                                                                    |
+| ------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`@yaad/core`**    | [`packages/core`](./packages/core)     | Pure domain logic, Zustand stores, storage engine, CRDT Yjs client, offline sync outbox queue, and typed ID generators. Zero UI dependencies.  |
 | **`@yaad/ui`**      | [`packages/ui`](./packages/ui)         | Block canvas, element renderers, slash menu, interactive graph, remote cursor overlays, presence avatars, Base UI components, and Tailwind v4. |
 | **`@yaad/api`**     | [`apps/api`](./apps/api)               | Production NestJS backend providing delta sync (`/sync`), real-time CRDT WebSocket relay (`/collab`), workspace member management, and auth.   |
-| **`@yaad/desktop`** | [`apps/desktop`](./apps/desktop)       | Tauri v2 desktop application bundling `@yaad/core` and `@yaad/ui` with native SQLite database persistence.                                   |
-| **`@yaad/web`**     | [`apps/web`](./apps/web)               | Browser and PWA application bundling `@yaad/core` and `@yaad/ui` with IndexedDB persistence.                                                 |
-| **`@yaad/config`**  | [`packages/config`](./packages/config) | Shared tsconfig presets (`base.json`, `react-app.json`).                                                                                     |
+| **`@yaad/desktop`** | [`apps/desktop`](./apps/desktop)       | Tauri v2 desktop application bundling `@yaad/core` and `@yaad/ui` with native SQLite database persistence.                                     |
+| **`@yaad/web`**     | [`apps/web`](./apps/web)               | Browser and PWA application bundling `@yaad/core` and `@yaad/ui` with IndexedDB persistence.                                                   |
+| **`@yaad/config`**  | [`packages/config`](./packages/config) | Shared tsconfig presets (`base.json`, `react-app.json`).                                                                                       |
 
 ---
 
@@ -85,15 +85,15 @@ pnpm install
 
 Run scripts from the workspace root:
 
-| Command            | Action                                                                         |
-| ------------------ | ------------------------------------------------------------------------------ |
-| `pnpm dev:web`     | Start the Web application Vite dev server (runs on `http://localhost:5173`)    |
+| Command            | Action                                                                            |
+| ------------------ | --------------------------------------------------------------------------------- |
+| `pnpm dev:web`     | Start the Web application Vite dev server (runs on `http://localhost:5173`)       |
 | `pnpm dev:api`     | Start the NestJS backend API dev server with hot reload (`http://localhost:3000`) |
-| `pnpm dev:desktop` | Launch the native desktop application in Tauri development mode                |
-| `pnpm test`        | Run Vitest test suites across all packages and applications                    |
-| `pnpm build`       | Compile TypeScript and build production bundles across all packages and apps   |
-| `pnpm check`       | Run linters, format check, and TypeScript type-checking across workspace       |
-| `pnpm tauri`       | Pass CLI commands directly to Tauri (e.g. `pnpm tauri info`)                   |
+| `pnpm dev:desktop` | Launch the native desktop application in Tauri development mode                   |
+| `pnpm test`        | Run Vitest test suites across all packages and applications                       |
+| `pnpm build`       | Compile TypeScript and build production bundles across all packages and apps      |
+| `pnpm check`       | Run linters, format check, and TypeScript type-checking across workspace          |
+| `pnpm tauri`       | Pass CLI commands directly to Tauri (e.g. `pnpm tauri info`)                      |
 
 ---
 
@@ -148,6 +148,7 @@ Yaad can be deployed anywhere in 1 command using Docker Compose:
 cp .env.example .env
 docker compose up -d
 ```
+
 Visit `http://localhost:8080`. For full details and reverse proxy configuration, check the [Self-Hosting Guide](file:///run/media/ehsan/Local%20Disk/CODE/CODE/yaad/docs/self-hosting.md).
 
 ---

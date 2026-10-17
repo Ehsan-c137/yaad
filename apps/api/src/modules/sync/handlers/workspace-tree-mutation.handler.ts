@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import type { SyncEntityType, SyncMutationDto } from '../dto/sync.dto.js';
+import type { SyncEntityType } from '../dto/sync.dto.js';
 import type {
-  DbTransaction,
+  MutationContext,
   MutationHandler,
 } from './mutation-handler.interface.js';
 
@@ -10,14 +10,16 @@ import { pages, workspaceTrees } from '../../../database/schema.js';
 
 @Injectable()
 export class WorkspaceTreeMutationHandler implements MutationHandler {
-  readonly entityType: SyncEntityType = 'workspace_tree';
+  get entityType(): SyncEntityType {
+    return 'workspace_tree';
+  }
 
-  async apply(
-    tx: DbTransaction,
-    mutation: SyncMutationDto,
-    version: number,
-    workspaceId: string,
-  ): Promise<void> {
+  async apply({
+    tx,
+    mutation,
+    version,
+    workspaceId,
+  }: MutationContext): Promise<void> {
     await tx
       .insert(workspaceTrees)
       .values({

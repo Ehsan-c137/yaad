@@ -26,7 +26,7 @@ describe("WorkspaceMemberService", () => {
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => mockMembers,
+      json: () => Promise.resolve(mockMembers),
     });
 
     const service = createWorkspaceMemberService(
@@ -59,7 +59,7 @@ describe("WorkspaceMemberService", () => {
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => newMember,
+      json: () => Promise.resolve(newMember),
     });
 
     const service = createWorkspaceMemberService(
@@ -89,7 +89,7 @@ describe("WorkspaceMemberService", () => {
   it("removes a member via DELETE", async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({}),
+      json: () => Promise.resolve({}),
     });
 
     const service = createWorkspaceMemberService(
@@ -123,7 +123,7 @@ describe("WorkspaceMemberService", () => {
 
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => joined,
+      json: () => Promise.resolve(joined),
     });
 
     const service = createWorkspaceMemberService(
@@ -150,7 +150,7 @@ describe("WorkspaceMemberService", () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: false,
       statusText: "Forbidden",
-      json: async () => ({ message: "Cannot remove workspace owner" }),
+      json: () => Promise.resolve({ message: "Cannot remove workspace owner" }),
     });
 
     const service = createWorkspaceMemberService(

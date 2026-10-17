@@ -70,16 +70,16 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.roomManager.releaseRoom(ctx.workspaceId, ctx.documentId);
 
       // Broadcast peer leave to remaining room subscribers
-      this.broadcastToRoom(
-        ctx.workspaceId,
-        ctx.documentId,
-        {
+      this.broadcastToRoom({
+        workspaceId: ctx.workspaceId,
+        documentId: ctx.documentId,
+        message: {
           event: 'peer-leave',
           documentId: ctx.documentId,
           userId: ctx.userId ?? ctx.awarenessData?.user?.id,
         },
-        client,
-      );
+        excludeClient: client,
+      });
     }
 
     this.clientContexts.delete(client);
@@ -277,16 +277,16 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     // 1. Broadcast immediately to all other collaborators in the room
-    this.broadcastToRoom(
+    this.broadcastToRoom({
       workspaceId,
       documentId,
-      {
+      message: {
         event: 'sync-update',
         documentId,
         update,
       },
-      client,
-    );
+      excludeClient: client,
+    });
 
     // 2. Apply to CRDT engine and persist in background
     try {
@@ -327,16 +327,16 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ctx.awarenessData = awarenessData;
     }
 
-    this.broadcastToRoom(
+    this.broadcastToRoom({
       workspaceId,
       documentId,
-      {
+      message: {
         event: 'awareness-update',
         documentId,
         awarenessData,
       },
-      client,
-    );
+      excludeClient: client,
+    });
   }
 
   /**
@@ -387,12 +387,17 @@ export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect {
   /**
    * Helper to broadcast a message to room subscribers directly from Gateway state.
    */
-  private broadcastToRoom(
-    workspaceId: string,
-    documentId: string,
-    message: Record<string, any>,
-    excludeClient?: WebSocket,
-  ): void {
+  private broadcastToRoom({
+    workspaceId,
+    documentId,
+    message,
+    excludeClient,
+  }: {
+    workspaceId: string;
+    documentId: string;
+    message: Record<string, any>;
+    excludeClient?: WebSocket;
+  }): void {
     const roomKey = this.getRoomKey(workspaceId, documentId);
     const subscribers = this.roomSubscribers.get(roomKey);
     if (!subscribers) return;

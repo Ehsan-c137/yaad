@@ -19,10 +19,14 @@ export interface CollabRoom {
 export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
   private readonly logger = new Logger(YjsRoomManager.name);
   private readonly rooms = new Map<string, CollabRoom>();
-  // Snapshot debounce delay (10 seconds of idle typing)
-  private readonly SNAPSHOT_DEBOUNCE_MS = 10_000;
-  // Room in-memory cache time after all consumers disconnect (5 minutes)
-  private readonly ROOM_EVICTION_MS = 5 * 60_000;
+
+  private get snapshotDebounceMs(): number {
+    return 10_000;
+  }
+
+  private get roomEvictionMs(): number {
+    return 5 * 60_000;
+  }
 
   constructor(
     @Inject(COLLAB_PERSISTENCE)
@@ -153,7 +157,7 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
         this.rooms.delete(key);
         room.ydoc.destroy();
         this.logger.log(`Room evicted from memory: ${key}`);
-      }, this.ROOM_EVICTION_MS);
+      }, this.roomEvictionMs);
     }
   }
 
@@ -169,7 +173,7 @@ export class YjsRoomManager implements IRoomManager, OnModuleDestroy {
         room.ydoc,
       );
       room.saveTimeout = undefined;
-    }, this.SNAPSHOT_DEBOUNCE_MS);
+    }, this.snapshotDebounceMs);
   }
 
   /**

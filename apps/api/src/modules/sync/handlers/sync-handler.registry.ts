@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import type { SyncEntityType } from '../dto/sync.dto.js';
 import type { MutationHandler } from './mutation-handler.interface.js';
@@ -12,19 +12,23 @@ import { WorkspaceTreeMutationHandler } from './workspace-tree-mutation.handler.
 @Injectable()
 export class SyncHandlerRegistry {
   private readonly handlers = new Map<SyncEntityType, MutationHandler>();
+  @Inject(PageMutationHandler)
+  private readonly pageHandler!: PageMutationHandler;
+  @Inject(DocumentMutationHandler)
+  private readonly documentHandler!: DocumentMutationHandler;
+  @Inject(WorkspaceTreeMutationHandler)
+  private readonly treeHandler!: WorkspaceTreeMutationHandler;
+  @Inject(WorkspaceMutationHandler)
+  private readonly workspaceHandler!: WorkspaceMutationHandler;
+  @Inject(TagMutationHandler)
+  private readonly tagHandler!: TagMutationHandler;
 
-  constructor(
-    pageHandler: PageMutationHandler,
-    documentHandler: DocumentMutationHandler,
-    treeHandler: WorkspaceTreeMutationHandler,
-    workspaceHandler: WorkspaceMutationHandler,
-    tagHandler: TagMutationHandler,
-  ) {
-    this.register(pageHandler);
-    this.register(documentHandler);
-    this.register(treeHandler);
-    this.register(workspaceHandler);
-    this.register(tagHandler);
+  constructor() {
+    this.register(this.pageHandler);
+    this.register(this.documentHandler);
+    this.register(this.treeHandler);
+    this.register(this.workspaceHandler);
+    this.register(this.tagHandler);
   }
 
   register(handler: MutationHandler): void {
