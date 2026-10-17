@@ -14,7 +14,6 @@ A modern, fast, local-first personal knowledge management and block-based worksp
 - **Local-First Delta Sync Engine**: Offline FIFO mutation queue (`outbox`) with idempotent push/pull synchronization, monotonic versioning, and immutable sync logs.
 - **Live Sync Status & Feedback**: Real-time visual feedback indicating synced, syncing, offline, or error persistence states.
 - **Granular Workspace Roles & Sharing**: Role-based access control (`OWNER`, `EDITOR`, `VIEWER`), instant shareable invite links, quick join prompt, and real-time permission revocation via WebSockets.
-- **Real-Time Page Tree Synchronization**: Instant hierarchical sidebar tree synchronization across all workspace collaborators.
 - **Block-Based Editor**: Notion-style modular canvas supporting rich blocks:
   - Paragraphs, Headings (H1, H2, H3), Bullet Lists, Todo Lists with checkboxes, Blockquotes
   - Code Blocks with syntax highlighting, Callouts with custom icons/accents
@@ -22,7 +21,6 @@ A modern, fast, local-first personal knowledge management and block-based worksp
   - Images, Link Previews with metadata extraction, Separators/Dividers, and Sub-pages
   - Slash command menu (`/`), keyboard shortcuts, and type transformation
 - **Interactive Knowledge Graph**: Visual node-edge graph visualization powered by `@xyflow/react` and `d3-force`. Explore workspace-wide connections or zoom into page-specific link neighborhoods.
-- **Hierarchical Sidebar & Workspaces**: Nested drag-and-drop page tree, quick bookmarks, tags, and a trash bin with soft-delete and restore capabilities.
 - **Multi-Tab Workflow**: Fast tab navigation with automatic memory management and store eviction for closed documents.
 - **Global Command Search**: Fast full-text workspace search across page titles, block content, and tags.
 - **Multi-Target Distribution**:
