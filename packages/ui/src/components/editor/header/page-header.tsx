@@ -83,8 +83,8 @@ export function PageHeader() {
           open={isShareOpen}
           onOpenChange={setIsShareOpen}
           workspaceId={workspaceId}
-          workspaceName={workspace.name}
-          workspaceIcon={workspace.icon}
+          workspaceName={workspace?.name}
+          workspaceIcon={workspace?.icon}
           pageId={pageId}
         />
       )}
