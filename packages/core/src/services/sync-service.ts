@@ -1,9 +1,11 @@
+import type { SyncEntityType } from "../lib/sync/types";
+
 import { getDefaultApiBaseUrl } from "../constants/endpoints.js";
 import { useUserStore } from "../store/use-user-store";
 
 export interface SyncMutation {
   clientMutationId: string;
-  entityType: "document" | "page" | "tag" | "workspace_tree" | "workspace";
+  entityType: SyncEntityType;
   entityId: string;
   operation: "delete" | "upsert";
   payload: any;

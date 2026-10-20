@@ -220,4 +220,62 @@ describe("SyncWorker (Background Sync Engine)", () => {
     );
     removeDocumentStore("doc_open_1", false);
   });
+
+  it("pulls remote calendar events and applies them to adapter and store", async () => {
+    useUserStore.setState({ token: "valid-jwt-token" });
+
+    mockAdapter.saveCalendarEvent = vi.fn().mockResolvedValue(undefined);
+    mockAdapter.saveCalendarCategory = vi.fn().mockResolvedValue(undefined);
+
+    const remoteEvent = {
+      id: "evt_remote_1",
+      title: "Remote Sync Meeting",
+      calendarId: "work",
+      date: "2026-10-23",
+      startTime: "11:00",
+      endTime: "12:00",
+    };
+
+    const remoteCategory = {
+      id: "design",
+      name: "Design",
+      dotColor: "#ec4899",
+      checked: true,
+    };
+
+    mockSyncClient.pull.mockResolvedValueOnce({
+      changes: [
+        {
+          id: "log_cal_1",
+          workspaceId: "ws_1",
+          version: 10,
+          entityType: "calendar_category",
+          entityId: "design",
+          operation: "upsert",
+          patch: remoteCategory,
+          clientMutationId: "other_peer_cal_cat",
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: "log_cal_2",
+          workspaceId: "ws_1",
+          version: 11,
+          entityType: "calendar_event",
+          entityId: "evt_remote_1",
+          operation: "upsert",
+          patch: remoteEvent,
+          clientMutationId: "other_peer_cal_evt",
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      latestVersion: 11,
+    });
+
+    await worker.syncNow("ws_1");
+
+    expect(mockAdapter.saveCalendarCategory).toHaveBeenCalledWith(
+      remoteCategory,
+    );
+    expect(mockAdapter.saveCalendarEvent).toHaveBeenCalledWith(remoteEvent);
+  });
 });

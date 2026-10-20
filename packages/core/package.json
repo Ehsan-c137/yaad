@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "date-fns": "^4.4.0",
     "idb-keyval": "^6.3.0",
     "yjs": "^13.6.33",
     "zustand": "^5.0.15"

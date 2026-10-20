@@ -1,3 +1,7 @@
+import type {
+  CalendarCategory,
+  CalendarEvent,
+} from '@yaad/core/store/calendar/types.js';
 import type { DocumentJSON } from '@yaad/core/types/document.js';
 import type { WorkspacePageMeta } from '@yaad/core/types/workspace.js';
 
@@ -105,6 +109,38 @@ export const documents = pgTable(
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (table) => [index('documents_workspace_id_idx').on(table.workspaceId)],
+);
+
+// --- Calendar Categories ---
+export const calendarCategories = pgTable(
+  'calendar_categories',
+  {
+    id: varchar('id', { length: 64 }).primaryKey(),
+    workspaceId: varchar('workspace_id', { length: 64 })
+      .references(() => workspaces.id, { onDelete: 'cascade' })
+      .notNull(),
+    version: bigint('version', { mode: 'number' }).default(1).notNull(),
+    content: jsonb('content').$type<CalendarCategory>().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('calendar_categories_workspace_id_idx').on(table.workspaceId),
+  ],
+);
+
+// --- Calendar Events ---
+export const calendarEvents = pgTable(
+  'calendar_events',
+  {
+    id: varchar('id', { length: 64 }).primaryKey(),
+    workspaceId: varchar('workspace_id', { length: 64 })
+      .references(() => workspaces.id, { onDelete: 'cascade' })
+      .notNull(),
+    version: bigint('version', { mode: 'number' }).default(1).notNull(),
+    content: jsonb('content').$type<CalendarEvent>().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => [index('calendar_events_workspace_id_idx').on(table.workspaceId)],
 );
 
 // --- Append-Only Sync Log (The heart of local-first delta replication) ---

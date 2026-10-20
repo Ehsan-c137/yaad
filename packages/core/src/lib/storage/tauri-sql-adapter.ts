@@ -1,4 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import type {
+  CalendarCategory,
+  CalendarEvent,
+} from "@yaad/core/store/calendar/types";
 import type { DocumentJSON, Tag } from "@yaad/core/types/document";
 import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 
@@ -6,6 +9,14 @@ import type { DatabaseDriver } from "./sql/schema";
 import type { StorageAdapter, TagIndexRecord } from "./types";
 
 import { getAllBlobs, getBlob, removeBlob, saveBlob } from "./sql/blob-ops";
+import {
+  deleteCalendarCategory,
+  deleteCalendarEvent,
+  getCalendarCategories,
+  getCalendarEvents,
+  saveCalendarCategory,
+  saveCalendarEvent,
+} from "./sql/calendar-ops";
 import {
   deleteDocument,
   getAllDocuments,
@@ -175,5 +186,33 @@ export class TauriSqlAdapter implements StorageAdapter {
 
   async getAllBlobs(): Promise<{ id: string; blob: Blob }[]> {
     return getAllBlobs(await this.getDb());
+  }
+
+  // -------------------------------------------------------------------------
+  // CALENDAR OPERATIONS
+  // -------------------------------------------------------------------------
+
+  async getCalendarEvents(): Promise<CalendarEvent[]> {
+    return getCalendarEvents(await this.getDb());
+  }
+
+  async saveCalendarEvent(event: CalendarEvent): Promise<void> {
+    return saveCalendarEvent(await this.getDb(), event);
+  }
+
+  async deleteCalendarEvent(id: string): Promise<void> {
+    return deleteCalendarEvent(await this.getDb(), id);
+  }
+
+  async getCalendarCategories(): Promise<CalendarCategory[]> {
+    return getCalendarCategories(await this.getDb());
+  }
+
+  async saveCalendarCategory(category: CalendarCategory): Promise<void> {
+    return saveCalendarCategory(await this.getDb(), category);
+  }
+
+  async deleteCalendarCategory(id: string): Promise<void> {
+    return deleteCalendarCategory(await this.getDb(), id);
   }
 }

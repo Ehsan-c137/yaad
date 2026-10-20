@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 
 import { DatabaseModule } from '../../database/database.module.js';
 import { AuthModule } from '../auth/auth.module.js';
+import { CalendarCategoryMutationHandler } from './handlers/calendar-category-mutation.handler.js';
+import { CalendarEventMutationHandler } from './handlers/calendar-event-mutation.handler.js';
 import { DocumentMutationHandler } from './handlers/document-mutation.handler.js';
 import { PageMutationHandler } from './handlers/page-mutation.handler.js';
 import { SyncHandlerRegistry } from './handlers/sync-handler.registry.js';
@@ -20,6 +22,8 @@ import { SyncService } from './sync.service.js';
     WorkspaceTreeMutationHandler,
     WorkspaceMutationHandler,
     TagMutationHandler,
+    CalendarEventMutationHandler,
+    CalendarCategoryMutationHandler,
     SyncHandlerRegistry,
     SyncService,
   ],

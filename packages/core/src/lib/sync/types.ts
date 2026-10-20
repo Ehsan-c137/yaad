@@ -1,5 +1,11 @@
 export type SyncEntityType =
-  "document" | "page" | "tag" | "workspace_tree" | "workspace";
+  | "calendar_category"
+  | "calendar_event"
+  | "document"
+  | "page"
+  | "tag"
+  | "workspace_tree"
+  | "workspace";
 
 export type SyncOperation = "delete" | "upsert";
 

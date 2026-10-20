@@ -9,9 +9,12 @@ import { BottomMobileNav } from "../bottom-mobile-nav";
 
 vi.mock("@/hooks/use-media-query");
 
+let mockPathname = "/workspace/workspace-1";
+
 vi.mock("react-router", () => ({
   useNavigate: () => vi.fn(),
   useParams: () => ({}),
+  useLocation: () => ({ pathname: mockPathname }),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -75,5 +78,24 @@ describe("BottomMobileNav", () => {
     expect(nav.className).toContain("pointer-events-none");
     expect(nav.className).toContain("select-none");
     expect(nav.hasAttribute("inert")).toBe(true);
+  });
+
+  it("reveals calendar dock items with animation when navigating to calendar route", () => {
+    vi.mocked(useMediaQuery).mockReturnValue(true);
+    useSidebarStore.setState({ isSidebarOpen: false });
+    mockPathname = "/workspace/workspace-1/calendar";
+
+    render(<BottomMobileNav />);
+
+    // Search is shifted out of the dock row to the top navigation header
+    expect(screen.queryByTestId("search-box")).toBeNull();
+    // Primary action is present as floating action button (FAB)
+    expect(screen.getByRole("button", { name: "Add event" })).toBeDefined();
+
+    // 4 core calendar navigation tabs are present in dock
+    expect(screen.getByText("Inbox")).toBeDefined();
+    expect(screen.getByText("Today")).toBeDefined();
+    expect(screen.getByText("Upcoming")).toBeDefined();
+    expect(screen.getByText("Browse")).toBeDefined();
   });
 });

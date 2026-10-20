@@ -30,6 +30,14 @@ _Avoid_: Master block, base block, document root
 The structural definition of a block (such as `paragraph`, `heading_1`, `todo`, `separator`, `quote`, `callout`, `table`, `kanban`, `link_preview`, `page`).
 _Avoid_: Block style, block category
 
+**Calendar Event**:
+A scheduled item containing temporal coordinates (`date`, `startTime`, `endTime`), title, category binding, location, and optional provider metadata.
+_Avoid_: Appointment, meeting, booking (when referring to the generic data model)
+
+**Calendar Category**:
+A color-coded classification container organizing calendar events (e.g., Work, Personal, Focus, Meetings).
+_Avoid_: Calendar list, calendar folder
+
 ### State & Lifecycle
 
 **Tab Store**:

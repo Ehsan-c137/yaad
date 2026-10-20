@@ -3,6 +3,8 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import type { SyncEntityType } from '../dto/sync.dto.js';
 import type { MutationHandler } from './mutation-handler.interface.js';
 
+import { CalendarCategoryMutationHandler } from './calendar-category-mutation.handler.js';
+import { CalendarEventMutationHandler } from './calendar-event-mutation.handler.js';
 import { DocumentMutationHandler } from './document-mutation.handler.js';
 import { PageMutationHandler } from './page-mutation.handler.js';
 import { TagMutationHandler } from './tag-mutation.handler.js';
@@ -22,6 +24,10 @@ export class SyncHandlerRegistry {
   private readonly workspaceHandler!: WorkspaceMutationHandler;
   @Inject(TagMutationHandler)
   private readonly tagHandler!: TagMutationHandler;
+  @Inject(CalendarEventMutationHandler)
+  private readonly calendarEventHandler!: CalendarEventMutationHandler;
+  @Inject(CalendarCategoryMutationHandler)
+  private readonly calendarCategoryHandler!: CalendarCategoryMutationHandler;
 
   constructor() {
     this.register(this.pageHandler);
@@ -29,6 +35,8 @@ export class SyncHandlerRegistry {
     this.register(this.treeHandler);
     this.register(this.workspaceHandler);
     this.register(this.tagHandler);
+    this.register(this.calendarEventHandler);
+    this.register(this.calendarCategoryHandler);
   }
 
   register(handler: MutationHandler): void {

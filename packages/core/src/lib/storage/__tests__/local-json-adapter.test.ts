@@ -175,4 +175,45 @@ describe("LocalJsonAdapter (Integration Test)", () => {
     expect(allBlobs).toHaveLength(1);
     expect(allBlobs[0].id).toBe("b1");
   });
+
+  it("saves, retrieves and deletes calendar events and categories in IndexedDB", async () => {
+    const event = {
+      id: "evt_1",
+      title: "Team Sync",
+      calendarId: "work" as const,
+      date: "2026-10-20",
+      startTime: "10:00",
+      endTime: "11:00",
+    };
+    const category = {
+      id: "work" as const,
+      name: "Work",
+      dotColor: "#3b82f6",
+      badgeBg: "blue",
+      badgeBorder: "blue",
+      badgeText: "blue",
+      badgeDarkBg: "darkblue",
+      badgeDarkBorder: "darkblue",
+      badgeDarkText: "blue",
+      checked: true,
+    };
+
+    await adapter.saveCalendarCategory(category);
+    expect(await adapter.getCalendarCategories()).toEqual([category]);
+
+    await adapter.saveCalendarEvent(event);
+    expect(await adapter.getCalendarEvents()).toEqual([event]);
+
+    // Update event
+    await adapter.saveCalendarEvent({ ...event, title: "Updated Team Sync" });
+    const events = await adapter.getCalendarEvents();
+    expect(events[0].title).toBe("Updated Team Sync");
+
+    // Delete
+    await adapter.deleteCalendarEvent("evt_1");
+    expect(await adapter.getCalendarEvents()).toEqual([]);
+
+    await adapter.deleteCalendarCategory("work");
+    expect(await adapter.getCalendarCategories()).toEqual([]);
+  });
 });

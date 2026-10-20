@@ -48,6 +48,17 @@ export async function initStorage(): Promise<void> {
     await currentAdapter.init();
   }
 
+  try {
+    const { useCalendarStore } =
+      await import("../../store/calendar/use-calendar-store");
+    await useCalendarStore.getState().loadCalendarFromStorage();
+  } catch (error) {
+    console.warn(
+      "[initStorage] Failed to initialize calendar from storage:",
+      error,
+    );
+  }
+
   // Start background sync worker
   syncWorker.start();
 }

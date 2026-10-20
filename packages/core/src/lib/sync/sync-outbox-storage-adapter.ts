@@ -148,6 +148,108 @@ export function createSyncOutboxAdapter(
         payload: { id },
       });
     },
+
+    saveCalendarEvent: async (event: any) => {
+      if (inner.saveCalendarEvent) {
+        await inner.saveCalendarEvent(event);
+      }
+
+      let wsId = event.workspaceId ?? "ws_personal";
+
+      if (!event.workspaceId) {
+        try {
+          const { useWorkspaceStore } =
+            await import("../../store/use-workspace-store");
+          wsId =
+            useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+        } catch {
+          wsId = "ws_personal";
+        }
+      }
+
+      await enqueue({
+        workspaceId: wsId,
+        entityType: "calendar_event",
+        entityId: event.id,
+        operation: "upsert",
+        payload: event,
+      });
+    },
+
+    deleteCalendarEvent: async (id: string) => {
+      if (inner.deleteCalendarEvent) {
+        await inner.deleteCalendarEvent(id);
+      }
+
+      let wsId = "ws_personal";
+
+      try {
+        const { useWorkspaceStore } =
+          await import("../../store/use-workspace-store");
+        wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+      } catch {
+        wsId = "ws_personal";
+      }
+
+      await enqueue({
+        workspaceId: wsId,
+        entityType: "calendar_event",
+        entityId: id,
+        operation: "delete",
+        payload: { id },
+      });
+    },
+
+    saveCalendarCategory: async (category: any) => {
+      if (inner.saveCalendarCategory) {
+        await inner.saveCalendarCategory(category);
+      }
+
+      let wsId = category.workspaceId ?? "ws_personal";
+
+      if (!category.workspaceId) {
+        try {
+          const { useWorkspaceStore } =
+            await import("../../store/use-workspace-store");
+          wsId =
+            useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+        } catch {
+          wsId = "ws_personal";
+        }
+      }
+
+      await enqueue({
+        workspaceId: wsId,
+        entityType: "calendar_category",
+        entityId: category.id,
+        operation: "upsert",
+        payload: category,
+      });
+    },
+
+    deleteCalendarCategory: async (id: string) => {
+      if (inner.deleteCalendarCategory) {
+        await inner.deleteCalendarCategory(id);
+      }
+
+      let wsId = "ws_personal";
+
+      try {
+        const { useWorkspaceStore } =
+          await import("../../store/use-workspace-store");
+        wsId = useWorkspaceStore.getState().activeWorkspaceId ?? "ws_personal";
+      } catch {
+        wsId = "ws_personal";
+      }
+
+      await enqueue({
+        workspaceId: wsId,
+        entityType: "calendar_category",
+        entityId: id,
+        operation: "delete",
+        payload: { id },
+      });
+    },
   };
 
   return new Proxy(inner as SyncOutboxAdapter, {

@@ -18,6 +18,8 @@ export const SYNC_ENTITY_TYPES = [
   'page',
   'document',
   'tag',
+  'calendar_event',
+  'calendar_category',
 ] as const;
 export type SyncEntityType = (typeof SYNC_ENTITY_TYPES)[number];
 

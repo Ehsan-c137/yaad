@@ -90,4 +90,43 @@ describe("createSyncOutboxAdapter (Functional Decorator)", () => {
     // Zero mutations enqueued because it's remote sync!
     expect(await queue.size()).toBe(0);
   });
+
+  it("writes to inner adapter AND enqueues to outbox for calendar events and categories", async () => {
+    mockInner.saveCalendarEvent = vi.fn().mockResolvedValue(undefined);
+    mockInner.deleteCalendarEvent = vi.fn().mockResolvedValue(undefined);
+    mockInner.saveCalendarCategory = vi.fn().mockResolvedValue(undefined);
+    mockInner.deleteCalendarCategory = vi.fn().mockResolvedValue(undefined);
+
+    const event = {
+      id: "evt_1",
+      title: "Meeting",
+      calendarId: "work",
+      workspaceId: "ws_1",
+    } as any;
+    await adapter.saveCalendarEvent!(event);
+
+    expect(mockInner.saveCalendarEvent).toHaveBeenCalledWith(event);
+    expect(await queue.size()).toBe(1);
+    const [item] = await queue.peek(1);
+    expect(item.entityType).toBe("calendar_event");
+    expect(item.operation).toBe("upsert");
+    expect(item.entityId).toBe("evt_1");
+
+    await adapter.deleteCalendarEvent!("evt_1");
+    expect(mockInner.deleteCalendarEvent).toHaveBeenCalledWith("evt_1");
+    expect(await queue.size()).toBe(2);
+
+    const category = {
+      id: "work",
+      name: "Work",
+      workspaceId: "ws_1",
+    } as any;
+    await adapter.saveCalendarCategory!(category);
+    expect(mockInner.saveCalendarCategory).toHaveBeenCalledWith(category);
+
+    await adapter.deleteCalendarCategory!("work");
+    expect(mockInner.deleteCalendarCategory).toHaveBeenCalledWith("work");
+
+    expect(await queue.size()).toBe(4);
+  });
 });

@@ -1,4 +1,8 @@
 import type {
+  CalendarCategory,
+  CalendarEvent,
+} from "@yaad/core/store/calendar/types";
+import type {
   DocumentBlockType,
   DocumentJSON,
   Tag,
@@ -53,4 +57,11 @@ export interface StorageAdapter {
   saveBlob: (id: string, blob: Blob) => Promise<void>;
   removeBlob: (id: string) => Promise<void>;
   getAllBlobs?: () => Promise<{ id: string; blob: Blob }[]>;
+  // Calendar Operations
+  getCalendarEvents?: () => Promise<CalendarEvent[]>;
+  saveCalendarEvent?: (event: CalendarEvent) => Promise<void>;
+  deleteCalendarEvent?: (id: string) => Promise<void>;
+  getCalendarCategories?: () => Promise<CalendarCategory[]>;
+  saveCalendarCategory?: (category: CalendarCategory) => Promise<void>;
+  deleteCalendarCategory?: (id: string) => Promise<void>;
 }

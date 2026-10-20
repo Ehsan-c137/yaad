@@ -50,6 +50,12 @@ const GraphPage = lazy(() =>
   })),
 );
 
+const DaymarkCalendar = lazy(() =>
+  import("@/components/calendar/daymark-calendar").then((m) => ({
+    default: m.DaymarkCalendar,
+  })),
+);
+
 function RootRedirect() {
   const [isStandalone] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -119,10 +125,15 @@ export default function App() {
               </Suspense>
             }
           >
+            <Route path="/calendar" element={<DaymarkCalendar />} />
             <Route path="/app" element={<HomePage />} />
             <Route
               path="/workspace/:workspaceId"
               element={<WorkspaceHomeRoute />}
+            />
+            <Route
+              path="/workspace/:workspaceId/calendar"
+              element={<DaymarkCalendar />}
             />
             <Route
               path="/workspace/:workspaceId/graph"

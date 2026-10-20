@@ -288,6 +288,74 @@ export class SyncWorker implements ISyncWorker {
               }),
             );
           }
+        } else if (change.entityType === "calendar_event") {
+          if (change.operation === "delete") {
+            await adapter.deleteCalendarEvent?.(change.entityId);
+          } else if (change.patch) {
+            await adapter.saveCalendarEvent?.(change.patch);
+          }
+
+          try {
+            const { useCalendarStore } =
+              await import("../../store/calendar/use-calendar-store");
+
+            if (change.operation === "delete") {
+              useCalendarStore
+                .getState()
+                .deleteEvent(change.entityId, { skipPersistence: true });
+            } else if (change.patch) {
+              useCalendarStore.getState().upsertEventFromRemote?.(change.patch);
+            }
+          } catch {
+            // Calendar store not loaded yet
+          }
+
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("yaad:sync:calendar-event-updated", {
+                detail: {
+                  eventId: change.entityId,
+                  patch: change.patch,
+                  operation: change.operation,
+                },
+              }),
+            );
+          }
+        } else if (change.entityType === "calendar_category") {
+          if (change.operation === "delete") {
+            await adapter.deleteCalendarCategory?.(change.entityId);
+          } else if (change.patch) {
+            await adapter.saveCalendarCategory?.(change.patch);
+          }
+
+          try {
+            const { useCalendarStore } =
+              await import("../../store/calendar/use-calendar-store");
+
+            if (change.operation === "delete") {
+              useCalendarStore
+                .getState()
+                .deleteCategory(change.entityId, { skipPersistence: true });
+            } else if (change.patch) {
+              useCalendarStore
+                .getState()
+                .upsertCategoryFromRemote?.(change.patch);
+            }
+          } catch {
+            // Calendar store not loaded yet
+          }
+
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("yaad:sync:calendar-category-updated", {
+                detail: {
+                  categoryId: change.entityId,
+                  patch: change.patch,
+                  operation: change.operation,
+                },
+              }),
+            );
+          }
         }
       }
 

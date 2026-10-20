@@ -27,6 +27,12 @@ const GraphPage = lazy(() =>
   })),
 );
 
+const DaymarkCalendar = lazy(() =>
+  import("@/components/calendar/daymark-calendar").then((m) => ({
+    default: m.DaymarkCalendar,
+  })),
+);
+
 function WorkspaceHomeRoute() {
   const { workspaceId } = useParams();
   const workspace = useWorkspaceStore((s) =>
@@ -68,9 +74,14 @@ export default function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/calendar" element={<DaymarkCalendar />} />
             <Route
               path="/workspace/:workspaceId"
               element={<WorkspaceHomeRoute />}
+            />
+            <Route
+              path="/workspace/:workspaceId/calendar"
+              element={<DaymarkCalendar />}
             />
             <Route
               path="/workspace/:workspaceId/graph"

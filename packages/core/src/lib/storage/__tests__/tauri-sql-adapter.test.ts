@@ -23,6 +23,8 @@ class MockDatabaseDriver implements DatabaseDriver {
     this.tables.set("documents", new Map());
     this.tables.set("blobs", new Map());
     this.tables.set("tags", new Map());
+    this.tables.set("calendar_events", new Map());
+    this.tables.set("calendar_categories", new Map());
   }
 
   async execute(
@@ -80,6 +82,34 @@ class MockDatabaseDriver implements DatabaseDriver {
         string,
       ];
       this.tables.get("tags")!.set(id, { json });
+      return { rowsAffected: 1 };
+    }
+
+    if (q.startsWith("INSERT INTO calendar_events")) {
+      const [id, json, updatedAt] = bindValues as [string, string, number];
+      this.tables
+        .get("calendar_events")!
+        .set(id, { json, updated_at: updatedAt });
+      return { rowsAffected: 1 };
+    }
+
+    if (q.startsWith("INSERT INTO calendar_categories")) {
+      const [id, json, updatedAt] = bindValues as [string, string, number];
+      this.tables
+        .get("calendar_categories")!
+        .set(id, { json, updated_at: updatedAt });
+      return { rowsAffected: 1 };
+    }
+
+    if (q.startsWith("DELETE FROM calendar_events")) {
+      const [id] = bindValues as [string];
+      this.tables.get("calendar_events")!.delete(id);
+      return { rowsAffected: 1 };
+    }
+
+    if (q.startsWith("DELETE FROM calendar_categories")) {
+      const [id] = bindValues as [string];
+      this.tables.get("calendar_categories")!.delete(id);
       return { rowsAffected: 1 };
     }
 
@@ -172,6 +202,24 @@ class MockDatabaseDriver implements DatabaseDriver {
 
     if (q.startsWith("SELECT json FROM tags")) {
       const rows = Array.from(this.tables.get("tags")!.values()).map((row) => ({
+        json: row.json!,
+      }));
+      return rows as unknown as T;
+    }
+
+    if (q.startsWith("SELECT json FROM calendar_events")) {
+      const rows = Array.from(this.tables.get("calendar_events")!.values()).map(
+        (row) => ({
+          json: row.json!,
+        }),
+      );
+      return rows as unknown as T;
+    }
+
+    if (q.startsWith("SELECT json FROM calendar_categories")) {
+      const rows = Array.from(
+        this.tables.get("calendar_categories")!.values(),
+      ).map((row) => ({
         json: row.json!,
       }));
       return rows as unknown as T;
@@ -302,5 +350,40 @@ describe("TauriSqlAdapter (Unit Test)", () => {
     await adapter.removeBlob("b_sql_1");
 
     await expect(adapter.getBlob("b_sql_1")).resolves.toBeUndefined();
+  });
+
+  it("saves, retrieves and deletes calendar events and categories in SQLite", async () => {
+    const event = {
+      id: "evt_sql_1",
+      title: "Architecture Review",
+      calendarId: "work" as const,
+      date: "2026-10-22",
+      startTime: "14:00",
+      endTime: "15:00",
+    };
+    const category = {
+      id: "work" as const,
+      name: "Work",
+      dotColor: "#3b82f6",
+      badgeBg: "blue",
+      badgeBorder: "blue",
+      badgeText: "blue",
+      badgeDarkBg: "darkblue",
+      badgeDarkBorder: "darkblue",
+      badgeDarkText: "blue",
+      checked: true,
+    };
+
+    await adapter.saveCalendarCategory(category);
+    expect(await adapter.getCalendarCategories()).toEqual([category]);
+
+    await adapter.saveCalendarEvent(event);
+    expect(await adapter.getCalendarEvents()).toEqual([event]);
+
+    await adapter.deleteCalendarEvent("evt_sql_1");
+    expect(await adapter.getCalendarEvents()).toEqual([]);
+
+    await adapter.deleteCalendarCategory("work");
+    expect(await adapter.getCalendarCategories()).toEqual([]);
   });
 });

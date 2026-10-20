@@ -20,6 +20,26 @@ describe('Sync DTO Runtime Validation', () => {
       expect(errors).toHaveLength(0);
     });
 
+    it('validates calendar_event and calendar_category mutations successfully', async () => {
+      const eventDto = plainToInstance(SyncMutationDto, {
+        clientMutationId: 'mut_cal_1',
+        entityType: 'calendar_event',
+        entityId: 'evt_123',
+        operation: 'upsert',
+        payload: { title: 'Dentist Appointment', date: '2026-10-20' },
+      });
+      const categoryDto = plainToInstance(SyncMutationDto, {
+        clientMutationId: 'mut_cat_1',
+        entityType: 'calendar_category',
+        entityId: 'cat_health',
+        operation: 'upsert',
+        payload: { name: 'Health', dotColor: '#10b981' },
+      });
+
+      expect(await validate(eventDto)).toHaveLength(0);
+      expect(await validate(categoryDto)).toHaveLength(0);
+    });
+
     it('rejects unsupported entityType', async () => {
       const dto = plainToInstance(SyncMutationDto, {
         clientMutationId: 'mut_123',

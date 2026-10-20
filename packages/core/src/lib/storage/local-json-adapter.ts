@@ -1,4 +1,7 @@
-/* eslint-disable @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/no-unnecessary-condition, @typescript-eslint/no-dynamic-delete */
+import type {
+  CalendarCategory,
+  CalendarEvent,
+} from "@yaad/core/store/calendar/types";
 import type { DocumentJSON, Tag } from "@yaad/core/types/document";
 import type { Workspace, WorkspacePageMeta } from "@yaad/core/types/workspace";
 
@@ -11,6 +14,8 @@ import { blobStorage } from "./blob-storage";
 const WORKSPACES_KEY = "app_workspaces_v1";
 const TAG_INDEX_KEY = "app_tag_index_v1";
 const TAGS_KEY = "app_tags_v1";
+const CALENDAR_EVENTS_KEY = "app_calendar_events_v1";
+const CALENDAR_CATEGORIES_KEY = "app_calendar_categories_v1";
 
 export class LocalJsonAdapter implements StorageAdapter {
   async getWorkspaces(): Promise<Workspace[]> {
@@ -154,10 +159,10 @@ export class LocalJsonAdapter implements StorageAdapter {
   // TAG INDEX
   async saveDocTags(pageId: string, records: TagIndexRecord[]): Promise<void> {
     const indexMap =
-      (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
+      (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) ?? {};
 
     if (!records || records.length === 0) {
-      delete indexMap[pageId];
+      Reflect.deleteProperty(indexMap, pageId);
     } else {
       indexMap[pageId] = records;
     }
@@ -169,8 +174,8 @@ export class LocalJsonAdapter implements StorageAdapter {
     const indexMap =
       (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
 
-    if (indexMap[pageId]) {
-      delete indexMap[pageId];
+    if (Reflect.has(indexMap, pageId)) {
+      Reflect.deleteProperty(indexMap, pageId);
       await set(TAG_INDEX_KEY, indexMap);
     }
   }
@@ -178,7 +183,7 @@ export class LocalJsonAdapter implements StorageAdapter {
   async getTagsIndex(tagId?: string): Promise<TagIndexRecord[]> {
     try {
       const indexMap =
-        (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) || {};
+        (await get<Record<string, TagIndexRecord[]>>(TAG_INDEX_KEY)) ?? {};
       const allRecords = Object.values(indexMap).flat();
 
       if (tagId) {
@@ -238,6 +243,99 @@ export class LocalJsonAdapter implements StorageAdapter {
     } catch (error) {
       console.error("[LocalJsonAdapter] Error fetching all blobs:", error);
       return [];
+    }
+  }
+
+  // CALENDAR OPERATIONS
+  async getCalendarEvents(): Promise<CalendarEvent[]> {
+    try {
+      const events = await get<CalendarEvent[]>(CALENDAR_EVENTS_KEY);
+      return events ?? [];
+    } catch (error) {
+      console.error(
+        "[LocalJsonAdapter] Error fetching calendar events:",
+        error,
+      );
+      return [];
+    }
+  }
+
+  async saveCalendarEvent(event: CalendarEvent): Promise<void> {
+    try {
+      const events = await this.getCalendarEvents();
+      const index = events.findIndex((e) => e.id === event.id);
+
+      if (index >= 0) {
+        events[index] = event;
+      } else {
+        events.push(event);
+      }
+
+      await set(CALENDAR_EVENTS_KEY, events);
+    } catch (error) {
+      console.error(
+        `[LocalJsonAdapter] Error saving calendar event ${event.id}:`,
+        error,
+      );
+    }
+  }
+
+  async deleteCalendarEvent(id: string): Promise<void> {
+    try {
+      const events = await this.getCalendarEvents();
+      const updated = events.filter((e) => e.id !== id);
+      await set(CALENDAR_EVENTS_KEY, updated);
+    } catch (error) {
+      console.error(
+        `[LocalJsonAdapter] Error deleting calendar event ${id}:`,
+        error,
+      );
+    }
+  }
+
+  async getCalendarCategories(): Promise<CalendarCategory[]> {
+    try {
+      const categories = await get<CalendarCategory[]>(CALENDAR_CATEGORIES_KEY);
+      return categories ?? [];
+    } catch (error) {
+      console.error(
+        "[LocalJsonAdapter] Error fetching calendar categories:",
+        error,
+      );
+      return [];
+    }
+  }
+
+  async saveCalendarCategory(category: CalendarCategory): Promise<void> {
+    try {
+      const categories = await this.getCalendarCategories();
+      const index = categories.findIndex((c) => c.id === category.id);
+
+      if (index >= 0) {
+        categories[index] = category;
+      } else {
+        categories.push(category);
+      }
+
+      await set(CALENDAR_CATEGORIES_KEY, categories);
+    } catch (error) {
+      console.error(
+        `[LocalJsonAdapter] Error saving calendar category ${category.id}:`,
+        error,
+      );
+    }
+  }
+
+  async deleteCalendarCategory(id: string): Promise<void> {
+    try {
+      const categories = await this.getCalendarCategories();
+      const updated = categories.filter((c) => c.id !== id);
+      await set(CALENDAR_CATEGORIES_KEY, updated);
+    } catch (error) {
+      console.error(
+        `[LocalJsonAdapter] Error deleting calendar category ${id}:`,
+        error,
+      );
     }
   }
 }

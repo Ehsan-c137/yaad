@@ -70,6 +70,22 @@ export const DDL_TAGS = `
   );
 `;
 
+export const DDL_CALENDAR_EVENTS = `
+  CREATE TABLE IF NOT EXISTS calendar_events (
+    id         TEXT PRIMARY KEY,
+    json       TEXT    NOT NULL,
+    updated_at INTEGER
+  );
+`;
+
+export const DDL_CALENDAR_CATEGORIES = `
+  CREATE TABLE IF NOT EXISTS calendar_categories (
+    id         TEXT PRIMARY KEY,
+    json       TEXT    NOT NULL,
+    updated_at INTEGER
+  );
+`;
+
 export const DDL_IDX_BLOCK_TAGS_TAG_ID = `
   CREATE INDEX IF NOT EXISTS idx_block_tags_tag_id ON block_tags(tag_id);
 `;
@@ -81,5 +97,7 @@ export const ALL_DDL = [
   DDL_BLOBS,
   DDL_BLOCK_TAGS,
   DDL_TAGS,
+  DDL_CALENDAR_EVENTS,
+  DDL_CALENDAR_CATEGORIES,
   DDL_IDX_BLOCK_TAGS_TAG_ID,
 ] as const;

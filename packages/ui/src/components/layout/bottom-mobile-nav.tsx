@@ -2,11 +2,18 @@
 import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { MOBILE_NAV_HEIGHT } from "@yaad/core/constants/sizes";
+import { useCalendarStore } from "@yaad/core/store/use-calendar-store";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { Plus } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  CalendarRange,
+  Globe,
+  Inbox as InboxIcon,
+  Plus,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 
 import { MobileBlockDrawer } from "@/components/editor/menu/mobile-block-drawer";
 import { SearchBox } from "@/components/search/search-command";
@@ -109,61 +116,203 @@ function MobileEditorNavActions({
 export function BottomMobileNav() {
   const { t } = useTranslation("sidebar");
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { pageId } = useParams();
+
   const isMobile = useMediaQuery("(max-width: 767px)");
   const createPage = useSidebarStore((store) => store.createPage);
   const activeWorkspace = useWorkspaceStore((state) => state.activeWorkspaceId);
   const { isReadOnly } = useWorkspacePermissions(activeWorkspace);
   const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
 
-  if (!isMobile || !activeWorkspace) return null;
+  const mobileTab = useCalendarStore((s) => s.mobileTab);
+  const setMobileTab = useCalendarStore((s) => s.setMobileTab);
+  const setIsProviderModalOpen = useCalendarStore(
+    (s) => s.setIsProviderModalOpen,
+  );
+  const connectedProvidersCount = useCalendarStore((s) => s.providers.length);
 
-  const handleNewPage = () => {
+  const isCalendar =
+    pathname === "/calendar" ||
+    pathname.endsWith("/calendar") ||
+    (activeWorkspace !== null &&
+      pathname === `/workspace/${activeWorkspace}/calendar`);
+
+  if (!isMobile || (!activeWorkspace && !isCalendar)) return null;
+
+  const handleNewAction = () => {
     if (isReadOnly) return;
+    if (isCalendar) {
+      useCalendarStore.getState().setIsEventModalOpen(true);
+      return;
+    }
+    if (!activeWorkspace) return;
     const newPageId = createPage(null);
     navigate(`/${ROUTES.workspace}/${activeWorkspace}/${newPageId}`);
   };
 
   return (
-    <nav
-      style={{
-        height: `${MOBILE_NAV_HEIGHT}px`,
-        bottom: "max(1rem, calc(0.75rem + env(safe-area-inset-bottom, 0px)))",
-      }}
-      aria-label="Mobile navigation"
-      aria-hidden={isSidebarOpen}
-      inert={isSidebarOpen ? true : undefined}
-      className={cn(
-        "fixed inset-x-4 z-30 mx-auto flex max-w-md items-center justify-between",
-        "rounded-full border border-border/60 bg-background/90 px-3.5 py-1.5 shadow-lg shadow-black/5 backdrop-blur-xl",
-        "dark:border-white/[0.12] dark:bg-background/85 dark:shadow-black/30",
-        "transition-all duration-300 ease-(--spring)",
-        isSidebarOpen &&
-          "pointer-events-none select-none opacity-0 translate-y-3",
+    <>
+      {/* Calendar Floating Action Button (FAB) above dock */}
+      {isCalendar && !isReadOnly && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleNewAction}
+          title="Add event"
+          aria-label="Add event"
+          className={cn(
+            "fixed right-5 z-40 flex size-14 items-center justify-center rounded-full",
+            "bg-primary text-primary-foreground shadow-xl shadow-primary/25",
+            "transition-all duration-300 ease-(--spring) hover:scale-105 active:scale-95",
+            isSidebarOpen &&
+              "pointer-events-none select-none opacity-0 translate-y-3",
+          )}
+          style={{
+            bottom:
+              "calc(max(1rem, calc(0.75rem + env(safe-area-inset-bottom, 0px))) + 68px + 12px)",
+          }}
+        >
+          <Plus className="size-6" strokeWidth={2.2} />
+        </Button>
       )}
-    >
-      <SearchBox />
 
-      {pageId ? (
-        <EditorPageIdProvider pageId={pageId}>
-          <MobileEditorNavActions
-            pageId={pageId}
-            activeWorkspace={activeWorkspace}
-          />
-        </EditorPageIdProvider>
-      ) : (
-        !isReadOnly && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full active:scale-95"
-            onClick={handleNewPage}
-            title={t("createNewPage")}
-          >
-            <Plus className="size-4" />
-          </Button>
-        )
-      )}
-    </nav>
+      <nav
+        style={{
+          height: `${MOBILE_NAV_HEIGHT}px`,
+          background: "rgba(255, 255, 255, 0.95)",
+          boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.06)",
+          bottom: "max(1rem, calc(0.75rem + env(safe-area-inset-bottom, 0px)))",
+        }}
+        aria-label="Mobile navigation"
+        aria-hidden={isSidebarOpen}
+        inert={isSidebarOpen ? true : undefined}
+        className={cn(
+          "fixed inset-x-4 z-30 mx-auto flex items-center",
+          isCalendar
+            ? "max-w-sm justify-around rounded-full border border-border/60 px-3 py-1.5 dark:border-white/12 dark:bg-[#18181b]/85 dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]"
+            : "max-w-md justify-between rounded-full border border-border/60 bg-background/90 px-3.5 py-1.5 shadow-lg shadow-black/5 backdrop-blur-xl dark:border-white/12 dark:bg-background/85 dark:shadow-black/30",
+          "transition-all duration-300 ease-(--spring)",
+          isSidebarOpen &&
+            "pointer-events-none select-none opacity-0 translate-y-3",
+        )}
+      >
+        {/* 1. Left: Search Trigger (only when not on calendar) */}
+        {!isCalendar && <SearchBox />}
+
+        {/* 2. Center: Calendar Dock Items (4 core navigation tabs) */}
+        {isCalendar && (
+          <div className="flex w-full items-center justify-around">
+            {/* Tab 1: Inbox */}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setMobileTab("inbox")}
+              className={cn(
+                "flex h-auto flex-col items-center justify-center gap-1 rounded-xl px-3 py-1 text-[11px] transition-all select-none hover:bg-transparent",
+                mobileTab === "inbox"
+                  ? "font-bold text-foreground"
+                  : "font-normal text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <InboxIcon
+                className="size-[18px]"
+                strokeWidth={mobileTab === "inbox" ? 2.5 : 1.5}
+              />
+              <span>Inbox</span>
+            </Button>
+
+            {/* Tab 2: Today */}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setMobileTab("today")}
+              className={cn(
+                "flex h-auto flex-col items-center justify-center gap-1 rounded-xl px-3 py-1 text-[11px] transition-all select-none hover:bg-transparent",
+                mobileTab === "today"
+                  ? "font-bold text-foreground"
+                  : "font-normal text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <CalendarIcon
+                className="size-[18px]"
+                strokeWidth={mobileTab === "today" ? 2.5 : 1.5}
+              />
+              <span>Today</span>
+            </Button>
+
+            {/* Tab 3: Upcoming */}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setMobileTab("upcoming")}
+              className={cn(
+                "flex h-auto flex-col items-center justify-center gap-1 rounded-xl px-3 py-1 text-[11px] transition-all select-none hover:bg-transparent",
+                mobileTab === "upcoming"
+                  ? "font-bold text-foreground"
+                  : "font-normal text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <CalendarRange
+                className="size-[18px]"
+                strokeWidth={mobileTab === "upcoming" ? 2.5 : 1.5}
+              />
+              <span>Upcoming</span>
+            </Button>
+
+            {/* Tab 4: Browse */}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setMobileTab("browse");
+                setIsProviderModalOpen(true);
+              }}
+              className={cn(
+                "relative flex h-auto flex-col items-center justify-center gap-1 rounded-xl px-3 py-1 text-[11px] transition-all select-none hover:bg-transparent",
+                mobileTab === "browse"
+                  ? "font-bold text-foreground"
+                  : "font-normal text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <div className="relative flex items-center justify-center">
+                <Globe
+                  className="size-[18px]"
+                  strokeWidth={mobileTab === "browse" ? 2.5 : 1.5}
+                />
+                {connectedProvidersCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-primary" />
+                )}
+              </div>
+              <span>Browse</span>
+            </Button>
+          </div>
+        )}
+
+        {/* 3. Right: Action Trigger (only when not on calendar) */}
+        {!isCalendar &&
+          (pageId ? (
+            <EditorPageIdProvider pageId={pageId}>
+              <MobileEditorNavActions
+                pageId={pageId}
+                activeWorkspace={activeWorkspace ?? ""}
+              />
+            </EditorPageIdProvider>
+          ) : (
+            !isReadOnly && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full active:scale-95"
+                onClick={handleNewAction}
+                title={t("createNewPage")}
+                aria-label={t("createNewPage")}
+              >
+                <Plus className="size-4" />
+              </Button>
+            )
+          ))}
+      </nav>
+    </>
   );
 }
