@@ -31,7 +31,7 @@ export function WindowHeader() {
         data-tauri-drag-region
       >
         <div
-          className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden pr-2 [app-region:drag]"
+          className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden pr-2 pl-1 [app-region:drag]"
           data-tauri-drag-region
         >
           <SidebarToggleButton />

@@ -76,7 +76,7 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
         onDrop={handleDrop}
         className={cn(
           "group relative flex w-full items-center",
-          "my-px rounded-full px-2",
+          "my-px rounded-lg px-2",
           "transition-colors duration-(--press-duration) ease-(--spring)",
           isActive
             ? "bg-(--accent-blue-tint)"
@@ -92,10 +92,10 @@ export function SidebarPageItem({ pageId, depth = 0 }: SidebarPageItemProps) {
         {isDropTarget && activePosition === "before" && (
           <div
             data-testid="drop-indicator-before"
-            className="pointer-events-none absolute -top-0.5 start-1 end-1 z-30 flex items-center"
+            className="pointer-events-none absolute -top-0.5 inset-s-1 inset-e-1 z-30 flex items-center"
           >
-            <div className="size-1.5 rounded-full bg-(--accent-blue) ring-2 ring-background" />
-            <div className="h-0.5 flex-1 rounded-full bg-(--accent-blue) shadow-[0_0_6px_var(--accent-blue)]" />
+            <div className="size-1.5 rounded-lg bg-(--accent-blue) ring-2 ring-background" />
+            <div className="h-0.5 flex-1 rounded-lg bg-(--accent-blue) shadow-[0_0_6px_var(--accent-blue)]" />
           </div>
         )}
 

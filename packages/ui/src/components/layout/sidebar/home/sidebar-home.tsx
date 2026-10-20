@@ -1,20 +1,15 @@
-import { Button, buttonVariants } from "@ui/button";
+import { Button } from "@ui/button";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { FileText, Network, Plus, Trash2 } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router";
 
-import { SearchBox } from "@/components/search/search-command";
-import { Link } from "@/components/ui/link";
-import { Separator } from "@/components/ui/separator";
 import {
   resetDndState,
   useSidebarDndStore,
 } from "@/hooks/sidebar/use-sidebar-dnd";
 import { useWorkspacePermissions } from "@/hooks/workspace/use-workspace-permissions";
-import { isFirefox } from "@/lib/browser";
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
@@ -111,82 +106,42 @@ function SidebarRootDropZone() {
   );
 }
 
-function SidebarHomeHeader() {
+export function SidebarHomeHeader({
+  showPrivateSection = true,
+}: {
+  showPrivateSection?: boolean;
+} = {}) {
   const { t } = useTranslation("sidebar");
-  const { pathname } = useLocation();
   const createPage = useSidebarStore((store) => store.createPage);
   const activeWorkspaceId = useWorkspaceStore(
     (store) => store.activeWorkspaceId,
   );
   const { isReadOnly } = useWorkspacePermissions(activeWorkspaceId);
-  const isSidebarOpen = useSidebarStore((store) => store.isSidebarOpen);
 
-  if (!activeWorkspaceId) return null;
-
-  const isGraphActive =
-    Boolean(activeWorkspaceId) &&
-    pathname === `/workspace/${activeWorkspaceId}/graph`;
-  const isTrashActive =
-    Boolean(activeWorkspaceId) &&
-    pathname === `/workspace/${activeWorkspaceId}/trash`;
+  if (!activeWorkspaceId || !showPrivateSection) return null;
 
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between py-1">
-        {activeWorkspaceId && (
-          <div className="flex items-center gap-1">
-            <Link
-              href={`/workspace/${activeWorkspaceId}/graph`}
-              aria-label={t("graphView")}
-              title={t("graphView")}
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "icon" }),
-                "rounded-full",
-                isGraphActive && "bg-muted text-foreground",
-              )}
-            >
-              <Network className="size-4" strokeWidth={1.5} />
-            </Link>
-            <Link
-              href={`/workspace/${activeWorkspaceId}/trash`}
-              aria-label={t("goToTrash")}
-              title={t("trashPage")}
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "icon" }),
-                "rounded-full",
-                isTrashActive && "bg-muted text-foreground",
-              )}
-            >
-              <Trash2 className="size-4" strokeWidth={1.5} />
-            </Link>
-            <SearchBox
-              triggerClassName={
-                isSidebarOpen && !isFirefox()
-                  ? "sidebar-search-button"
-                  : undefined
-              }
-            />
-          </div>
-        )}
-      </div>
-      <Separator />
-      <div className="text-xs font-semibold uppercase tracking-widest flex items-center justify-between">
-        <span>{t("private")}</span>
+    <div
+      className={cn(
+        styles.sectionLabel,
+        "flex items-center justify-between px-2 pt-3 pb-1 text-xs font-semibold uppercase tracking-widest",
+      )}
+    >
+      <span>{t("private")}</span>
 
-        {!isReadOnly && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => void createPage(null)}
-            title={t("createPage")}
-            aria-label={t("createNewPage")}
-            className="text-muted-foreground hover:text-(--accent-blue)"
-          >
-            <Plus className="size-3.5" />
-          </Button>
-        )}
-      </div>
+      {!isReadOnly && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => void createPage(null)}
+          title={t("createPage")}
+          aria-label={t("createNewPage")}
+          className="text-muted-foreground hover:text-(--accent-blue)"
+        >
+          <Plus className="size-3.5" />
+        </Button>
+      )}
     </div>
   );
 }

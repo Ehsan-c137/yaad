@@ -4,8 +4,10 @@ import type { CSSProperties } from "react";
 
 import { WINDOW_HEADER_HEIGHT } from "@yaad/core/constants/sizes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
+import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router";
 
 import { useSidebarToggle } from "@/hooks/sidebar/use-sidebar-toggle";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -13,7 +15,9 @@ import { usePageTransitionPreference } from "@/hooks/use-page-transition-prefere
 import { styles } from "@/lib/design-token";
 import { cn } from "@/lib/utils";
 
+import { SidebarCalendar } from "./calendar/sidebar-calendar";
 import { Profile } from "./profile/profile";
+import { SidebarNav } from "./sidebar-nav";
 import { SidebarRail } from "./sidebar-rail";
 import { SidebarTabs } from "./sidebar-tabs";
 import { SidebarToggleButton } from "./sidebar-toggle-button";
@@ -44,7 +48,7 @@ function useSidebarAnimation(
 
     const timer = setTimeout(() => {
       setAnimationPhase("idle");
-    }, 320);
+    }, 280);
 
     return () => clearTimeout(timer);
   }, [isSidebarOpen, transitionsEnabled]);
@@ -83,7 +87,7 @@ function SidebarBackdrop({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-40 bg-black/40 transition-opacity duration-300",
+        "fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] transition-opacity duration-280 ease-out",
         isOpen ? "opacity-100" : "pointer-events-none opacity-0",
       )}
       onClick={onClose}
@@ -99,12 +103,21 @@ function SidebarExpandedPanel({
   isClosing: boolean;
   isOpening: boolean;
 }) {
+  const { pathname } = useLocation();
+  const activeWorkspaceId = useWorkspaceStore(
+    (store) => store.activeWorkspaceId,
+  );
+  const isCalendarActive =
+    pathname === "/calendar" ||
+    (Boolean(activeWorkspaceId) &&
+      pathname === `/workspace/${activeWorkspaceId!}/calendar`);
+
   return (
     <div
       className={cn(
         "flex h-full w-[calc(100vw-2.25rem)] max-w-[16.25rem] shrink-0 flex-col overflow-x-hidden md:w-[16.25rem]",
         isClosing &&
-          "absolute inset-y-0 start-0 z-10 p-2.5 sidebar-panel-animating-close pointer-events-none",
+          "absolute inset-y-0 inset-s-0 z-10 p-2.5 sidebar-panel-animating-close pointer-events-none",
         isOpening && "sidebar-panel-animating-open",
       )}
     >
@@ -113,7 +126,9 @@ function SidebarExpandedPanel({
         <SidebarToggleButton />
       </div>
 
-      <SidebarTabs />
+      <SidebarNav />
+
+      {isCalendarActive ? <SidebarCalendar /> : <SidebarTabs />}
 
       <div>
         <Profile />
@@ -139,13 +154,14 @@ function getSidebarClasses({
 }) {
   if (isMobile) {
     return cn(
+      "w-[calc(100vw-1rem)] max-w-72 p-2.5",
       isClosing && "sidebar-animating-close pointer-events-none",
       isOpening && "sidebar-animating-open",
       isVisible ? "visible" : "pointer-events-none invisible",
       isSidebarOpen || isClosing
-        ? "w-[calc(100vw-1rem)] max-w-72 p-2.5 opacity-100 translate-x-0 scale-100"
+        ? "opacity-100 translate-x-0"
         : isClosed &&
-            "pointer-events-none -translate-x-full rtl:translate-x-full scale-90 p-0 opacity-0 w-0",
+            "pointer-events-none -translate-x-full rtl:translate-x-full opacity-0",
     );
   }
 
@@ -192,8 +208,8 @@ export function Sidebar() {
         }
         className={cn(
           styles.sidebar,
-          "fixed top-2 start-2 z-50 flex h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/95 shadow-2xl origin-left rtl:origin-right will-change-[width,transform]",
-          "md:relative md:z-20 md:top-auto md:start-auto md:h-full md:border-border/70 dark:md:border-white/[0.08] md:bg-card/75 dark:md:bg-sidebar/80 md:shadow-xs",
+          "fixed top-2 inset-s-2 z-50 flex h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/95 shadow-2xl will-change-transform",
+          "md:relative md:z-20 md:top-auto md:inset-s-auto md:h-full md:border-border/70 dark:md:border-white/8 md:bg-card/75 dark:md:bg-sidebar/80 md:shadow-xs md:will-change-[width]",
           getSidebarClasses({
             isClosed,
             isClosing,

@@ -189,25 +189,13 @@
   .sidebar-animating-close {
     translate: none !important;
     scale: none !important;
-    animation: sidebar-anticipate-open 320ms cubic-bezier(0.22, 1, 0.36, 1)
-      reverse forwards;
-    transition:
-      width 300ms var(--spring) 0ms,
-      margin 300ms var(--spring) 0ms,
-      padding 300ms var(--spring) 0ms,
-      border-color 300ms var(--spring) 0ms;
+    animation: sidebar-slide-close 250ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
   }
 
   .sidebar-animating-open {
     translate: none !important;
     scale: none !important;
-    animation: sidebar-anticipate-open 320ms cubic-bezier(0.22, 1, 0.36, 1)
-      forwards;
-    transition:
-      width 300ms var(--spring) 0ms,
-      margin 300ms var(--spring) 0ms,
-      padding 300ms var(--spring) 0ms,
-      border-color 300ms var(--spring) 0ms;
+    animation: sidebar-slide-open 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .sidebar-desktop-transition {
@@ -345,40 +333,24 @@
     }
   }
 
-  @keyframes sidebar-anticipate-close {
-    0% {
-      transform: scale(1) translateX(0);
+  @keyframes sidebar-slide-close {
+    from {
+      transform: translateX(0);
       opacity: 1;
     }
-    12% {
-      transform: scale(0.995, 0.995) translateX(0);
-    }
-    32% {
-      transform: scale(1.025, 1.01) translateX(0);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(0.88, 0.92)
-        translateX(calc(var(--sidebar-slide-dir, 1) * -20rem));
-      opacity: 0;
+    to {
+      transform: translateX(calc(var(--sidebar-slide-dir, 1) * -100%));
+      opacity: 0.9;
     }
   }
 
-  @keyframes sidebar-anticipate-open {
-    0% {
-      transform: scale(0.88, 0.92)
-        translateX(calc(var(--sidebar-slide-dir, 1) * -20rem));
-      opacity: 0;
+  @keyframes sidebar-slide-open {
+    from {
+      transform: translateX(calc(var(--sidebar-slide-dir, 1) * -100%));
+      opacity: 0.9;
     }
-    68% {
-      transform: scale(1.025, 1.01) translateX(0);
-      opacity: 1;
-    }
-    88% {
-      transform: scale(0.995, 0.995) translateX(0);
-    }
-    100% {
-      transform: scale(1) translateX(0);
+    to {
+      transform: translateX(0);
       opacity: 1;
     }
   }

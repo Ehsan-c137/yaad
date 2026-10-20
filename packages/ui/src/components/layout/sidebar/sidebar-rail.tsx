@@ -4,7 +4,14 @@ import { Button } from "@ui/button";
 import { ROUTES } from "@yaad/core/constants/routes";
 import { useSidebarStore } from "@yaad/core/store/use-sidebar-store";
 import { useWorkspaceStore } from "@yaad/core/store/use-workspace-store";
-import { Bookmark, Network, Plus, Trash2 } from "lucide-react";
+import {
+  Bookmark,
+  Calendar,
+  FileText,
+  Network,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
@@ -38,6 +45,15 @@ export function SidebarRail() {
   const isTrashActive =
     activeWorkspaceId !== null &&
     pathname === `/workspace/${activeWorkspaceId}/trash`;
+  const isCalendarActive =
+    pathname === "/calendar" ||
+    (activeWorkspaceId !== null &&
+      pathname === `/workspace/${activeWorkspaceId}/calendar`);
+  const isNotesActive =
+    activeWorkspaceId !== null &&
+    !isGraphActive &&
+    !isTrashActive &&
+    !isCalendarActive;
   const isBookmarkedActive = isSidebarOpen && sidebarTab === "bookmarked";
 
   const handleBookmarkClick = () => {
@@ -65,6 +81,27 @@ export function SidebarRail() {
         <SidebarToggleButton />
 
         <div className="my-0.5 h-px w-5 bg-border/60 dark:bg-white/10" />
+
+        {activeWorkspaceId && (
+          <Link
+            href={`/workspace/${activeWorkspaceId}`}
+            aria-label={t("pages") || "Pages"}
+            className={cn(
+              "rounded-full transition-colors",
+              isNotesActive && "bg-muted text-foreground",
+            )}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full"
+              title={t("pages") || "Pages"}
+              aria-label={t("pages") || "Pages"}
+            >
+              <FileText className="size-4" strokeWidth={1.5} />
+            </Button>
+          </Link>
+        )}
 
         {activeWorkspaceId && (
           <Link
@@ -121,6 +158,29 @@ export function SidebarRail() {
             </Button>
           </Link>
         )}
+
+        <Link
+          href={
+            activeWorkspaceId
+              ? `/workspace/${activeWorkspaceId}/calendar`
+              : "/calendar"
+          }
+          aria-label="Calendar"
+          className={cn(
+            "rounded-full transition-colors",
+            isCalendarActive && "bg-muted text-foreground",
+          )}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            title="Calendar"
+            aria-label="Calendar"
+          >
+            <Calendar className="size-4" strokeWidth={1.5} />
+          </Button>
+        </Link>
 
         <SearchBox
           triggerClassName={
