@@ -105,10 +105,23 @@ describe("useCalendarStore Storage Persistence & Sync", () => {
   });
 
   it("calls storage.deleteCalendarCategory when deleteCategory is called", () => {
+    const event: CalendarEvent = {
+      id: "evt_category",
+      title: "Category Event",
+      calendarId: "cat_marketing",
+      date: "2026-10-25",
+      startTime: "10:00",
+      endTime: "11:00",
+    };
+    useCalendarStore.setState({ events: [event] });
+
     useCalendarStore.getState().deleteCategory("cat_marketing");
+
     expect(mockAdapter.deleteCalendarCategory).toHaveBeenCalledWith(
       "cat_marketing",
     );
+    expect(mockAdapter.deleteCalendarEvent).toHaveBeenCalledWith(event.id);
+    expect(useCalendarStore.getState().events).toEqual([]);
   });
 
   it("hydrates categories and events from storage via loadCalendarFromStorage", async () => {

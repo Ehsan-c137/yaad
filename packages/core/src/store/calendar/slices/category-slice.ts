@@ -15,7 +15,7 @@ export const createCategorySlice: StateCreator<
   [],
   [],
   CalendarCategorySlice
-> = (set) => ({
+> = (set, get) => ({
   categories: INITIAL_CATEGORIES,
 
   toggleCategory: (id: string) => {
@@ -63,12 +63,19 @@ export const createCategorySlice: StateCreator<
   },
 
   deleteCategory: (id: string, options?: CalendarMutationOptions) => {
+    const eventsToDelete = get().events.filter(
+      (event) => event.calendarId === id,
+    );
+
     set((state) => ({
       categories: state.categories.filter((c) => c.id !== id),
       events: state.events.filter((e) => e.calendarId !== id),
     }));
 
     if (!options?.skipPersistence) {
+      eventsToDelete.forEach((event) => {
+        void storage.deleteCalendarEvent?.(event.id);
+      });
       void storage.deleteCalendarCategory?.(id);
     }
   },
